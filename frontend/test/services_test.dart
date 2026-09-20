@@ -183,5 +183,49 @@ void main() {
       expect(user, isNotNull);
       expect(auth.currentUser, isNotNull);
     });
+
+    test('CatUser toJson and fromJson round-trip successfully', () {
+      const original = CatUser(
+        id: 'usr_custom_1',
+        username: 'persian_fluff',
+        displayName: 'Fluffy Persian',
+        avatarUrl: 'https://example.com/avatar.jpg',
+        bio: 'Nap enthusiast',
+        category: 'Persian Cat',
+        isVerified: true,
+        postsCount: 15,
+        followersCount: '2.5k',
+        followingCount: 120,
+      );
+
+      final json = original.toJson();
+      final restored = CatUser.fromJson(json);
+
+      expect(restored.id, original.id);
+      expect(restored.username, original.username);
+      expect(restored.displayName, original.displayName);
+      expect(restored.avatarUrl, original.avatarUrl);
+      expect(restored.bio, original.bio);
+      expect(restored.category, original.category);
+      expect(restored.isVerified, original.isVerified);
+      expect(restored.postsCount, original.postsCount);
+      expect(restored.followersCount, original.followersCount);
+      expect(restored.followingCount, original.followingCount);
+    });
+
+    test('saveLastUser updates AuthService lastUser property', () async {
+      final auth = AuthService();
+      const testUser = CatUser(
+        id: 'usr_last_saved',
+        username: 'real_last_cat',
+        displayName: 'Real Cat',
+        avatarUrl: 'https://example.com/cat.jpg',
+        category: 'Siamese Cat',
+      );
+
+      await auth.saveLastUser(testUser, identifier: 'real_last_cat', password: 'securepass');
+      expect(auth.lastUser.username, 'real_last_cat');
+      expect(auth.lastUser.category, 'Siamese Cat');
+    });
   });
 }

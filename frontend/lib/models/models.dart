@@ -101,6 +101,24 @@ class CatUser {
       isFollowing: isFollowing ?? this.isFollowing,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'username': username,
+      'displayName': displayName,
+      'avatarUrl': avatarUrl,
+      'bio': bio,
+      'category': category,
+      'website': website,
+      'isVerified': isVerified,
+      'postsCount': postsCount,
+      'followersCount': followersCount,
+      'followingCount': followingCount,
+      'isPublic': isPublic,
+      'isFollowing': isFollowing,
+    };
+  }
 }
 
 class Post {

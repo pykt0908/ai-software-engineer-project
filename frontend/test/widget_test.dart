@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/services/auth_service.dart';
 
 const List<int> _kTransparentImage = <int>[
   0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
@@ -89,6 +90,11 @@ void main() {
     FlutterSecureStorage.setMockInitialValues({});
   });
 
+  setUp(() {
+    AuthService().resetForTest();
+    FlutterSecureStorage.setMockInitialValues({});
+  });
+
   testWidgets('InstaCat app loads and shows OneTapLoginScreen', (WidgetTester tester) async {
     await tester.pumpWidget(const InstaCatApp());
     await tester.pumpAndSettle();
@@ -110,10 +116,10 @@ void main() {
     // Verify LoginScreen is shown
     expect(find.text('Log in with Facebook'), findsOneWidget);
     expect(find.text('Forgot password?'), findsOneWidget);
-    expect(find.text('One-Tap Login as @mochi_the_ragdoll'), findsOneWidget);
+    expect(find.byIcon(Icons.chevron_left), findsOneWidget);
 
-    // Tap to return to OneTapLoginScreen
-    await tester.tap(find.text('One-Tap Login as @mochi_the_ragdoll'));
+    // Tap back button (chevron_left) to return to OneTapLoginScreen
+    await tester.tap(find.byIcon(Icons.chevron_left));
     await tester.pumpAndSettle();
 
     expect(find.text('Switch accounts'), findsOneWidget);
@@ -299,6 +305,49 @@ void main() {
 
     // Verify returned to ProfileScreen and 'new_cool_cat' is immediately displayed in the AppBar!
     expect(find.text('new_cool_cat'), findsWidgets);
+  });
+
+  testWidgets('OneTapLoginScreen remembers and displays the last logged in user after logout', (WidgetTester tester) async {
+    await tester.pumpWidget(const InstaCatApp());
+    await tester.pumpAndSettle();
+
+    // Initially displays default or first user
+    expect(find.text('mochi_the_ragdoll'), findsOneWidget);
+
+    // Log in
+    await tester.tap(find.text('Log In'));
+    await tester.pumpAndSettle();
+
+    // Navigate to Profile tab
+    await tester.tap(find.byKey(const ValueKey('nav_profile')));
+    await tester.pumpAndSettle();
+
+    // Edit profile username
+    await tester.tap(find.text('Edit Profile'));
+    await tester.pumpAndSettle();
+
+    final usernameField = find.widgetWithText(TextField, 'mochi_the_ragdoll');
+    await tester.enterText(usernameField, 'persian_king');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+
+    // Verify username changed to persian_king
+    expect(find.text('persian_king'), findsWidgets);
+
+    // Now log out
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(ListTile, 'Log Out'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Log Out'));
+    await tester.pumpAndSettle();
+
+    // Returned to OneTapLoginScreen: verify it now displays 'persian_king'!
+    expect(find.text('persian_king'), findsOneWidget);
   });
 }
 

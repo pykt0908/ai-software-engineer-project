@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -11,6 +12,13 @@ class AuthService {
 
   final ApiClient _apiClient = ApiClient();
 
+  static const String keyLastUser = 'instacat_last_user';
+  static const String keyLastIdentifier = 'instacat_last_identifier';
+  static const String keyLastPassword = 'instacat_last_password';
+
+  CatUser? _lastUser;
+  CatUser get lastUser => _lastUser ?? MockData.currentUser;
+
   final ValueNotifier<CatUser?> currentUserNotifier = ValueNotifier<CatUser?>(null);
   CatUser? get currentUser => currentUserNotifier.value;
 
@@ -20,7 +28,58 @@ class AuthService {
     };
   }
 
+  Future<CatUser?> loadLastUser() async {
+    try {
+      final userJson = await _apiClient.storage.read(key: keyLastUser);
+      if (userJson != null && userJson.isNotEmpty) {
+        final decoded = jsonDecode(userJson);
+        if (decoded is Map<String, dynamic>) {
+          _lastUser = CatUser.fromJson(decoded);
+          return _lastUser;
+        }
+      }
+    } catch (e) {
+      debugPrint('AuthService: error loading last user: $e');
+    }
+    return _lastUser;
+  }
+
+  Future<void> saveLastUser(CatUser user, {String? identifier, String? password}) async {
+    _lastUser = user;
+    try {
+      await _apiClient.storage.write(
+        key: keyLastUser,
+        value: jsonEncode(user.toJson()),
+      );
+      if (identifier != null && identifier.isNotEmpty) {
+        await _apiClient.storage.write(key: keyLastIdentifier, value: identifier);
+      }
+      if (password != null && password.isNotEmpty) {
+        await _apiClient.storage.write(key: keyLastPassword, value: password);
+      }
+    } catch (e) {
+      debugPrint('AuthService: error saving last user: $e');
+    }
+  }
+
+  Future<String?> getLastIdentifier() async {
+    try {
+      return await _apiClient.storage.read(key: keyLastIdentifier);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<String?> getLastPassword() async {
+    try {
+      return await _apiClient.storage.read(key: keyLastPassword);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<bool> init() async {
+    await loadLastUser();
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       return false;
     }
@@ -29,6 +88,7 @@ class AuthService {
       try {
         final user = await fetchCurrentUser();
         currentUserNotifier.value = user;
+        await saveLastUser(user, identifier: user.username);
         return true;
       } catch (e) {
         await _apiClient.clearTokens();
@@ -84,6 +144,7 @@ class AuthService {
       }
 
       currentUserNotifier.value = user;
+      await saveLastUser(user, identifier: identifier.trim(), password: password);
       return user;
     } on DioException catch (e) {
       final message = _extractErrorMessage(e);
@@ -129,6 +190,7 @@ class AuthService {
       }
 
       currentUserNotifier.value = user;
+      await saveLastUser(user, identifier: username.trim(), password: password);
       return user;
     } on DioException catch (e) {
       final message = _extractErrorMessage(e);
@@ -162,6 +224,9 @@ class AuthService {
           'passwordConfirmation': passwordConfirmation,
         },
       );
+      try {
+        await _apiClient.storage.write(key: keyLastPassword, value: password);
+      } catch (_) {}
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -180,6 +245,12 @@ class AuthService {
 
   void updateCurrentUser(CatUser updated) {
     currentUserNotifier.value = updated;
+    saveLastUser(updated, identifier: updated.username);
+  }
+
+  void resetForTest() {
+    _lastUser = null;
+    currentUserNotifier.value = null;
   }
 
   String _extractErrorMessage(DioException e) {

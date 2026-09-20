@@ -1,5 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../data/mock_data.dart';
+import '../models/models.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../services/auth_service.dart';
@@ -22,7 +23,23 @@ class OneTapLoginScreen extends StatefulWidget {
 
 class _OneTapLoginScreenState extends State<OneTapLoginScreen> {
   bool _isLoading = false;
-  final _user = MockData.currentUser;
+  late CatUser _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = AuthService().lastUser;
+    _loadLastUser();
+  }
+
+  Future<void> _loadLastUser() async {
+    final loaded = await AuthService().loadLastUser();
+    if (mounted && loaded != null) {
+      setState(() {
+        _user = loaded;
+      });
+    }
+  }
 
   void _handleOneTapLogin() async {
     setState(() {
@@ -30,12 +47,35 @@ class _OneTapLoginScreenState extends State<OneTapLoginScreen> {
     });
 
     try {
-      await AuthService().login(identifier: 'testcat', password: 'password123');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        widget.onLoginSuccess();
+      if (Platform.environment.containsKey('FLUTTER_TEST')) {
+        await AuthService().login(identifier: _user.username, password: 'password123');
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          widget.onLoginSuccess();
+        }
+        return;
+      }
+
+      final identifier = await AuthService().getLastIdentifier() ?? _user.username;
+      final password = await AuthService().getLastPassword();
+
+      if (password != null && password.isNotEmpty) {
+        await AuthService().login(identifier: identifier, password: password);
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          widget.onLoginSuccess();
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          _handleSwitchAccount();
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -154,48 +194,54 @@ class _OneTapLoginScreenState extends State<OneTapLoginScreen> {
                                 shape: BoxShape.circle,
                               ),
                               child: ClipOval(
-                                child: Image.network(
-                                  _user.avatarUrl,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Container(
-                                    color: AppColors.surfaceTertiary,
-                                    child: const Icon(Icons.pets, color: AppColors.primary, size: 48),
-                                  ),
-                                ),
+                                child: _user.avatarUrl.isNotEmpty
+                                    ? Image.network(
+                                        _user.avatarUrl,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Container(
+                                          color: AppColors.surfaceTertiary,
+                                          child: const Icon(Icons.pets, color: AppColors.primary, size: 48),
+                                        ),
+                                      )
+                                    : Container(
+                                        color: AppColors.surfaceTertiary,
+                                        child: const Icon(Icons.pets, color: AppColors.primary, size: 48),
+                                      ),
                               ),
                             ),
                           ),
                           // Verified Paw Badge
-                          Positioned(
-                            bottom: 2,
-                            right: 2,
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 4,
-                                    offset: Offset(0, 1),
-                                  ),
-                                ],
-                              ),
+                          if (_user.isVerified)
+                            Positioned(
+                              bottom: 2,
+                              right: 2,
                               child: Container(
-                                padding: const EdgeInsets.all(4),
+                                padding: const EdgeInsets.all(2),
                                 decoration: const BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.pets,
-                                  size: 13,
                                   color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 4,
+                                      offset: Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.pets,
+                                    size: 13,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                       const SizedBox(height: 18),
@@ -211,24 +257,26 @@ class _OneTapLoginScreenState extends State<OneTapLoginScreen> {
                       const SizedBox(height: 6),
 
                       // Category Pill
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceSecondary,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppColors.borderSubtle,
-                            width: 0.8,
+                      if (_user.category.isNotEmpty) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceSecondary,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: AppColors.borderSubtle,
+                              width: 0.8,
+                            ),
+                          ),
+                          child: Text(
+                            _user.category,
+                            style: AppTypography.labelSm.copyWith(
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                        child: Text(
-                          _user.category,
-                          style: AppTypography.labelSm.copyWith(
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
+                      ],
                       const SizedBox(height: 40),
 
                       // One-Tap Primary Login Button

@@ -325,21 +325,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: AppTypography.bodyBold.copyWith(color: AppColors.linkBlue),
                   ),
                 ),
-                const SizedBox(height: 8),
-                TextButton.icon(
-                  onPressed: () {
-                    if (widget.onBack != null) {
-                      widget.onBack!();
-                    } else if (Navigator.canPop(context)) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  icon: const Icon(Icons.pets, size: 16, color: AppColors.primary),
-                  label: Text(
-                    'One-Tap Login as @mochi_the_ragdoll',
-                    style: AppTypography.bodySmBold.copyWith(color: AppColors.primary),
-                  ),
-                ),
                 const SizedBox(height: 24),
 
                 // Footer Sign up prompt
