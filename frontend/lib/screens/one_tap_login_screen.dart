@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../theme/app_colors.dart';
@@ -23,16 +22,15 @@ class OneTapLoginScreen extends StatefulWidget {
 
 class _OneTapLoginScreenState extends State<OneTapLoginScreen> {
   bool _isLoading = false;
-  late CatUser _user;
+  CatUser _user = AuthService().lastUser;
 
   @override
   void initState() {
     super.initState();
-    _user = AuthService().lastUser;
-    _loadLastUser();
+    _loadUser();
   }
 
-  Future<void> _loadLastUser() async {
+  void _loadUser() async {
     final loaded = await AuthService().loadLastUser();
     if (mounted && loaded != null) {
       setState(() {
@@ -42,26 +40,14 @@ class _OneTapLoginScreenState extends State<OneTapLoginScreen> {
   }
 
   void _handleOneTapLogin() async {
-    setState(() {
-      _isLoading = true;
-    });
+    final identifier = await AuthService().getLastIdentifier() ?? _user.username;
+    final password = await AuthService().getLastPassword();
 
-    try {
-      if (Platform.environment.containsKey('FLUTTER_TEST')) {
-        await AuthService().login(identifier: _user.username, password: 'password123');
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-          widget.onLoginSuccess();
-        }
-        return;
-      }
-
-      final identifier = await AuthService().getLastIdentifier() ?? _user.username;
-      final password = await AuthService().getLastPassword();
-
-      if (password != null && password.isNotEmpty) {
+    if (password != null && password.isNotEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+      try {
         await AuthService().login(identifier: identifier, password: password);
         if (mounted) {
           setState(() {
@@ -69,22 +55,203 @@ class _OneTapLoginScreenState extends State<OneTapLoginScreen> {
           });
           widget.onLoginSuccess();
         }
-      } else {
+      } catch (e) {
         if (mounted) {
           setState(() {
             _isLoading = false;
           });
-          _handleSwitchAccount();
+          _showPasswordPrompt(context, identifier);
         }
       }
-    } catch (e) {
+    } else {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        _handleSwitchAccount();
+        _showPasswordPrompt(context, identifier);
       }
     }
+  }
+
+  void _showPasswordPrompt(BuildContext context, String identifier) {
+    final passwordController = TextEditingController();
+    bool obscure = true;
+    String? errorMessage;
+    bool isSubmitting = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (bottomSheetContext) => StatefulBuilder(
+        builder: (ctx, setModalState) {
+          final bottomPadding = MediaQuery.of(ctx).viewInsets.bottom;
+          return Container(
+            padding: EdgeInsets.fromLTRB(24, 20, 24, bottomPadding + 24),
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceCanvas,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: AppColors.borderSubtle,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                CircleAvatar(
+                  radius: 36,
+                  backgroundColor: AppColors.surfaceSecondary,
+                  backgroundImage: _user.avatarUrl.isNotEmpty
+                      ? NetworkImage(_user.avatarUrl)
+                      : null,
+                  child: _user.avatarUrl.isEmpty
+                      ? const Icon(Icons.pets, size: 36, color: AppColors.primary)
+                      : null,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Log in as @${_user.username}',
+                  style: AppTypography.headlineMd.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Enter password to continue',
+                  style: AppTypography.captionTimestamp.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (errorMessage != null) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                    ),
+                    child: Text(
+                      errorMessage!,
+                      style: AppTypography.captionTimestamp.copyWith(
+                        color: AppColors.error,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+                Container(
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceSecondary,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderSubtle, width: 0.8),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  alignment: Alignment.center,
+                  child: TextField(
+                    key: const ValueKey('input_modal_password'),
+                    controller: passwordController,
+                    obscureText: obscure,
+                    autofocus: true,
+                    textAlignVertical: TextAlignVertical.center,
+                    style: AppTypography.bodyRegular.copyWith(color: AppColors.textPrimary),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: 'Password',
+                      hintStyle: AppTypography.bodySm.copyWith(color: AppColors.textPlaceholder),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                      prefixIcon: const Icon(Icons.lock_outline, size: 20, color: AppColors.textSecondary),
+                      prefixIconConstraints: const BoxConstraints(minWidth: 32, minHeight: 20),
+                      suffixIcon: IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        icon: Icon(
+                          obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
+                        onPressed: () => setModalState(() => obscure = !obscure),
+                      ),
+                      suffixIconConstraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: ElevatedButton(
+                    key: const ValueKey('btn_modal_login'),
+                    onPressed: isSubmitting
+                        ? null
+                        : () async {
+                            final pass = passwordController.text.trim();
+                            if (pass.isEmpty) {
+                              setModalState(() {
+                                errorMessage = 'Please enter your password';
+                              });
+                              return;
+                            }
+                            setModalState(() {
+                              isSubmitting = true;
+                              errorMessage = null;
+                            });
+                            try {
+                              await AuthService().login(identifier: identifier, password: pass);
+                              if (bottomSheetContext.mounted) {
+                                Navigator.of(bottomSheetContext).pop();
+                              }
+                              widget.onLoginSuccess();
+                            } catch (e) {
+                              setModalState(() {
+                                isSubmitting = false;
+                                errorMessage = e.toString().replaceAll('Exception: ', '');
+                              });
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                    child: isSubmitting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
+                        : Text(
+                            'Log In',
+                            style: AppTypography.bodyBold.copyWith(color: Colors.white),
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(bottomSheetContext).pop();
+                    _handleSwitchAccount();
+                  },
+                  child: Text(
+                    'Log into another account',
+                    style: AppTypography.bodySm.copyWith(color: AppColors.linkBlue),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _handleSwitchAccount() {

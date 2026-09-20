@@ -125,12 +125,13 @@ erDiagram
   - ต้องมีการยืนยันตัวตน (Authenticated User)
   - ค้นหารายชื่อผู้ใช้ที่กำลังติดตาม (`following`) แล้วดึงเฉพาะโพสต์ของบุคคลเหล่านั้น
 
-### 5. ระบบโปรไฟล์และโพสต์ของผู้ใช้ (Profile API)
+### 5. ระบบโปรไฟล์และการค้นหาผู้ใช้ (Profile & Search API)
 * **Controller**: [profile.ts](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/profile/controllers/profile.ts)
 * **Endpoints**:
   - `GET /api/me`: ส่งคืนข้อมูลโปรไฟล์ของผู้ใช้ปัจจุบัน พร้อมนับยอดสถิติสดจากฐานข้อมูล ได้แก่ `postsCount`, `followersCount`, และ `followingCount`
   - `PUT /api/me`: รองรับการแก้ไข `displayName`, `bio`, `isPublic`, รูปภาพ `avatar`, และ **`username`**
     - เมื่อมีการแก้ไข `username` ระบบจะตรวจสอบความยาว (อย่างน้อย 3 ตัวอักษร), ตัวอักษรที่อนุญาต, และตรวจเช็กความซ้ำซ้อนกับผู้ใช้อื่นในระบบอย่างรัดกุม
+  - `GET /api/profiles/search?q=:query`: ค้นหาบัญชีผู้ใช้จริงในระบบจาก `username` หรือ `displayName` แบบ Case-insensitive พร้อมส่งคืนข้อมูล Avatar, สถิติโพสต์ และยอดผู้ติดตาม
   - `GET /api/profiles/:username`: ส่งคืนข้อมูลโปรไฟล์สาธารณะของผู้ใช้ พร้อมระบุว่าผู้เรียกกำลังติดตามอยู่หรือไม่ (`isFollowing`)
   - `GET /api/profiles/:username/posts`: ส่งคืนรายการโพสต์ทั้งหมดของบัญชีนั้นๆ พร้อมนับยอดไลก์และสถานะการไลก์ เรียงจากใหม่ไปเก่า เพื่อนำไปแสดงในตาราง Profile Grid
 
@@ -145,7 +146,7 @@ erDiagram
 2. ผูกสิทธิ์สำหรับ Role **`Public`**:
    - `post.find`, `post.findOne`
    - `feed.getPublicFeed`
-   - `profile.getProfile`, `profile.getUserPosts`
+   - `profile.getProfile`, `profile.getUserPosts`, `profile.searchUsers`
 3. ผูกสิทธิ์สำหรับ Role **`Authenticated`**:
    - ทุกสิทธิ์ของ Public
    - `post.create`, `post.update`, `post.delete`

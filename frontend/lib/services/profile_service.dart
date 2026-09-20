@@ -67,6 +67,39 @@ class ProfileService {
     }
   }
 
+  Future<List<CatUser>> searchUsers(String query) async {
+    final q = query.trim();
+    if (q.isEmpty) return [];
+
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      final all = [
+        AuthService().currentUser ?? MockData.currentUser,
+        MockData.biscuitPaw,
+        MockData.miloTheScottish,
+        MockData.lunaCalico,
+        MockData.oliverWhiskers,
+        MockData.churuLover,
+      ];
+      final lower = q.toLowerCase();
+      return all
+          .where((u) =>
+              u.username.toLowerCase().contains(lower) ||
+              u.displayName.toLowerCase().contains(lower))
+          .toList();
+    }
+
+    try {
+      final response = await _apiClient.dio.get(
+        '/profiles/search',
+        queryParameters: {'q': q},
+      );
+      final list = response.data['data'] as List? ?? [];
+      return list.map((item) => CatUser.fromJson(item)).toList();
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   Future<Map<String, dynamic>> toggleFollow({
     required String targetDocumentId,
     required bool currentFollowing,

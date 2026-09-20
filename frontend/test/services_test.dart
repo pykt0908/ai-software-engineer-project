@@ -4,6 +4,7 @@ import 'package:frontend/models/models.dart';
 import 'package:frontend/services/api_config.dart';
 import 'package:frontend/services/api_client.dart';
 import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/profile_service.dart';
 
 void main() {
   setUpAll(() {
@@ -226,6 +227,19 @@ void main() {
       await auth.saveLastUser(testUser, identifier: 'real_last_cat', password: 'securepass');
       expect(auth.lastUser.username, 'real_last_cat');
       expect(auth.lastUser.category, 'Siamese Cat');
+    });
+
+    test('ProfileService searchUsers filters users by query', () async {
+      final profileService = ProfileService();
+      final results = await profileService.searchUsers('biscuit');
+      expect(results, isNotEmpty);
+      expect(results.first.username, 'biscuit_paw');
+
+      final emptyResults = await profileService.searchUsers('');
+      expect(emptyResults, isEmpty);
+
+      final notFoundResults = await profileService.searchUsers('nonexistent_cat_query_xyz');
+      expect(notFoundResults, isEmpty);
     });
   });
 }

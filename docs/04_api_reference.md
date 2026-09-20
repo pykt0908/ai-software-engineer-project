@@ -22,6 +22,7 @@
 | `DELETE` | `/api/posts/:documentId/like` | ยกเลิกการถูกใจโพสต์ | ✅ Yes |
 | `GET` | `/api/me` | ดึงข้อมูลโปรไฟล์ของตนเองและยอดสถิติ | ✅ Yes |
 | `PUT` | `/api/me` | แก้ไขโปรไฟล์ (รวมถึง Username และ Avatar) | ✅ Yes |
+| `GET` | `/api/profiles/search` | ค้นหาบัญชีผู้ใช้ด้วยคำค้นหา (Query string `?q=...`) | ❌ No / Optional |
 | `GET` | `/api/profiles/:username` | ดูข้อมูลโปรไฟล์สาธารณะของผู้ใช้อื่น | ❌ No / Optional |
 | `GET` | `/api/profiles/:username/posts` | ดูรายการโพสต์ทั้งหมดของบัญชีผู้ใช้ | ❌ No / Optional |
 | `POST` | `/api/users/:documentId/follow` | ติดตามผู้ใช้อื่น | ✅ Yes |
@@ -215,7 +216,36 @@
 
 ---
 
-### 3. ดึงรายการโพสต์ของผู้ใช้ (Get User Posts)
+### 3. ค้นหาผู้ใช้งาน (Search Users)
+* **Method**: `GET`
+* **URL**: `/api/profiles/search?q=test`
+* **Headers**: `Authorization: Bearer <token>` (Optional)
+* **Response (200 OK)**:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "documentId": "usr_testcat_01",
+      "username": "testcat",
+      "displayName": "Test Cat",
+      "bio": "Official Test Cat account",
+      "isPublic": true,
+      "followersCount": 42,
+      "postsCount": 5,
+      "isFollowing": false,
+      "avatar": {
+        "id": 5,
+        "url": "/uploads/avatar_testcat.jpg"
+      }
+    }
+  ]
+}
+```
+
+---
+
+### 4. ดึงรายการโพสต์ของผู้ใช้ (Get User Posts)
 * **Method**: `GET`
 * **URL**: `/api/profiles/:username/posts?page=1&pageSize=12`
 * **Headers**: `Authorization: Bearer <token>` (Optional)

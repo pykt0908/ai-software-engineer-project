@@ -88,26 +88,35 @@ ValueListenableBuilder<CatUser?>(
 ### 4. ProfileService (`profile_service.dart`)
 - `getMe()`: ดึงข้อมูลโปรไฟล์ของตนเองพร้อมสถิติสด
 - `updateMe(...)`: ส่งคำขออัปเดตข้อมูลผู้ใช้ รวมถึง `username`
+- `searchUsers(query)`: ค้นหาผู้ใช้จริงผ่าน Backend `/api/profiles/search?q=...`
 - `getUserPosts(username)`: ดึงรายการโพสต์ทั้งหมดของบัญชีที่ระบุ
 - `uploadAvatar(File)`: บีบอัดภาพและอัปโหลดเป็นรูปโปรไฟล์
 
 ---
 
-## 3.4 ระบบจดจำบัญชีล่าสุด (Last Logged-in User Persistence)
+## 3.4 ระบบจดจำบัญชีล่าสุดและการยืนยันรหัสผ่าน (Last Logged-in & Secure Re-login)
 
-หนึ่งในฟังก์ชันเด่นคือการจำลองประสบการณ์ One-Tap Login เหมือน Instagram ของจริง:
+หนึ่งในฟังก์ชันเด่นคือการจำลองประสบการณ์ One-Tap Login เหมือน Instagram ของจริง พร้อมมาตรการรักษาความปลอดภัย:
 
 ```mermaid
-graph LR
-    A[ผู้ใช้ล็อกอินสำเร็จ] --> B[บันทึก JSON โปรไฟล์ลง Keychain]
-    B --> C[บันทึก Credentials ที่เข้ารหัสไว้]
-    C --> D[ผู้ใช้กด Log Out]
-    D --> E[ล้าง JWT Tokens ออกจากเครื่อง]
-    E --> F[คงเหลือข้อมูล lastUser ไว้]
-    F --> G[หน้า One-Tap Login แสดงรูป, ชื่อ, Category ของบัญชีล่าสุด]
-    G --> H[ผู้ใช้กด Log In ปุ่มเดียว Re-login สำเร็จทันที]
+graph TD
+    A[ผู้ใช้ล็อกอินสำเร็จ] --> B[บันทึก User Profile ลง Keychain]
+    B --> C[บันทึก Password ที่เข้ารหัสไว้สำหรับ One-Tap ครั้งถัดไป]
+    C --> D[ผู้ใช้กด Log Out จากหน้า Profile]
+    D --> E[ลบ JWT Tokens และลบรหัสผ่าน keyLastPassword ออกจาก Secure Storage]
+    E --> F[ยังคงเหลือข้อมูลโปรไฟล์ lastUser ไว้เพื่อแสดงผล Avatar & Username]
+    F --> G[หน้า One-Tap Login แสดงรูปและชื่อของบัญชีล่าสุด]
+    G --> H{ผู้ใช้กด Log In}
+    H -->|มี Password ค้างอยู่| I[เข้าสู่ระบบอัตโนมัติทันที]
+    H -->|เพิ่ง Logout / ไม่มี Password| J[เปิด Instagram-style Password Bottom Sheet ให้กรอกรหัสผ่าน]
+    J --> K[เข้าสู่ระบบสำเร็จ พร้อมบันทึก Password สำหรับ One-Tap ถัดไป]
 ```
 
+* **ความปลอดภัยระดับสูง**: เมื่อกดออกจากระบบ (Log Out) แอปจะลบรหัสผ่านที่บันทึกไว้ทิ้งทันที เพื่อป้องกันบุคคลอื่นที่หยิบเครื่องมากด Log In ซ้ำโดยไม่ต้องยืนยันตัวตน
+* **หน้าค้นหาใน Explore (`explore_screen.dart`)**:
+  - รองรับการค้นหาผู้ใช้จริงด้วยระบบ Debounce (250ms) ป้องกันการส่งคำขอถี่เกินไป
+  - แสดงผลลัพธ์รายชื่อผู้ใช้งานจริง พร้อม Avatar, Display Name, ยอดผู้ติดตาม และ Badge Verified
+  - เมื่อกดที่ผู้ใช้คนใด สามารถเปิดดูหน้า [ProfileScreen](file:///Users/panya/Documents/ai-engineer-course/frontend/lib/screens/profile_screen.dart) ของผู้ใช้นั้นได้ พร้อมปุ่มย้อนกลับ (Back Button)
 * **ความยืดหยุ่น**: หากผู้ใช้ต้องการเปลี่ยนไปใช้บัญชีอื่น สามารถกดปุ่ม **"Switch accounts"** เพื่อเปิดหน้า [LoginScreen](file:///Users/panya/Documents/ai-engineer-course/frontend/lib/screens/login_screen.dart) ปกติได้ทันที
 * **ความสะอาดของหน้าจอ**: ในหน้า `LoginScreen` จะเริ่มต้นด้วยช่องกรอกที่ว่างเปล่า 100% (ไม่มีการใส่ข้อมูลค้างไว้) เพื่อความปลอดภัยและความเป็นส่วนตัว
 

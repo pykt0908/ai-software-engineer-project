@@ -360,4 +360,73 @@ export default {
       },
     };
   },
+
+  async searchUsers(ctx: any) {
+    const q = String(ctx.query.q || '').trim();
+    if (!q) {
+      return { data: [] };
+    }
+
+    const currentUser = ctx.state.user;
+
+    const users = await strapi.documents('plugin::users-permissions.user').findMany({
+      filters: {
+        $or: [
+          { username: { $containsi: q } },
+          { displayName: { $containsi: q } },
+        ],
+        blocked: false,
+      },
+      limit: 20,
+      populate: ['avatar'],
+    });
+
+    const data = await Promise.all(
+      users.map(async (u: any) => {
+        let isFollowing = false;
+        if (currentUser) {
+          const followRecord = await strapi.documents('api::follow.follow').findFirst({
+            filters: {
+              follower: { id: currentUser.id },
+              following: { id: u.id },
+            },
+          });
+          isFollowing = !!followRecord;
+        }
+
+        const followersCount = await strapi.documents('api::follow.follow').count({
+          filters: {
+            following: { id: u.id },
+          },
+        });
+
+        const postsCount = await strapi.documents('api::post.post').count({
+          filters: {
+            author: { id: u.id },
+            moderationStatus: 'visible',
+          },
+        });
+
+        return {
+          documentId: u.documentId,
+          id: u.id,
+          username: u.username,
+          displayName: u.displayName || u.username,
+          bio: u.bio || '',
+          avatar: u.avatar
+            ? {
+                id: u.avatar.id,
+                url: u.avatar.url,
+              }
+            : null,
+          isPublic: u.isPublic ?? true,
+          followersCount,
+          postsCount,
+          isFollowing,
+        };
+      })
+    );
+
+    return { data };
+  },
 };

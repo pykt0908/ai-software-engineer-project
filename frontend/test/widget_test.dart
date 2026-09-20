@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/screens/main_shell.dart';
 
 const List<int> _kTransparentImage = <int>[
   0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
@@ -92,7 +93,9 @@ void main() {
 
   setUp(() {
     AuthService().resetForTest();
-    FlutterSecureStorage.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({
+      'instacat_last_password': 'password123',
+    });
   });
 
   testWidgets('InstaCat app loads and shows OneTapLoginScreen', (WidgetTester tester) async {
@@ -348,6 +351,63 @@ void main() {
 
     // Returned to OneTapLoginScreen: verify it now displays 'persian_king'!
     expect(find.text('persian_king'), findsOneWidget);
+
+    // Tapping 'Log In' after logout MUST require password!
+    await tester.tap(find.text('Log In'));
+    await tester.pumpAndSettle();
+
+    // Verify Password Prompt Bottom Sheet is shown
+    expect(find.text('Enter password to continue'), findsOneWidget);
+    expect(find.text('Log in as @persian_king'), findsOneWidget);
+
+    // Enter correct password and submit
+    await tester.enterText(find.byKey(const ValueKey('input_modal_password')), 'password123');
+    await tester.pumpAndSettle();
+
+    // Tap Log In inside the bottom sheet
+    await tester.tap(find.byKey(const ValueKey('btn_modal_login')));
+    await tester.pumpAndSettle();
+
+    // Successfully logged back in and returned to app!
+    expect(find.byType(MainShell), findsOneWidget);
+    expect(find.text('Your Story'), findsOneWidget);
+  });
+
+  testWidgets('Searching users in ExploreScreen shows real search results and opens profile', (WidgetTester tester) async {
+    await tester.pumpWidget(const InstaCatApp());
+    await tester.pumpAndSettle();
+
+    // Log in
+    await tester.tap(find.text('Log In'));
+    await tester.pumpAndSettle();
+
+    // Navigate to Explore tab
+    await tester.tap(find.byIcon(Icons.search_rounded));
+    await tester.pumpAndSettle();
+
+    // Find search field and type 'milo'
+    final searchField = find.widgetWithText(TextField, 'Search cats, breeds, #hashtags...');
+    expect(searchField, findsOneWidget);
+
+    await tester.enterText(searchField, 'milo');
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+
+    // Verify search results display 'milo_the_scottish'
+    expect(find.text('milo_the_scottish'), findsOneWidget);
+
+    // Tap user result to open their profile
+    await tester.tap(find.text('milo_the_scottish'));
+    await tester.pumpAndSettle();
+
+    // Verify profile screen of milo opened with back button
+    expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+
+    // Tap back button to return to explore search
+    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.pumpAndSettle();
+
+    expect(find.text('milo_the_scottish'), findsOneWidget);
   });
 }
 

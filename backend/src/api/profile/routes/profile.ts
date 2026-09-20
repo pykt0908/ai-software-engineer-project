@@ -18,6 +18,15 @@ export default {
     },
     {
       method: 'GET',
+      path: '/profiles/search',
+      handler: 'profile.searchUsers',
+      config: {
+        auth: false,
+        policies: [],
+      },
+    },
+    {
+      method: 'GET',
       path: '/profiles/:username',
       handler: 'profile.getProfile',
       config: {

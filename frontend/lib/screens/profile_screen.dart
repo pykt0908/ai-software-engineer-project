@@ -466,38 +466,50 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        titleSpacing: 16,
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
+        titleSpacing: Navigator.canPop(context) ? 0 : 16,
         title: GestureDetector(
-          onTap: _showAccountSwitcher,
+          onTap: _isOwnProfile ? _showAccountSwitcher : null,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.lock_outline, size: 16, color: AppColors.textPrimary),
-              const SizedBox(width: 6),
+              if (_isOwnProfile) ...[
+                const Icon(Icons.lock_outline, size: 16, color: AppColors.textPrimary),
+                const SizedBox(width: 6),
+              ],
               Text(
                 _user.username,
                 style: AppTypography.headlineMd.copyWith(fontSize: 19),
               ),
-              const SizedBox(width: 4),
-              const Icon(Icons.keyboard_arrow_down, size: 20, color: AppColors.textPrimary),
+              if (_isOwnProfile) ...[
+                const SizedBox(width: 4),
+                const Icon(Icons.keyboard_arrow_down, size: 20, color: AppColors.textPrimary),
+              ],
             ],
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_box_outlined, size: 24, color: AppColors.textPrimary),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Create Story or Reel')),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.menu, size: 26, color: AppColors.textPrimary),
-            onPressed: _showOptionsMenu,
-          ),
-          const SizedBox(width: 4),
-        ],
+        actions: _isOwnProfile
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.add_box_outlined, size: 24, color: AppColors.textPrimary),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Create Story or Reel')),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.menu, size: 26, color: AppColors.textPrimary),
+                  onPressed: _showOptionsMenu,
+                ),
+                const SizedBox(width: 4),
+              ]
+            : null,
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(0.8),
           child: Divider(height: 0.8, color: AppColors.borderSubtle),

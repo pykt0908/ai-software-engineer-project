@@ -239,6 +239,9 @@ class AuthService {
       // Ignore network errors on logout
     } finally {
       await _apiClient.clearTokens();
+      try {
+        await _apiClient.storage.delete(key: keyLastPassword);
+      } catch (_) {}
       currentUserNotifier.value = null;
     }
   }
