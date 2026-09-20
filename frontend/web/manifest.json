@@ -1,11 +1,11 @@
 {
-    "name": "frontend",
-    "short_name": "frontend",
+    "name": "InstaCat",
+    "short_name": "InstaCat",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "InstaCat - The Social Network for Cat Lovers",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
