@@ -9,11 +9,7 @@ class LoginScreen extends StatefulWidget {
   final VoidCallback onLoginSuccess;
   final VoidCallback? onBack;
 
-  const LoginScreen({
-    super.key,
-    required this.onLoginSuccess,
-    this.onBack,
-  });
+  const LoginScreen({super.key, required this.onLoginSuccess, this.onBack});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -92,7 +88,11 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: canGoBack
           ? AppBar(
               leading: IconButton(
-                icon: const Icon(Icons.chevron_left, size: 28, color: AppColors.textPrimary),
+                icon: const Icon(
+                  Icons.chevron_left,
+                  size: 28,
+                  color: AppColors.textPrimary,
+                ),
                 onPressed: () {
                   if (widget.onBack != null) {
                     widget.onBack!();
@@ -161,7 +161,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.surfaceSecondary,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderSubtle, width: 0.8),
+                    border: Border.all(
+                      color: AppColors.borderSubtle,
+                      width: 0.8,
+                    ),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   alignment: Alignment.center,
@@ -172,11 +175,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: InputDecoration(
                       isDense: true,
                       hintText: 'Phone number, username, or email',
-                      hintStyle: AppTypography.bodySm.copyWith(color: AppColors.textPlaceholder),
+                      hintStyle: AppTypography.bodySm.copyWith(
+                        color: AppColors.textPlaceholder,
+                      ),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
-                      prefixIcon: const Icon(Icons.person_outline, size: 20, color: AppColors.textSecondary),
-                      prefixIconConstraints: const BoxConstraints(minWidth: 32, minHeight: 20),
+                      prefixIcon: const Icon(
+                        Icons.person_outline,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -188,7 +200,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.surfaceSecondary,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderSubtle, width: 0.8),
+                    border: Border.all(
+                      color: AppColors.borderSubtle,
+                      width: 0.8,
+                    ),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   alignment: Alignment.center,
@@ -200,17 +215,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: InputDecoration(
                       isDense: true,
                       hintText: 'Password',
-                      hintStyle: AppTypography.bodySm.copyWith(color: AppColors.textPlaceholder),
+                      hintStyle: AppTypography.bodySm.copyWith(
+                        color: AppColors.textPlaceholder,
+                      ),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
-                      prefixIcon: const Icon(Icons.lock_outline, size: 20, color: AppColors.textSecondary),
-                      prefixIconConstraints: const BoxConstraints(minWidth: 32, minHeight: 20),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 20,
+                      ),
                       suffixIcon: IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
                         splashRadius: 20,
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          _obscurePassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
                           size: 20,
                           color: AppColors.textSecondary,
                         ),
@@ -220,7 +249,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           });
                         },
                       ),
-                      suffixIconConstraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      suffixIconConstraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
                     ),
                   ),
                 ),
@@ -231,7 +263,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 4,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
@@ -240,7 +275,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SnackBar(
                           content: Row(
                             children: [
-                              Icon(Icons.mail_outline, color: Colors.white, size: 18),
+                              Icon(
+                                Icons.mail_outline,
+                                color: Colors.white,
+                                size: 18,
+                              ),
                               SizedBox(width: 8),
                               Text('Password reset instructions sent'),
                             ],
@@ -289,7 +328,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(width: 8),
                               Text(
                                 'Log In',
-                                style: AppTypography.bodyBold.copyWith(color: Colors.white, fontSize: 15),
+                                style: AppTypography.bodyBold.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
                               ),
                             ],
                           ),
@@ -300,7 +342,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Divider with "OR"
                 Row(
                   children: [
-                    const Expanded(child: Divider(color: AppColors.borderSubtle)),
+                    const Expanded(
+                      child: Divider(color: AppColors.borderSubtle),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Text(
@@ -311,7 +355,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const Expanded(child: Divider(color: AppColors.borderSubtle)),
+                    const Expanded(
+                      child: Divider(color: AppColors.borderSubtle),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -319,10 +365,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Social Login Buttons
                 TextButton.icon(
                   onPressed: () => widget.onLoginSuccess(),
-                  icon: const Icon(Icons.facebook, color: AppColors.linkBlue, size: 22),
+                  icon: const Icon(
+                    Icons.facebook,
+                    color: AppColors.linkBlue,
+                    size: 22,
+                  ),
                   label: Text(
                     'Log in with Facebook',
-                    style: AppTypography.bodyBold.copyWith(color: AppColors.linkBlue),
+                    style: AppTypography.bodyBold.copyWith(
+                      color: AppColors.linkBlue,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -335,8 +387,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextButton(
                       onPressed: _openRegisterScreen,
                       child: Text(
-                        'Sign up.',
-                        style: AppTypography.bodySmBold.copyWith(color: AppColors.primary),
+                        ' Sign up.',
+                        style: AppTypography.bodySmBold.copyWith(
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                   ],

@@ -2,6 +2,8 @@
 
 > A full-stack cat social media mobile application built with **Flutter**, **Strapi 5**, and **PostgreSQL**.
 
+📖 **[Full Documentation / คู่มือระบบฉบับละเอียดทั้งหมด](docs/README.md)**
+
 ---
 
 ## 📌 Features
