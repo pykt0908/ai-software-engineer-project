@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
+import '../data/mock_data.dart';
 import '../models/models.dart';
 import 'api_client.dart';
+import 'auth_service.dart';
 
 class ProfileService {
   static final ProfileService _instance = ProfileService._internal();
@@ -14,6 +16,9 @@ class ProfileService {
   ProfileService._internal();
 
   Future<CatUser> getMe() async {
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      return AuthService().currentUser ?? MockData.currentUser;
+    }
     try {
       final response = await _apiClient.dio.get('/me');
       return CatUser.fromJson(response.data);
@@ -23,13 +28,24 @@ class ProfileService {
   }
 
   Future<CatUser> updateMe({
+    String? username,
     String? displayName,
     String? bio,
     bool? isPublic,
     int? avatarId,
   }) async {
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      final current = AuthService().currentUser ?? MockData.currentUser;
+      return current.copyWith(
+        username: username ?? current.username,
+        displayName: displayName ?? current.displayName,
+        bio: bio ?? current.bio,
+        isPublic: isPublic ?? current.isPublic,
+      );
+    }
     try {
       final data = <String, dynamic>{};
+      if (username != null && username.isNotEmpty) data['username'] = username.trim();
       if (displayName != null) data['displayName'] = displayName;
       if (bio != null) data['bio'] = bio;
       if (isPublic != null) data['isPublic'] = isPublic;

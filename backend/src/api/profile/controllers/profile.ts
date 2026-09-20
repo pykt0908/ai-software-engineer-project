@@ -69,6 +69,27 @@ export default {
     const body = ctx.request.body.data || ctx.request.body || {};
     const updateData: Record<string, any> = {};
 
+    if (typeof body.username !== 'undefined') {
+      const newUsername = String(body.username).trim().toLowerCase();
+      if (newUsername.length < 3) {
+        return ctx.badRequest('Username must be at least 3 characters');
+      }
+      if (!/^[a-zA-Z0-9_.]+$/.test(newUsername)) {
+        return ctx.badRequest('Username can only contain letters, numbers, dots, and underscores');
+      }
+      if (newUsername !== user.username) {
+        const existing = await strapi.documents('plugin::users-permissions.user').findFirst({
+          filters: {
+            username: newUsername,
+          },
+        });
+        if (existing && existing.id !== user.id) {
+          return ctx.badRequest('Username is already taken');
+        }
+        updateData.username = newUsername;
+      }
+    }
+
     if (typeof body.displayName !== 'undefined') {
       updateData.displayName = String(body.displayName).trim();
     }

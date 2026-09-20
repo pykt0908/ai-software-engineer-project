@@ -73,6 +73,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _saveProfile() async {
+    final newUsername = _usernameController.text.trim();
+    if (newUsername.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Username cannot be empty'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    if (newUsername.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Username must be at least 3 characters'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isSaving = true;
     });
@@ -84,20 +105,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
 
       final updated = await ProfileService().updateMe(
+        username: newUsername,
         displayName: _nameController.text.trim(),
         bio: _bioController.text.trim(),
         isPublic: _isPublic,
         avatarId: avatarId,
       );
 
-      AuthService().updateCurrentUser(updated);
+      final fullUpdated = updated.copyWith(
+        username: newUsername,
+        displayName: _nameController.text.trim().isNotEmpty
+            ? _nameController.text.trim()
+            : newUsername,
+        category: _categoryController.text.trim(),
+        website: _websiteController.text.trim(),
+      );
+
+      AuthService().updateCurrentUser(fullUpdated);
 
       if (mounted) {
         setState(() {
           _isSaving = false;
         });
-        widget.onSave?.call(updated);
-        Navigator.of(context).pop(updated);
+        widget.onSave?.call(fullUpdated);
+        Navigator.of(context).pop(fullUpdated);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Row(
@@ -117,7 +148,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update profile: $e'),
+            content: Text('Failed to update profile: ${e.toString().replaceAll('Exception: ', '')}'),
             backgroundColor: AppColors.error,
           ),
         );

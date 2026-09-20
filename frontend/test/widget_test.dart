@@ -241,5 +241,65 @@ void main() {
     // Verify returned to OneTapLoginScreen
     expect(find.text('Switch accounts'), findsOneWidget);
   });
+
+  testWidgets('LoginScreen username and password fields have no predata', (WidgetTester tester) async {
+    await tester.pumpWidget(const InstaCatApp());
+    await tester.pumpAndSettle();
+
+    // Tap Switch accounts to open LoginScreen
+    await tester.tap(find.text('Switch accounts'));
+    await tester.pumpAndSettle();
+
+    // Find all TextFields on LoginScreen
+    final textFields = tester.widgetList<TextField>(find.byType(TextField)).toList();
+    expect(textFields.length, 2);
+
+    // Verify both are empty
+    expect(textFields[0].controller?.text, isEmpty);
+    expect(textFields[1].controller?.text, isEmpty);
+
+    // Verify hint texts
+    expect(find.text('Phone number, username, or email'), findsOneWidget);
+    expect(find.text('Password'), findsOneWidget);
+  });
+
+  testWidgets('Editing username updates and displays immediately on ProfileScreen', (WidgetTester tester) async {
+    await tester.pumpWidget(const InstaCatApp());
+    await tester.pumpAndSettle();
+
+    // Log in
+    await tester.tap(find.text('Log In'));
+    await tester.pumpAndSettle();
+
+    // Navigate to Profile tab
+    await tester.tap(find.byKey(const ValueKey('nav_profile')));
+    await tester.pumpAndSettle();
+
+    // Initially shows default username
+    expect(find.text('mochi_the_ragdoll'), findsWidgets);
+
+    // Tap Edit Profile
+    await tester.tap(find.text('Edit Profile'));
+    await tester.pumpAndSettle();
+
+    // Verify EditProfileScreen is shown
+    expect(find.text('Edit Profile'), findsOneWidget);
+
+    // Find the username text field by searching for text 'mochi_the_ragdoll'
+    final usernameField = find.widgetWithText(TextField, 'mochi_the_ragdoll');
+    expect(usernameField, findsOneWidget);
+
+    // Clear and enter new username
+    await tester.enterText(usernameField, 'new_cool_cat');
+    await tester.pumpAndSettle();
+
+    // Tap Done (save) button
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+
+    // Verify returned to ProfileScreen and 'new_cool_cat' is immediately displayed in the AppBar!
+    expect(find.text('new_cool_cat'), findsWidgets);
+  });
 }
+
 
