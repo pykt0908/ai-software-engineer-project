@@ -1,0 +1,54 @@
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Environment variables
+.env
+*.env
+!.env.example
+
+# Node.js / Strapi
+**/node_modules/
+**/dist/
+**/.strapi/
+**/.tmp/
+**/.cache/
+backend/build/
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
+**/.strapi-updater.json
+**/.strapi-cloud.json
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# Flutter / Dart
+**/.dart_tool/
+**/build/
+**/.pub/
+**/.pub-cache/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/ios/Flutter/.last_build_id
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/android/.gradle/
+**/android/local.properties
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+
+# IDEs & Editor
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/*.log

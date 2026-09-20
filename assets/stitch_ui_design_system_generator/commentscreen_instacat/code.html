@@ -1,0 +1,383 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>InstaCat - Comments</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "border-subtle": "#E4E4E7",
+            "surface-container-high": "#eae7e7",
+            "primary": "#9d4300",
+            "on-tertiary-container": "#601a00",
+            "text-secondary": "#737373",
+            "surface": "#fcf9f8",
+            "on-secondary-container": "#79490b",
+            "primary-fixed-dim": "#ffb690",
+            "surface-container": "#f0eded",
+            "interactive-like": "#EF4444",
+            "surface-canvas": "#FFFFFF",
+            "inverse-surface": "#303030",
+            "surface-tint": "#9d4300",
+            "primary-container": "#f97316",
+            "background": "#fcf9f8",
+            "secondary-fixed": "#ffdcbd",
+            "on-tertiary-fixed-variant": "#832600",
+            "inverse-primary": "#ffb690",
+            "on-tertiary-fixed": "#390c00",
+            "secondary": "#855316",
+            "surface-bright": "#fcf9f8",
+            "surface-container-highest": "#e4e2e1",
+            "on-primary-container": "#582200",
+            "secondary-container": "#ffbc76",
+            "story-gradient-end": "#FBBF24",
+            "tertiary": "#ac3400",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed-variant": "#683c00",
+            "on-error": "#ffffff",
+            "story-gradient-start": "#F97316",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "outline": "#8c7164",
+            "inverse-on-surface": "#f3f0ef",
+            "surface-container-lowest": "#ffffff",
+            "surface-tertiary": "#F4F4F5",
+            "on-tertiary": "#ffffff",
+            "on-secondary": "#ffffff",
+            "surface-dim": "#dcd9d9",
+            "text-primary": "#262626",
+            "surface-secondary": "#FAFAFA",
+            "outline-variant": "#e0c0b1",
+            "surface-variant": "#e4e2e1",
+            "error": "#ba1a1a",
+            "on-secondary-fixed": "#2c1600",
+            "tertiary-fixed": "#ffdbd0",
+            "on-surface-variant": "#584237",
+            "text-placeholder": "#A1A1AA",
+            "on-surface": "#1b1c1c",
+            "on-primary-fixed-variant": "#783200",
+            "surface-container-low": "#f6f3f2",
+            "on-primary-fixed": "#341100",
+            "tertiary-container": "#ff6d39",
+            "on-background": "#1b1c1c",
+            "secondary-fixed-dim": "#fcb973",
+            "tertiary-fixed-dim": "#ffb59d",
+            "border-muted": "#DBDBDB",
+            "primary-fixed": "#ffdbca"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-md": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-xl": "1.5rem",
+            "gutter": "0.75rem",
+            "margin": "1rem",
+            "space-xs": "0.25rem",
+            "space-2xs": "0.125rem",
+            "space-2xl": "2rem",
+            "space-lg": "1rem"
+          },
+          "fontFamily": {
+            "caption-timestamp": ["Plus Jakarta Sans"],
+            "brand-title": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "body-bold": ["Plus Jakarta Sans"],
+            "body-regular": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-sm-bold": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "caption-timestamp": ["10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+            "brand-title": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+            "body-bold": ["14px", { "lineHeight": "18px", "fontWeight": "600" }],
+            "body-regular": ["14px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "body-sm-bold": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Hide scrollbars while allowing smooth scrolling */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-surface text-text-primary antialiased flex justify-center min-h-screen">
+<!-- Mobile Device Simulation Frame (390px Viewport) -->
+<main class="w-full max-w-[390px] min-h-screen bg-surface-canvas flex flex-col relative shadow-xl overflow-x-hidden pb-[120px]">
+<!-- Top System Status Area & App Header -->
+<header class="sticky top-0 z-40 bg-surface-canvas/95 backdrop-blur-md border-b border-border-subtle">
+<!-- Status bar placeholder -->
+<div class="h-10 px-margin flex items-center justify-between text-caption-timestamp font-caption-timestamp text-text-primary">
+<span class="font-body-bold text-body-sm-bold">9:41</span>
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[16px]">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[16px]">wifi</span>
+<span class="material-symbols-outlined text-[18px]">battery_full</span>
+</div>
+</div>
+<!-- App Bar Navigation -->
+<div class="h-11 px-margin flex items-center justify-between">
+<button aria-label="Back" class="p-1 -ml-1 text-text-primary hover:opacity-80 active:scale-95 transition-transform flex items-center" type="button">
+<span class="material-symbols-outlined text-[24px]">chevron_left</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-text-primary tracking-tight">Comments</h1>
+<button aria-label="Share" class="p-1 -mr-1 text-text-primary hover:opacity-80 active:scale-95 transition-transform flex items-center" type="button">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</div>
+</header>
+<!-- Comments Content Scrollable Area -->
+<div class="flex-1 px-margin pt-space-md">
+<!-- 1. Original Post Caption Zone (Pinned Context) -->
+<article class="flex items-start gap-3 pb-space-lg border-b border-border-subtle">
+<!-- Author Avatar with Story Ring Gradient Accent -->
+<div class="relative shrink-0">
+<div class="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-story-gradient-start to-story-gradient-end">
+<img alt="mochi_the_ragdoll" class="w-full h-full object-cover rounded-full bg-surface-container" data-alt="A charming fluffy purebred bi-color ragdoll cat with vivid deep sapphire-blue eyes, soft cream coat, and dark ears resting serenely in warm golden hour afternoon sunlight indoors on a minimalist linen sofa. The scene is bright and airy with modern high-key aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWEX7YMyh6w3nVFjo16JK8IUEwYgD-CEt0haLqWN5CBghbBhmLZzkwrttnZJHvLMSxULgmQMqxB7I60pcfmMyWJJ0xEqlhWFDiXxAn0qLEmcJZrRMIQknJNAEbJ5pMsA3jRlHXQKJ4JHoB_UF-dkTV6MgLGRUPtX3F_elokdgqHgUSkO4qN2Tw2GHZ5O_0Z1rGJSqtNX_T8bYC23sq46H8nonfbaO6scj3GuoHjvscxuXzsn250OZrPQ">
+</div>
+</div>
+<!-- Post Details & Full Caption -->
+<div class="flex-1 min-w-0 pt-0.5">
+<div class="text-body-regular font-body-regular text-text-primary leading-snug">
+<span class="font-body-bold text-body-bold text-text-primary inline-flex items-center gap-1 mr-1">
+              mochi_the_ragdoll
+              <span class="material-symbols-outlined text-[14px] text-primary-container" style="font-variation-settings: 'FILL' 1;">verified</span>
+</span>
+<span>Soaking up the afternoon sunbeams! Mochi is having the best weekend nap ✨🐾 <span class="text-primary-container">#catlife</span> <span class="text-primary-container">#ragdoll</span></span>
+</div>
+<div class="flex items-center gap-3 mt-1.5 text-caption-timestamp font-caption-timestamp text-text-secondary">
+<span>2h ago</span>
+<span class="w-1 h-1 rounded-full bg-border-muted"></span>
+<span class="text-primary-container font-body-sm-bold">Original Post</span>
+</div>
+</div>
+</article>
+<!-- 2. Comments Conversation Feed -->
+<section aria-label="User comments list" class="pt-space-md flex flex-col gap-5">
+<!-- Comment 1: biscuit_paw (with nested reply) -->
+<div class="flex flex-col gap-3">
+<div class="flex items-start justify-between gap-3 group">
+<div class="flex items-start gap-3 flex-1 min-w-0">
+<img alt="biscuit_paw" class="w-9 h-9 rounded-full object-cover shrink-0 bg-surface-container mt-0.5" data-alt="Close-up portrait of a cheerful ginger tabby cat with warm amber eyes, expressive whiskers, and cream markings peeking playfully. Soft natural ambient studio lighting, vibrant warm tones, clean modern pet portrait style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJt8VaXk4Zgd7GNmfMmhFi93IGwCCQunJPX2vl6Vp557bzBO6SytIxggzAeIuWejn11ioHu1g2bCYQ14GOXtwB5kNsAgngGZorc23oWdMM02l_A7uZzkTZa5yatmhwc-Ky4K1flsRIZUtuUYraoKs7LOclw9ii1On5wt4nqBFrRa-GtaeB90CZHDk4w7Vffixu6VL8RN8CT6Zkk0RroXauK3mjDPimS05Al_lN5uZgAvHzHXrmC9b3MQ">
+<div class="flex-1 min-w-0">
+<p class="text-body-regular font-body-regular text-text-primary leading-snug">
+<span class="font-body-bold text-body-bold mr-1">biscuit_paw</span>
+                  The comfiest loaf ever! Need to try that pillow 😻
+                </p>
+<div class="flex items-center gap-4 mt-1.5 text-caption-timestamp font-caption-timestamp text-text-secondary">
+<span>1h ago</span>
+<span class="font-body-sm-bold">12 likes</span>
+<button class="font-body-sm-bold text-text-secondary hover:text-text-primary active:scale-95 transition-colors" type="button">Reply</button>
+</div>
+</div>
+</div>
+<!-- Like heart action -->
+<button aria-label="Like comment" class="text-text-secondary hover:text-interactive-like active:scale-75 transition-all p-1" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<!-- Nested Thread Reply: Author Mochi Response -->
+<div class="pl-12 flex items-start justify-between gap-3">
+<div class="flex items-start gap-2.5 flex-1 min-w-0">
+<img alt="mochi_the_ragdoll" class="w-7 h-7 rounded-full object-cover shrink-0 bg-surface-container mt-0.5" data-alt="Fluffy ragdoll cat kitten head tilted curiously with blue eyes and silk fur against a bright modern cream backdrop. Warm sunlight highlighting its velvety nose and delicate whiskers." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI8o48Vm1oTkRdHXsVLF3aGcjYKfXQx8j-9oAwavwNktRfsn4RN7nQeggJBMaFulUSizPIqVrzISz0WaP6-RieYHrA7m7Z3BC5IAS9lJVa0Px39H3bniWpa4qZnF7yOpxE0NIpos3l07irEn0BUlC8wGfIKHAXR-yxbXitQDWM_Q6TRH7zbRL63GZ1ZvmowhyO9MKE3c_50M5r3gLjDzox-RqPdzFC2kEahubx3j-Dg67GCunJP4Hxlw">
+<div class="flex-1 min-w-0">
+<p class="text-body-regular font-body-regular text-text-primary leading-snug">
+<span class="font-body-bold text-body-bold inline-flex items-center gap-0.5 mr-1">
+                    mochi_the_ragdoll
+                    <span class="material-symbols-outlined text-[12px] text-primary-container" style="font-variation-settings: 'FILL' 1;">verified</span>
+</span>
+<span class="text-primary-container font-body-sm-bold">@biscuit_paw</span> He refused to leave it all day! 😸
+                </p>
+<div class="flex items-center gap-4 mt-1 text-caption-timestamp font-caption-timestamp text-text-secondary">
+<span>40m ago</span>
+<span class="font-body-sm-bold">4 likes</span>
+<button class="font-body-sm-bold text-text-secondary hover:text-text-primary active:scale-95 transition-colors" type="button">Reply</button>
+</div>
+</div>
+</div>
+<button aria-label="Like reply" class="text-text-secondary hover:text-interactive-like active:scale-75 transition-all p-1" type="button">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</button>
+</div>
+</div>
+<!-- Comment 2: luna_calico (Active Liked State with Warm Brand Orange) -->
+<div class="flex items-start justify-between gap-3 group">
+<div class="flex items-start gap-3 flex-1 min-w-0">
+<img alt="luna_calico" class="w-9 h-9 rounded-full object-cover shrink-0 bg-surface-container mt-0.5" data-alt="Artistic aesthetic portrait of an adorable calico cat with distinct orange, black, and white fur patches, luminous green-yellow eyes, illuminated by warm soft indoor lighting. Modern light-mode social media aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJmac1tibH2FbFas96iiHdZhDOEF3YaWcfnInOjfiA2ObmN1kyftLNrYlFyBlAM-JLuE7NMaKfj873AOZeHoTIzLwt_SH-UbZne9K2fvfnjUPRPqHNBK2j58CkLqot-8ydA9EhFuJ3dOYseepOhtvad6nyEpN7SPTsfnuxcf9BNCQb6M4PqoOtM_bVDsuYtfB3-auLjpS6ik3GWtFKpgu0LouppXG4VPB5JPy_2D-4zc0Cct-RIWF-qQ">
+<div class="flex-1 min-w-0">
+<p class="text-body-regular font-body-regular text-text-primary leading-snug">
+<span class="font-body-bold text-body-bold mr-1">luna_calico</span>
+                Those gorgeous blue eyes! Melted my heart ❤️✨
+              </p>
+<div class="flex items-center gap-4 mt-1.5 text-caption-timestamp font-caption-timestamp text-text-secondary">
+<span>45m ago</span>
+<span class="font-body-sm-bold text-primary-container">8 likes</span>
+<button class="font-body-sm-bold text-text-secondary hover:text-text-primary active:scale-95 transition-colors" type="button">Reply</button>
+</div>
+</div>
+</div>
+<!-- Liked active state (Filled Brand Orange #F97316) -->
+<button aria-label="Unlike comment" class="text-primary-container active:scale-75 transition-all p-1" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+<!-- Comment 3: oliver_whiskers -->
+<div class="flex items-start justify-between gap-3 group">
+<div class="flex items-start gap-3 flex-1 min-w-0">
+<img alt="oliver_whiskers" class="w-9 h-9 rounded-full object-cover shrink-0 bg-surface-container mt-0.5" data-alt="A round-faced handsome British Shorthair cat with dense silver-gray coat and deep copper amber eyes sitting proudly in a sun-drenched Scandinavian room. Pristine white minimalist interior styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwylYyPYud5KhuwdoXT8eB5CaqQfjAtuBtWwHJ5STHWjYF52mWMokflptWdXPw8bn8-14cKTTVzLaYGGLgbKZh_NtFELPzOMsQnC7NFbCYDS5uj8eYgm2tpI8mLpUg2lfXeJubZM5g0cVbMdvr8PpElgj1ueB3FoCqpjqJksbenN8jWltUSgnrpfxcXQwhhV-fVNAIkImg6e02dK-ZXHPFXjksYyMF0VWcRFtfeSZEfWT-GcgcQ9W5iw">
+<div class="flex-1 min-w-0">
+<p class="text-body-regular font-body-regular text-text-primary leading-snug">
+<span class="font-body-bold text-body-bold mr-1">oliver_whiskers</span>
+                Purrfect nap spot! Give extra scritches from us 🐾
+              </p>
+<div class="flex items-center gap-4 mt-1.5 text-caption-timestamp font-caption-timestamp text-text-secondary">
+<span>30m ago</span>
+<span class="font-body-sm-bold">5 likes</span>
+<button class="font-body-sm-bold text-text-secondary hover:text-text-primary active:scale-95 transition-colors" type="button">Reply</button>
+</div>
+</div>
+</div>
+<button aria-label="Like comment" class="text-text-secondary hover:text-interactive-like active:scale-75 transition-all p-1" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<!-- Comment 4: churu_lover -->
+<div class="flex items-start justify-between gap-3 group">
+<div class="flex items-start gap-3 flex-1 min-w-0">
+<img alt="churu_lover" class="w-9 h-9 rounded-full object-cover shrink-0 bg-surface-container mt-0.5" data-alt="Cute Scottish Fold cat with tightly folded ears and giant luminous rounded eyes looking upwards enthusiastically against a crisp pastel neutral background with high clarity pet photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNH7ULrFwLZJWjqG5NS7uEa94n4TRdXuPgCvHkuI_s_3XHD1ZP42r6b-8RB88GYTpgBevIO3Ah_ZOjw7Xgo1wJCyn40jvkrOaILJgLxbn89HMZ-fmBtDS_WBd2E3qun7TvrC8pbHVgX9F-wIsCc7ROSddurNoAhn_3W7XvS0ekePcM0HCythl8aeupuXUp25UR5qipfjztXsFaYvNuM2e2BVevZEraIEch1GkgjCBemybZeqLKucoJ6g">
+<div class="flex-1 min-w-0">
+<p class="text-body-regular font-body-regular text-text-primary leading-snug">
+<span class="font-body-bold text-body-bold mr-1">churu_lover</span>
+                Did someone say weekend nap? 🐟💤
+              </p>
+<div class="flex items-center gap-4 mt-1.5 text-caption-timestamp font-caption-timestamp text-text-secondary">
+<span>15m ago</span>
+<span class="font-body-sm-bold">3 likes</span>
+<button class="font-body-sm-bold text-text-secondary hover:text-text-primary active:scale-95 transition-colors" type="button">Reply</button>
+</div>
+</div>
+</div>
+<button aria-label="Like comment" class="text-text-secondary hover:text-interactive-like active:scale-75 transition-all p-1" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<!-- Comment 5: felix_the_tuxedo -->
+<div class="flex items-start justify-between gap-3 group">
+<div class="flex items-start gap-3 flex-1 min-w-0">
+<img alt="felix_the_tuxedo" class="w-9 h-9 rounded-full object-cover shrink-0 bg-surface-container mt-0.5" data-alt="Sleek tuxedo cat with crisp jet-black coat and pristine white bib and whiskers resting gracefully in soft daylight on a light-colored hardwood floor. Warm, cozy, and playful vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdj8pEH4WwRmMJv94Lxc_AK1COaZhkp3Fa4a-PBFK11a5CCQPo5mcyjRKYjqqOtipEixqFDMrtGyCc-lFIYU54hlLbe3sQ2_2K_oA7-TP8VGUGRqBcwkmVdDjVJdztClc1iCytw7i0-iqSVNVgg3PfLqQQzhFusVaEH44xPIg4WPDidKtIKTgtjNlEryBfEt4X4bDrOcCYlRrqe93oEPbO-oIM57flgIB7oMa8WDC1U1FY3piHi7-H_A">
+<div class="flex-1 min-w-0">
+<p class="text-body-regular font-body-regular text-text-primary leading-snug">
+<span class="font-body-bold text-body-bold mr-1">felix_the_tuxedo</span>
+                Sundays are officially made for napping in sunbeams ☀️
+              </p>
+<div class="flex items-center gap-4 mt-1.5 text-caption-timestamp font-caption-timestamp text-text-secondary">
+<span>5m ago</span>
+<span class="font-body-sm-bold">1 like</span>
+<button class="font-body-sm-bold text-text-secondary hover:text-text-primary active:scale-95 transition-colors" type="button">Reply</button>
+</div>
+</div>
+</div>
+<button aria-label="Like comment" class="text-text-secondary hover:text-interactive-like active:scale-75 transition-all p-1" type="button">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+</section>
+</div>
+<!-- Pinned Bottom Controls (Quick Emojis + Floating Comment Input Bar) -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 bg-surface-canvas border-t border-border-subtle shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+<!-- Quick Reaction Emoji Floating Bar -->
+<div class="h-10 px-margin flex items-center justify-between border-b border-border-subtle/60 bg-surface-secondary/50 overflow-x-auto no-scrollbar">
+<button class="text-[20px] hover:scale-125 active:scale-90 transition-transform p-1" onclick="insertEmoji('❤️')" type="button">❤️</button>
+<button class="text-[20px] hover:scale-125 active:scale-90 transition-transform p-1" onclick="insertEmoji('😻')" type="button">😻</button>
+<button class="text-[20px] hover:scale-125 active:scale-90 transition-transform p-1" onclick="insertEmoji('🐾')" type="button">🐾</button>
+<button class="text-[20px] hover:scale-125 active:scale-90 transition-transform p-1" onclick="insertEmoji('✨')" type="button">✨</button>
+<button class="text-[20px] hover:scale-125 active:scale-90 transition-transform p-1" onclick="insertEmoji('🐟')" type="button">🐟</button>
+<button class="text-[20px] hover:scale-125 active:scale-90 transition-transform p-1" onclick="insertEmoji('🧶')" type="button">🧶</button>
+<button class="text-[20px] hover:scale-125 active:scale-90 transition-transform p-1" onclick="insertEmoji('🥺')" type="button">🥺</button>
+<button class="text-[20px] hover:scale-125 active:scale-90 transition-transform p-1" onclick="insertEmoji('🔥')" type="button">🔥</button>
+</div>
+<!-- Main Comment Input Bar -->
+<div class="p-space-sm px-margin flex items-center gap-2.5 pb-6">
+<!-- Current User Avatar -->
+<div class="relative shrink-0">
+<img alt="Current User" class="w-8 h-8 rounded-full object-cover border border-border-subtle bg-surface-container" data-alt="Close up face of an adorable white and beige ragdoll cat with soft furry cheeks and striking blue eyes in bright daylight. Clean social pet profile photo." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV39oHMb3A1aJINTHWBZXqo9bYCNtvyaVEIXcZUho92IQCyjGxDMz6gQemOFpZDOUo0KIWlHCR6TbimxaWKhuDRjsbAsma8aY-b96mE2tracaN7welhqGckW0lC6f3a2Siz-h3zYF-C_CCJ8kWx224seouacCyma2QQo3awDaQCzlUit3_XgvVXEykF5Shf0t0VFVvKBxJy4fEdg5e5K-mqeCAAZg1iaNoVnHMPrsfSkePLK9BjnKMwQ">
+</div>
+<!-- Input Field Container -->
+<div class="flex-1 flex items-center bg-surface-tertiary rounded-full px-3.5 py-1.5 border border-border-subtle focus-within:border-primary-container focus-within:bg-surface-canvas transition-all">
+<input class="w-full bg-transparent border-0 p-0 text-body-sm font-body-regular text-text-primary placeholder:text-text-placeholder focus:ring-0 focus:outline-none" id="comment-input" oninput="handleInputChange(this)" placeholder="Add a comment for mochi_the_ragdoll..." type="text">
+<!-- Attachment Button (GIF / Media) -->
+<button aria-label="Add GIF" class="text-text-placeholder hover:text-text-primary transition-colors ml-1 p-0.5 flex items-center" type="button">
+<span class="material-symbols-outlined text-[19px]">gif_box</span>
+</button>
+</div>
+<!-- Post Action Button -->
+<button class="text-primary-container font-label-md text-label-md px-1.5 py-1 opacity-40 cursor-not-allowed hover:text-primary transition-all active:scale-95" disabled="" id="post-btn" type="button">
+          Post
+        </button>
+</div>
+<!-- iOS Home Indicator Indicator Bar -->
+<div class="w-full flex justify-center pb-2 -mt-3">
+<div class="w-32 h-1 bg-text-primary/20 rounded-full"></div>
+</div>
+</div>
+</main>
+<script>
+    const input = document.getElementById('comment-input');
+    const postBtn = document.getElementById('post-btn');
+
+    function handleInputChange(el) {
+      if (el.value.trim().length > 0) {
+        postBtn.removeAttribute('disabled');
+        postBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+        postBtn.classList.add('opacity-100', 'cursor-pointer');
+      } else {
+        postBtn.setAttribute('disabled', 'true');
+        postBtn.classList.add('opacity-40', 'cursor-not-allowed');
+        postBtn.classList.remove('opacity-100', 'cursor-pointer');
+      }
+    }
+
+    function insertEmoji(emoji) {
+      input.value += emoji;
+      input.focus();
+      handleInputChange(input);
+    }
+  </script>
+</body></html>

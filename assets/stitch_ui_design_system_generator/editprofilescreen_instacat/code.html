@@ -1,0 +1,375 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>InstaCat - Edit Profile</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline-variant": "#e0c0b1",
+            "text-placeholder": "#A1A1AA",
+            "primary-container": "#f97316",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed-variant": "#783200",
+            "tertiary-container": "#ff6d39",
+            "outline": "#8c7164",
+            "surface-container-low": "#f6f3f2",
+            "on-error": "#ffffff",
+            "text-primary": "#262626",
+            "on-primary": "#ffffff",
+            "primary": "#9d4300",
+            "surface-container-high": "#eae7e7",
+            "surface": "#fcf9f8",
+            "surface-canvas": "#FFFFFF",
+            "on-secondary-fixed": "#2c1600",
+            "surface-bright": "#fcf9f8",
+            "on-primary-container": "#582200",
+            "on-tertiary-fixed": "#390c00",
+            "tertiary": "#ac3400",
+            "primary-fixed-dim": "#ffb690",
+            "surface-tertiary": "#F4F4F5",
+            "surface-secondary": "#FAFAFA",
+            "secondary": "#855316",
+            "interactive-like": "#EF4444",
+            "surface-dim": "#dcd9d9",
+            "surface-tint": "#9d4300",
+            "secondary-fixed": "#ffdcbd",
+            "background": "#fcf9f8",
+            "surface-container-highest": "#e4e2e1",
+            "inverse-on-surface": "#f3f0ef",
+            "surface-variant": "#e4e2e1",
+            "inverse-surface": "#303030",
+            "on-surface": "#1b1c1c",
+            "error": "#ba1a1a",
+            "on-error-container": "#93000a",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#ffbc76",
+            "on-surface-variant": "#584237",
+            "surface-container": "#f0eded",
+            "secondary-fixed-dim": "#fcb973",
+            "error-container": "#ffdad6",
+            "inverse-primary": "#ffb690",
+            "border-muted": "#DBDBDB",
+            "on-primary-fixed": "#341100",
+            "story-gradient-start": "#F97316",
+            "border-subtle": "#E4E4E7",
+            "on-secondary-container": "#79490b",
+            "primary-fixed": "#ffdbca",
+            "tertiary-fixed-dim": "#ffb59d",
+            "tertiary-fixed": "#ffdbd0",
+            "on-background": "#1b1c1c",
+            "text-secondary": "#737373",
+            "on-tertiary-fixed-variant": "#832600",
+            "on-secondary-fixed-variant": "#683c00",
+            "story-gradient-end": "#FBBF24",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-container": "#601a00"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-lg": "1rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "gutter": "0.75rem",
+            "space-2xs": "0.125rem",
+            "margin": "1rem",
+            "space-2xl": "2rem",
+            "space-xl": "1.5rem",
+            "space-md": "0.75rem"
+          },
+          "fontFamily": {
+            "brand-title": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-regular": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "caption-timestamp": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "body-sm-bold": ["Plus Jakarta Sans"],
+            "body-bold": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "brand-title": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "body-regular": ["14px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-lg": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "caption-timestamp": ["10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+            "body-sm-bold": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+            "body-bold": ["14px", { "lineHeight": "18px", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Hide scrollbars for slick app canvas feel */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    * {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-surface-secondary text-text-primary antialiased min-h-screen flex justify-center selection:bg-primary-container selection:text-surface-canvas font-body-regular">
+<!-- Mobile Viewport Shell (iPhone Form Factor: Max Width 430px) -->
+<div class="w-full max-w-[430px] min-h-screen bg-surface-canvas flex flex-col relative shadow-xl">
+<!-- Top Safe Area & iOS Style Status Bar -->
+<header class="sticky top-0 z-40 bg-surface-canvas/95 backdrop-blur-md">
+<!-- Status Bar Row -->
+<div class="flex justify-between items-center px-margin pt-3 pb-1 text-text-primary text-body-sm font-body-bold">
+<span>9:41</span>
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[16px]">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[16px]">wifi</span>
+<span class="material-symbols-outlined text-[18px]">battery_full</span>
+</div>
+</div>
+<!-- App Header: Cancel / Edit Profile / Done -->
+<nav class="h-11 flex justify-between items-center px-margin">
+<button class="font-body-regular text-body-regular text-text-secondary hover:text-text-primary transition-colors active:scale-95 duration-150" type="button">
+          Cancel
+        </button>
+<h1 class="font-headline-md text-headline-md text-text-primary tracking-tight">
+          Edit Profile
+        </h1>
+<button class="font-label-md text-label-md text-primary-container hover:opacity-80 active:scale-95 transition-all" id="save-top-btn" type="button">
+          Done
+        </button>
+</nav>
+<!-- Hairline divider -->
+<div class="w-full h-[1px] bg-border-subtle"></div>
+</header>
+<!-- Scrollable Content Canvas -->
+<main class="flex-1 overflow-y-auto pb-28">
+<!-- Profile Avatar Section -->
+<section class="flex flex-col items-center pt-space-xl pb-space-lg">
+<div class="relative group cursor-pointer active:scale-95 transition-transform duration-200" id="avatar-container">
+<!-- Outer gradient aura ring matching InstaCat story glow -->
+<div class="w-28 h-28 rounded-full p-[3px] bg-gradient-to-tr from-story-gradient-start to-story-gradient-end shadow-sm">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-low border-2 border-surface-canvas">
+<img class="w-full h-full object-cover" data-alt="An adorable, fluffy seal-point Ragdoll cat with striking vibrant blue eyes and plush white cream fur posing gently in soft morning sunlight. The pet portrait reflects a high-end, editorial aesthetic with warm amber and orange tones in the warm domestic background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4IksTFY9LAtT_oyAZji2TMEQ19py4LiBKjexxZw6mjemjxPij5xAj7gAvcij8RYNg-0rd8bIrJlFdHIgg6IeCgxLyMcrzbSv_u7dbOPUaPD-gVNJZtTHC9CTVC1xtZsiLsg4L3TtY7RI-iUojivg9Zwp8g-Y50lRbecpLiyuMoEFZAdGVoCK0SZloK-K2vBzNjgXQ_POReupHeHwk_a_4wFw3B4QI1NJsIAvZVFZiA9j0F65cCrqvhg">
+</div>
+</div>
+<!-- Floating Camera Badge Button -->
+<div class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary-container text-surface-canvas flex items-center justify-center shadow-md border-2 border-surface-canvas group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</div>
+</div>
+<!-- Action Link -->
+<button class="mt-space-md font-label-md text-label-md text-primary-container hover:opacity-80 transition-opacity" type="button">
+          Change Profile Photo
+        </button>
+</section>
+<!-- Hairline Section Separator -->
+<div class="h-[1px] bg-border-subtle w-full mb-space-sm"></div>
+<!-- Form Section: Public Cat Profile -->
+<section class="px-margin space-y-space-md pt-space-xs">
+<!-- Name Field -->
+<div class="flex items-center justify-between border-b border-border-subtle py-space-sm">
+<label class="w-28 font-body-bold text-body-regular text-text-primary" for="input-name">Name</label>
+<input class="flex-1 bg-transparent border-none p-0 font-body-regular text-body-regular text-text-primary focus:ring-0 focus:outline-none placeholder:text-text-placeholder text-left" id="input-name" placeholder="Pet full name" type="text" value="Mochi The Ragdoll">
+</div>
+<!-- Username Field -->
+<div class="flex items-center justify-between border-b border-border-subtle py-space-sm">
+<label class="w-28 font-body-bold text-body-regular text-text-primary" for="input-username">Username</label>
+<div class="flex-1 flex items-center">
+<span class="font-body-regular text-body-regular text-text-secondary mr-0.5">@</span>
+<input class="w-full bg-transparent border-none p-0 font-body-regular text-body-regular text-text-primary focus:ring-0 focus:outline-none placeholder:text-text-placeholder" id="input-username" placeholder="username" type="text" value="mochi_the_ragdoll">
+</div>
+</div>
+<!-- Category / Pet Title Field -->
+<div class="flex items-center justify-between border-b border-border-subtle py-space-sm cursor-pointer hover:bg-surface-secondary/50 rounded-lg px-1 transition-colors">
+<label class="w-28 font-body-bold text-body-regular text-text-primary" for="input-category">Category</label>
+<input class="flex-1 bg-transparent border-none p-0 font-body-regular text-body-regular text-text-primary focus:ring-0 focus:outline-none placeholder:text-text-placeholder" id="input-category" placeholder="e.g. Feline Influencer" type="text" value="Ragdoll • Cat Creator">
+<span class="material-symbols-outlined text-text-secondary text-[20px]">chevron_right</span>
+</div>
+<!-- Website Link Field -->
+<div class="flex items-center justify-between border-b border-border-subtle py-space-sm">
+<label class="w-28 font-body-bold text-body-regular text-text-primary" for="input-website">Website</label>
+<div class="flex-1 flex items-center">
+<span class="material-symbols-outlined text-primary-container text-[18px] mr-1.5">link</span>
+<input class="w-full bg-transparent border-none p-0 font-body-regular text-body-regular text-primary-container focus:ring-0 focus:outline-none placeholder:text-text-placeholder" id="input-website" placeholder="https://yourcat.link" type="text" value="mochi.instacat.pet">
+</div>
+</div>
+<!-- Multi-line Bio Field with Character Counter -->
+<div class="border-b border-border-subtle pt-space-xs pb-space-sm">
+<div class="flex justify-between items-center mb-1">
+<label class="font-body-bold text-body-regular text-text-primary" for="input-bio">Bio</label>
+<span class="font-caption-timestamp text-caption-timestamp text-text-secondary" id="bio-char-count">112/150</span>
+</div>
+<textarea class="w-full bg-surface-secondary/60 rounded-lg border border-border-subtle p-2.5 font-body-regular text-body-regular text-text-primary focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none resize-none transition-all placeholder:text-text-placeholder" id="input-bio" maxlength="150" placeholder="Tell fellow cat lovers about your pet..." rows="3">Fluffy cloud living in Tokyo 🐱
+Sunbeam connoisseur &amp; treat enthusiast ✨
+Ambassador for @whiskerbox • Meow vibes only</textarea>
+</div>
+</section>
+<!-- Cat-Specific Delight Attributes (Bento Card Style) -->
+<section class="px-margin mt-space-lg">
+<div class="bg-surface-secondary rounded-xl p-space-md border border-border-subtle">
+<div class="flex items-center space-x-1.5 mb-space-sm text-primary-container">
+<span class="material-symbols-outlined text-[20px]">pets</span>
+<h2 class="font-headline-md text-label-md text-text-primary">Feline Characteristics</h2>
+</div>
+<div class="space-y-space-sm">
+<!-- Cat Breed -->
+<div class="flex flex-col bg-surface-canvas rounded-lg p-2.5 border border-border-subtle">
+<label class="font-caption-timestamp text-caption-timestamp text-text-secondary mb-0.5" for="input-breed">Cat Breed &amp; Coat</label>
+<div class="flex items-center justify-between">
+<input class="bg-transparent border-none p-0 font-body-bold text-body-regular text-text-primary focus:ring-0 focus:outline-none" id="input-breed" type="text" value="Ragdoll (Seal Point)">
+<span class="material-symbols-outlined text-text-secondary text-[18px]">tune</span>
+</div>
+</div>
+<!-- Favorite Treat & Toy -->
+<div class="flex flex-col bg-surface-canvas rounded-lg p-2.5 border border-border-subtle">
+<label class="font-caption-timestamp text-caption-timestamp text-text-secondary mb-0.5" for="input-treat">Favorite Treat &amp; Toy</label>
+<div class="flex items-center justify-between">
+<input class="bg-transparent border-none p-0 font-body-regular text-body-regular text-text-primary focus:ring-0 focus:outline-none" id="input-treat" type="text" value="Churu tuna puree &amp; yarn balls">
+<span class="material-symbols-outlined text-text-secondary text-[18px]">interests</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Professional Creator Link Card -->
+<section class="px-margin mt-space-md">
+<div class="flex items-center justify-between p-space-md rounded-xl bg-orange-50/50 border border-outline-variant hover:bg-orange-50 cursor-pointer active:scale-[0.99] transition-all group">
+<div class="flex items-center space-x-2.5">
+<div class="w-8 h-8 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]">stars</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-primary-container">Switch to Professional Cat Creator Account</p>
+<p class="font-body-sm text-body-sm text-text-secondary">Get whiskers insights, tools &amp; creator perks</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary-container text-[20px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+</div>
+</section>
+<!-- Hairline Division -->
+<div class="h-[1px] bg-border-subtle w-full my-space-lg"></div>
+<!-- Private Information Section -->
+<section class="px-margin space-y-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-label-sm text-label-sm text-text-secondary uppercase tracking-wider font-body-bold">
+            Private Information
+          </h2>
+<span class="flex items-center text-caption-timestamp font-caption-timestamp text-text-secondary">
+<span class="material-symbols-outlined text-[13px] mr-0.5">lock</span> Only you see this
+          </span>
+</div>
+<!-- Email Address -->
+<div class="flex items-center justify-between border-b border-border-subtle py-space-sm">
+<label class="w-28 font-body-bold text-body-regular text-text-primary" for="input-email">E-mail</label>
+<input class="flex-1 bg-transparent border-none p-0 font-body-regular text-body-regular text-text-primary focus:ring-0 focus:outline-none" id="input-email" type="email" value="mochi.human@gmail.com">
+</div>
+<!-- Phone Number -->
+<div class="flex items-center justify-between border-b border-border-subtle py-space-sm">
+<label class="w-28 font-body-bold text-body-regular text-text-primary" for="input-phone">Phone</label>
+<input class="flex-1 bg-transparent border-none p-0 font-body-regular text-body-regular text-text-primary focus:ring-0 focus:outline-none" id="input-phone" type="tel" value="+1 202 555 0147">
+</div>
+<!-- Gender / Spayed Status -->
+<div class="flex items-center justify-between border-b border-border-subtle py-space-sm">
+<label class="w-28 font-body-bold text-body-regular text-text-primary" for="input-gender">Gender</label>
+<div class="flex-1 flex items-center justify-between">
+<input class="w-full bg-transparent border-none p-0 font-body-regular text-body-regular text-text-primary focus:ring-0 focus:outline-none" id="input-gender" type="text" value="Female (Spayed)">
+<span class="material-symbols-outlined text-text-secondary text-[20px]">expand_more</span>
+</div>
+</div>
+</section>
+<!-- Additional Settings / Links -->
+<section class="px-margin mt-space-lg mb-space-xl">
+<button class="w-full text-left font-body-regular text-body-regular text-text-secondary hover:text-text-primary py-space-xs transition-colors" type="button">
+          Personal Information Settings
+        </button>
+</section>
+</main>
+<!-- Bottom Docked Sticky CTA Action Bar -->
+<footer class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] p-margin bg-surface-canvas/95 backdrop-blur-lg border-t border-border-subtle flex flex-col items-center z-30">
+<button class="w-full h-11 bg-primary-container text-surface-canvas rounded-lg font-label-md text-label-md flex items-center justify-center space-x-2 shadow-sm hover:opacity-95 active:scale-[0.98] transition-all" id="save-changes-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">pets</span>
+<span>Save Changes</span>
+</button>
+</footer>
+<!-- Toast Feedback Notification (Hidden by default, triggered on Save) -->
+<div class="fixed top-14 left-1/2 -translate-x-1/2 bg-inverse-surface text-surface-canvas px-space-lg py-2.5 rounded-full shadow-lg flex items-center space-x-2 opacity-0 pointer-events-none transition-all duration-300 z-50" id="toast">
+<span class="material-symbols-outlined text-story-gradient-end text-[18px]">check_circle</span>
+<span class="font-body-bold text-body-sm">Profile updated successfully!</span>
+</div>
+</div>
+<!-- Interactive JavaScript for Form Logic & Feedback -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const bioTextarea = document.getElementById('input-bio');
+      const bioCharCount = document.getElementById('bio-char-count');
+      const saveTopBtn = document.getElementById('save-top-btn');
+      const saveBottomBtn = document.getElementById('save-changes-btn');
+      const toast = document.getElementById('toast');
+      const avatarContainer = document.getElementById('avatar-container');
+
+      // Update Bio character counter dynamically
+      if (bioTextarea && bioCharCount) {
+        bioTextarea.addEventListener('input', () => {
+          const currentLength = bioTextarea.value.length;
+          bioCharCount.textContent = `${currentLength}/150`;
+          if (currentLength >= 140) {
+            bioCharCount.classList.add('text-primary-container', 'font-body-bold');
+            bioCharCount.classList.remove('text-text-secondary');
+          } else {
+            bioCharCount.classList.remove('text-primary-container', 'font-body-bold');
+            bioCharCount.classList.add('text-text-secondary');
+          }
+        });
+      }
+
+      // Save animation feedback
+      const triggerSaveToast = () => {
+        toast.classList.remove('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-100', '-translate-y-1');
+
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'pointer-events-none');
+          toast.classList.remove('opacity-100', '-translate-y-1');
+        }, 2400);
+      };
+
+      if (saveTopBtn) saveTopBtn.addEventListener('click', triggerSaveToast);
+      if (saveBottomBtn) saveBottomBtn.addEventListener('click', triggerSaveToast);
+
+      // Micro-interaction on avatar click
+      if (avatarContainer) {
+        avatarContainer.addEventListener('click', () => {
+          avatarContainer.classList.add('scale-95');
+          setTimeout(() => avatarContainer.classList.remove('scale-95'), 150);
+        });
+      }
+    });
+  </script>
+</body></html>

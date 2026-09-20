@@ -1,0 +1,395 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>InstaCat - Social Feed</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-error-container": "#93000a",
+          "primary": "#9d4300",
+          "on-primary-fixed": "#341100",
+          "on-background": "#1b1c1c",
+          "error-container": "#ffdad6",
+          "on-error": "#ffffff",
+          "surface-bright": "#fcf9f8",
+          "surface": "#fcf9f8",
+          "on-secondary-container": "#79490b",
+          "surface-tertiary": "#F4F4F5",
+          "surface-tint": "#9d4300",
+          "on-tertiary": "#ffffff",
+          "surface-secondary": "#FAFAFA",
+          "background": "#fcf9f8",
+          "secondary-fixed": "#ffdcbd",
+          "tertiary-fixed": "#ffdbd0",
+          "on-tertiary-fixed-variant": "#832600",
+          "surface-dim": "#dcd9d9",
+          "text-secondary": "#737373",
+          "outline": "#8c7164",
+          "tertiary-fixed-dim": "#ffb59d",
+          "on-surface": "#1b1c1c",
+          "surface-container-high": "#eae7e7",
+          "on-surface-variant": "#584237",
+          "on-secondary-fixed-variant": "#683c00",
+          "text-primary": "#262626",
+          "on-primary-container": "#582200",
+          "primary-fixed": "#ffdbca",
+          "border-subtle": "#E4E4E7",
+          "on-tertiary-container": "#601a00",
+          "inverse-surface": "#303030",
+          "story-gradient-end": "#FBBF24",
+          "tertiary": "#ac3400",
+          "secondary-fixed-dim": "#fcb973",
+          "surface-container-low": "#f6f3f2",
+          "text-placeholder": "#A1A1AA",
+          "tertiary-container": "#ff6d39",
+          "outline-variant": "#e0c0b1",
+          "on-primary-fixed-variant": "#783200",
+          "secondary-container": "#ffbc76",
+          "secondary": "#855316",
+          "primary-fixed-dim": "#ffb690",
+          "surface-container": "#f0eded",
+          "inverse-on-surface": "#f3f0ef",
+          "error": "#ba1a1a",
+          "on-tertiary-fixed": "#390c00",
+          "on-primary": "#ffffff",
+          "surface-container-lowest": "#ffffff",
+          "inverse-primary": "#ffb690",
+          "surface-container-highest": "#e4e2e1",
+          "surface-variant": "#e4e2e1",
+          "surface-canvas": "#FFFFFF",
+          "border-muted": "#DBDBDB",
+          "on-secondary-fixed": "#2c1600",
+          "interactive-like": "#EF4444",
+          "on-secondary": "#ffffff",
+          "story-gradient-start": "#F97316",
+          "primary-container": "#f97316"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.5rem",
+          "full": "0.75rem"
+        },
+        "spacing": {
+          "space-xl": "1.5rem",
+          "space-md": "0.75rem",
+          "margin": "1rem",
+          "space-sm": "0.5rem",
+          "gutter": "0.75rem",
+          "space-2xs": "0.125rem",
+          "space-xs": "0.25rem",
+          "space-lg": "1rem",
+          "space-2xl": "2rem"
+        },
+        "fontFamily": {
+          "label-md": ["Plus Jakarta Sans"],
+          "body-bold": ["Plus Jakarta Sans"],
+          "body-sm": ["Plus Jakarta Sans"],
+          "body-sm-bold": ["Plus Jakarta Sans"],
+          "headline-md": ["Plus Jakarta Sans"],
+          "body-regular": ["Plus Jakarta Sans"],
+          "label-sm": ["Plus Jakarta Sans"],
+          "brand-title": ["Plus Jakarta Sans"],
+          "caption-timestamp": ["Plus Jakarta Sans"],
+          "headline-lg": ["Plus Jakarta Sans"]
+        },
+        "fontSize": {
+          "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+          "body-bold": ["14px", { "lineHeight": "18px", "fontWeight": "600" }],
+          "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+          "body-sm-bold": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+          "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+          "body-regular": ["14px", { "lineHeight": "18px", "fontWeight": "400" }],
+          "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+          "brand-title": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+          "caption-timestamp": ["10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+          "headline-lg": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+        }
+      }
+    }
+  }
+  </script>
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .story-ring-gradient {
+      background: linear-gradient(45deg, #F97316 0%, #FBBF24 100%);
+    }
+  </style>
+</head>
+<body class="bg-surface-secondary text-text-primary antialiased min-h-screen flex justify-center selection:bg-primary-container selection:text-white">
+<!-- Mobile Shell Viewport Container (iOS/Android 390px approx frame) -->
+<div class="w-full max-w-[420px] bg-surface-canvas min-h-screen relative flex flex-col border-x border-border-subtle shadow-sm pb-16">
+<!-- Top Status Bar Simulation -->
+<div class="w-full h-8 px-5 pt-2 flex justify-between items-center bg-surface-canvas text-text-primary select-none z-50">
+<span class="font-body-bold text-body-sm tracking-tight font-semibold">9:41</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm font-semibold" data-icon="signal_cellular_4_bar">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-sm font-semibold" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-base font-semibold" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- TopAppBar Shared Component Execution -->
+<header class="sticky top-0 z-40 bg-surface-canvas dark:bg-surface border-b border-border-subtle dark:border-outline-variant py-2 flex justify-between items-center px-margin">
+<div class="flex items-center gap-2.5">
+<button aria-label="Camera" class="text-text-primary hover:opacity-80 active:scale-95 transition-transform duration-150 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="photo_camera">photo_camera</span>
+</button>
+<div class="flex flex-col select-none cursor-pointer">
+<div class="flex items-center tracking-tight leading-none">
+<span class="font-brand-title text-[22px] font-bold text-text-primary dark:text-on-surface tracking-tight">Insta</span>
+<span class="font-brand-title text-[22px] font-bold text-primary-container tracking-tight flex items-center">Cat<span class="material-symbols-outlined text-[16px] text-primary-container ml-0.5" data-icon="pets" style="font-variation-settings: 'FILL' 1;">pets</span></span>
+</div>
+<span class="text-[8px] font-bold tracking-wider text-primary-container uppercase leading-none mt-0.5">THE PURR-FECT PET COMMUNITY</span>
+</div>
+</div>
+<!-- Trailing Action Icons -->
+<div class="flex items-center gap-4">
+<button aria-label="Notifications" class="text-text-primary hover:opacity-80 active:scale-95 transition-transform duration-150 relative flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-primary-container rounded-full ring-2 ring-surface-canvas"></span>
+</button>
+<button aria-label="Direct Messages" class="text-text-primary hover:opacity-80 active:scale-95 transition-transform duration-150 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="send">send</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto">
+<!-- Stories Carousel Section (96px height) -->
+<section class="h-24 py-2 border-b border-border-subtle bg-surface-canvas overflow-x-auto no-scrollbar flex items-center px-space-sm gap-3 select-none">
+<!-- User Story: Add Story Button -->
+<div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16">
+<div class="relative w-14 h-14 rounded-full p-[2px] mb-1">
+<div class="w-full h-full rounded-full overflow-hidden border-2 border-surface-canvas">
+<img class="w-full h-full object-cover" data-alt="A portrait shot of a cheerful young cat parent holding an adorable grey tabby kitten in bright natural daylight. The lighting is clean and warm, highlighting soft fur and joyful facial expressions within a modern Scandinavian home interior." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv9qaqNw2-jaI33l2dqc8HSXV946zm1lMennuKD1caD_q0F_4n8WhGXku_ZQeqpzxS3ZoI3I2YTNhYjAdpla0C4HVPcGEMySCmFga5vg_2fwZJTLZeMLh94_TqUZLnE7qtEDS5E3lAuvpjBnRp4DLD-x_6fKdRyElSrHXSsT9QmFDwhLcqc4rp6083Lk3EtRVtiFkzG9ldXT6dhu-7g9du1Ms4RPTWO9sYhA1eqcbXP5bjZuhs6JKxCg">
+</div>
+<div class="absolute bottom-0 right-0 bg-primary-container text-white w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-surface-canvas shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold" data-icon="add">add</span>
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-text-primary truncate max-w-[62px] text-center">Your Story</span>
+</div>
+<!-- Story 1: milo_the_scottish -->
+<div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16">
+<div class="w-14 h-14 rounded-full p-[2px] story-ring-gradient mb-1">
+<div class="w-full h-full rounded-full overflow-hidden border-2 border-surface-canvas">
+<img class="w-full h-full object-cover" data-alt="A close-up studio shot of a Scottish Fold cat with large amber eyes, folded tiny ears, and silver lilac plush fur. The background is a soft beige tone with diffused daylight warmth evoking a playful, cozy feline mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKP0-y--DPd8PMpMEa-uUVkQU7UHOqOyRifF9Nmou5OG9q8FBA63lyB0VhH0W3JOGj3n6BURGOMmNWvdjeoDSZ1RxfnqQ730vb-LBcX1-S5cb9j0ejUXPSTgkbjxvuj7ZzquS9HsIjzd4XQNr2h-ws7jSSQELzF1vPZE6k2tmzasn4YhII-DMdXMG6aTxDoc3FBUn8LjmAxiORwdjFT0eVKujsMEHGqPZkHM1Y7sQgomINBtKydaHeHw">
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-text-primary truncate max-w-[62px] text-center">milo_the_...</span>
+</div>
+<!-- Story 2: luna_calico -->
+<div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16">
+<div class="w-14 h-14 rounded-full p-[2px] story-ring-gradient mb-1">
+<div class="w-full h-full rounded-full overflow-hidden border-2 border-surface-canvas">
+<img class="w-full h-full object-cover" data-alt="A curious calico cat with distinct orange, black, and white markings sitting near a potted green monstera leaf. Clean bright interior environment bathed in soft sunbeams and modern minimalist styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuM81muV4-auVviYV8d2mkDXrgf-2maGX995fexQdDsQY6s8DjE7NERzjWhOCNDlLdcSk4lZlep4igpnWLITMdxf1cTxWNJdUpVTZ9BO8cjRAqyQRnB2JFdzmwoBeTOtoGkrFmDAhtdIU_rvs6uzuEyWpCYeewLooyKYFJ7QZL2FdWLCxHPSJUpw9mf_8BJzyHzsSEbCZFRlIySz5sFU-WAdiodlHUdXT6vPBxSe_F3BE6m3ThmN1AQw">
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-text-primary truncate max-w-[62px] text-center">luna_calico</span>
+</div>
+<!-- Story 3: oliver_whiskers -->
+<div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16">
+<div class="w-14 h-14 rounded-full p-[2px] story-ring-gradient mb-1">
+<div class="w-full h-full rounded-full overflow-hidden border-2 border-surface-canvas">
+<img class="w-full h-full object-cover" data-alt="A majestic long-haired British Shorthair cat with prominent white whiskers and piercing green eyes looking alertly forward. Soft atmospheric light with warm golden reflections in an elegant aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNg0tHEFsrWsnyY89LdFF6ZstaK2tWj4YTcigVrGwKy8-ptnpkw393gGpwfdeH6oLmW5L4Np7eG69xY8puBmM7PhD8VIJV_5P_hGP8H0-fddKNiM9_t80xMUOCQa9EzEmw34w3jMI3Vu930XOU6dQA8N2ra3ii9N0lgwZQc-7I75yIMjigZyfW5itqOUmH9CXTirezA6upq77BUoUTqxRd1nutkMR2cjysYYSiIl-2BaxhUoeAL_fKrQ">
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-text-primary truncate max-w-[62px] text-center">oliver_wh...</span>
+</div>
+<!-- Story 4: churu_lover -->
+<div class="flex flex-col items-center flex-shrink-0 cursor-pointer group w-16">
+<div class="w-14 h-14 rounded-full p-[2px] story-ring-gradient mb-1">
+<div class="w-full h-full rounded-full overflow-hidden border-2 border-surface-canvas">
+<img class="w-full h-full object-cover" data-alt="A funny playful tuxedo kitten with pristine white paws licking its whiskers happily in a brightly lit modern living room with warm orange accent cushions in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuZC54QsSlf6TR5AmkVTxPPaPakSAEob28KF4Z9Sk6by3MWxmCCOnXvr5afvIyR5oc0fbD-xFwRZ4Y-12k0yMehigMxXe1yrmDiStMkYGuie6Pe9fl7_1XsyfUl5DcD-XercsiwBgTlLotyd0dc65qrmA5i4xc2D2VxshAkjsTm-Pq77eNnJbpJRWrVn5VZxhEffYe67RGjlw1XDe6Gbr9EiH_voz3HRMbdStl-tQhOAYdTi0keMBhZg">
+</div>
+</div>
+<span class="font-body-sm text-body-sm text-text-primary truncate max-w-[62px] text-center">churu_lover</span>
+</div>
+</section>
+<!-- FEED POST 1 -->
+<article class="bg-surface-canvas border-b border-border-subtle pb-3">
+<!-- Post Header -->
+<div class="h-[54px] px-space-lg flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full p-[1.5px] story-ring-gradient cursor-pointer">
+<div class="w-full h-full rounded-full overflow-hidden border-1 border-surface-canvas">
+<img class="w-full h-full object-cover" data-alt="A photogenic white and seal-point Ragdoll cat with intense deep blue sapphire eyes looking directly at the camera with fluffy well-groomed fur in a pristine minimalist room." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDBl5kjm2hikukZvpcCAECB9j2PuHg9ayo5nPWLPMDarkwCEdVJI27ZNxN9q2qhlJbvED8luvPF16XpkxDJS-krucHuwooGk5Y2DW775Wi9jpD7HiSias35hrPAraQ9Qegpf_vGtPrHP4pvXVERjb-H5Guvvk3qx5DKcK1Ddi4BvReW--kuK-71aB6eIk2MabHuvnOJruodO_GVqgGefOorT8ciGLrzNFbIPNkSiEuDeQzMIQTfAyXoA">
+</div>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1">
+<span class="font-body-bold text-body-bold text-text-primary hover:underline cursor-pointer">mochi_the_ragdoll</span>
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-secondary leading-none">Tokyo, Japan</span>
+</div>
+</div>
+<button aria-label="More options" class="text-text-primary p-1 hover:opacity-75 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<!-- Post Media Canvas: 1:1 Aspect Ratio with Carousel Counter -->
+<div class="relative w-full aspect-square bg-surface-secondary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A super fluffy seal bicolor Ragdoll cat happily basking on a soft cream knitted cushion bathed in golden afternoon sunlight filtering through large windows in a Tokyo apartment. Highly detailed fur texture, warm chromatic ambient lighting, relaxed and peaceful cat posture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRLzRS5H3IvL4LT7u_8fAIa2FuqGwiMYB5gM1Qj1dh3Xei5W_oIxRGRvp7sKMrb_6I0LxGyyuky8d8SQqn7N_5ltd7iEAPqj2_S12qSN7Wc6BeVQqV1J-gw_MeEMk_7cNXo3u24OqhxVJB-vITWacY_zfhEpI-UKPmguwAa7x9lVjUlo8Ffk72pBbzIV1FxpN9d5JQc5XsEcgB35RqOIUCoSr0DcCjH_8771JRtMUQl-y44TKYDX4JQA">
+<!-- Level 3 Overlay Badge: Image Counter -->
+<div class="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-[rgba(20,20,20,0.75)] backdrop-blur-md text-white font-label-sm text-label-sm tracking-wide">
+            1/3
+          </div>
+</div>
+<!-- Action Row & Indicators -->
+<div class="px-space-lg pt-3 pb-2 flex items-center justify-between">
+<div class="flex items-center gap-3.5">
+<!-- Active Like Button (Filled Heart) -->
+<button aria-label="Like post" class="text-interactive-like active:scale-90 transition-transform duration-150 flex items-center" type="button">
+<span class="material-symbols-outlined text-[26px]" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<button aria-label="Comment" class="text-text-primary active:scale-90 transition-transform duration-150 flex items-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="chat_bubble_outline">chat_bubble_outline</span>
+</button>
+<button aria-label="Share" class="text-text-primary active:scale-90 transition-transform duration-150 flex items-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="send">send</span>
+</button>
+</div>
+<!-- Carousel Paginator Dots -->
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-border-muted"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-border-muted"></span>
+</div>
+<!-- Bookmark Action -->
+<button aria-label="Save" class="text-text-primary active:scale-90 transition-transform duration-150 flex items-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="bookmark_border">bookmark_border</span>
+</button>
+</div>
+<!-- Post Details & Captions -->
+<div class="px-space-lg flex flex-col gap-1">
+<!-- Likes Count -->
+<div class="font-body-bold text-body-bold text-text-primary">
+            1,428 likes
+          </div>
+<!-- Caption -->
+<p class="font-body-regular text-body-regular text-text-primary leading-tight">
+<span class="font-body-bold text-body-bold text-text-primary mr-1">mochi_the_ragdoll</span>
+            Enjoying the afternoon sunbeam on my favorite pillow ☀️🐾 
+            <span class="text-primary-container font-medium hover:underline cursor-pointer">#catlife</span>
+<span class="text-primary-container font-medium hover:underline cursor-pointer">#ragdoll</span>
+</p>
+<!-- Comments Link -->
+<button class="text-left font-body-sm text-body-sm text-text-secondary mt-0.5 hover:text-text-primary transition-colors" type="button">
+            View all 84 comments
+          </button>
+<!-- Timestamp -->
+<span class="font-caption-timestamp text-caption-timestamp text-text-secondary uppercase tracking-wider">
+            2 hours ago
+          </span>
+</div>
+</article>
+<!-- FEED POST 2 -->
+<article class="bg-surface-canvas border-b border-border-subtle pb-4">
+<!-- Post Header -->
+<div class="h-[54px] px-space-lg flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full p-[1.5px] border border-border-muted cursor-pointer">
+<div class="w-full h-full rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of an energetic ginger tabby cat with wide green eyes and white chin markings in soft ambient daylight, clean composition with warm orange tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANalQuiNgDDnDS7vZGh66ArWPUTVvddm-8sZG20pbkYG7VNjfeGp6SMlYMhYoIgZt6Mcz1IeYV0_eZbJkQQQlX9IiMlqqL2K0tJcSDfzWXZMyLCsp_oDkik4c6sVbtp34KRDiJUXCU-9KYmtvG_lOJd7BhbPNtIa0-LAQ3T2zG8664bb98J_nHvxzHclEao6ki8EUQ782S-3g89rtuDvZ1xpDSipSNTjB-Qu4hwob5dkNdodYLdSyJfw">
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-body-bold text-body-bold text-text-primary hover:underline cursor-pointer">biscuit_paw</span>
+<span class="font-body-sm text-body-sm text-text-secondary leading-none">Bangkok, Thailand</span>
+</div>
+</div>
+<button aria-label="More options" class="text-text-primary p-1 hover:opacity-75 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<!-- Post Media Canvas: 1:1 Aspect Ratio -->
+<div class="relative w-full aspect-square bg-surface-secondary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A dynamic eye-level photo of a playful ginger marmalade cat sitting mischievously next to an innocent clear water tumbler on a modern oak nightstand. Natural warm morning daylight casting soft feline silhouettes, funny and charming expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHBhHPGPKZ9Z_tje_GHSUHGN64ONzAFakJUQLD3WZW_YjF3HohPeUbCOqsuIbE5f2dK5-Ovut-5hOOHc5BPbqHDbvgKgeeSyqQJpLTsYE7Jd7wJijnBSzEytT2Gf1KCrGXmlUt_PRD5NXhBw842Exyd6zi7IFS71_Q4Ch8xh3dLO3ePK5xTiCEgE7bT4RnpSKOqRv6wdvagYmsHDfERFRYxkoleLZ65-m--KEg5PkSGX5pPFCGUJG_Tg">
+</div>
+<!-- Action Row -->
+<div class="px-space-lg pt-3 pb-2 flex items-center justify-between">
+<div class="flex items-center gap-3.5">
+<!-- Unliked Heart -->
+<button aria-label="Like post" class="text-text-primary active:scale-90 hover:text-interactive-like transition-all duration-150 flex items-center" type="button">
+<span class="material-symbols-outlined text-[26px]" data-icon="favorite_border">favorite_border</span>
+</button>
+<button aria-label="Comment" class="text-text-primary active:scale-90 transition-transform duration-150 flex items-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="chat_bubble_outline">chat_bubble_outline</span>
+</button>
+<button aria-label="Share" class="text-text-primary active:scale-90 transition-transform duration-150 flex items-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="send">send</span>
+</button>
+</div>
+<!-- Bookmark Action -->
+<button aria-label="Save" class="text-text-primary active:scale-90 transition-transform duration-150 flex items-center" type="button">
+<span class="material-symbols-outlined text-[24px]" data-icon="bookmark_border">bookmark_border</span>
+</button>
+</div>
+<!-- Post Details & Captions -->
+<div class="px-space-lg flex flex-col gap-1">
+<!-- Likes Count -->
+<div class="font-body-bold text-body-bold text-text-primary">
+            852 likes
+          </div>
+<!-- Caption -->
+<p class="font-body-regular text-body-regular text-text-primary leading-tight">
+<span class="font-body-bold text-body-bold text-text-primary mr-1">biscuit_paw</span>
+            Mastered the art of knocking over water cups at 3 AM 😼
+          </p>
+<!-- Comments Link -->
+<button class="text-left font-body-sm text-body-sm text-text-secondary mt-0.5 hover:text-text-primary transition-colors" type="button">
+            View all 32 comments
+          </button>
+<!-- Timestamp -->
+<span class="font-caption-timestamp text-caption-timestamp text-text-secondary uppercase tracking-wider">
+            5 hours ago
+          </span>
+</div>
+</article>
+</main>
+<!-- BottomNavBar Shared Component Execution -->
+<nav class="fixed bottom-0 left-0 w-full z-50 h-[52px] flex justify-around items-center px-margin bg-surface-canvas dark:bg-surface border-t border-border-subtle dark:border-outline-variant max-w-[420px] mx-auto right-0">
+<!-- Destination 1: Home (Active State) -->
+<button aria-label="Home" class="flex flex-col items-center justify-center text-primary-container dark:text-primary-container py-space-sm active:scale-90 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[26px]" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+</button>
+<!-- Destination 2: Search (Inactive State) -->
+<button aria-label="Explore Search" class="flex flex-col items-center justify-center text-text-primary dark:text-on-surface py-space-sm hover:text-primary-container dark:hover:text-primary-container transition-colors active:scale-90 duration-150" type="button">
+<span class="material-symbols-outlined text-[26px]" data-icon="search">search</span>
+</button>
+<!-- Destination 3: Add Post (Inactive State) -->
+<button aria-label="Create Post" class="flex flex-col items-center justify-center text-text-primary dark:text-on-surface py-space-sm hover:text-primary-container dark:hover:text-primary-container transition-colors active:scale-90 duration-150" type="button">
+<span class="material-symbols-outlined text-[26px]" data-icon="add_box">add_box</span>
+</button>
+<!-- Destination 4: Favorite/Activity (Inactive State) -->
+<button aria-label="Activity Feed" class="flex flex-col items-center justify-center text-text-primary dark:text-on-surface py-space-sm hover:text-primary-container dark:hover:text-primary-container transition-colors active:scale-90 duration-150" type="button">
+<span class="material-symbols-outlined text-[26px]" data-icon="favorite">favorite</span>
+</button>
+<!-- Destination 5: Account Circle / Profile (Inactive State) -->
+<button aria-label="User Profile" class="flex flex-col items-center justify-center text-text-primary dark:text-on-surface py-space-sm hover:text-primary-container dark:hover:text-primary-container transition-colors active:scale-90 duration-150" type="button">
+<div class="w-6 h-6 rounded-full overflow-hidden border border-text-primary">
+<img class="w-full h-full object-cover" data-alt="A small circular avatar thumbnail of a friendly young adult holding their beloved ginger cat, set against a bright soft indoor studio background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyUFCA6KaBkaSlDDWWorHrA0CWyqFa_sg1pgGzLIDlmGOioQM3lkOrYmMlB8vOB8PQU7e1M9mv3QjPwK8M9cCsylxbkCj7ZldRzM-F-IanspyP2FsAuF7hjtM8Z0C0hER1LIHY_RI8P_S6soIYzwjZC0ZkGtpmb5AwnAhcqTF0njmS-HkvdFjigiXrsYRQDEpY8UVbVyux_UO8kaP__Dd-61Fhtavn2IPRoRBGt7pciv1pTD_K-XtpKg">
+</div>
+</button>
+</nav>
+</div>
+</body></html>

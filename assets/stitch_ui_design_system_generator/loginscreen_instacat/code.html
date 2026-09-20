@@ -1,0 +1,230 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>LoginScreen - InstaCat</title>
+<!-- Google Fonts: Plus Jakarta Sans & Pacifico for brand script logo -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            script: ['"Pacifico"', 'cursive'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#f97316',
+              50: '#fff7ed',
+              100: '#ffedd5',
+              200: '#fed7aa',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+            surface: {
+              DEFAULT: '#ffffff',
+              low: '#f8fafc',
+              subtle: '#f1f5f9',
+              border: '#e2e8f0',
+            }
+          },
+          boxShadow: {
+            'input-focus': '0 0 0 3px rgba(249, 115, 22, 0.15)',
+            'btn': '0 4px 14px 0 rgba(249, 115, 22, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles for Mobile Shell & Polishing -->
+<style data-purpose="base-layout">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      background-color: #f1f5f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .mobile-frame {
+      width: 100%;
+      max-width: 412px;
+      min-height: 100vh;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+    @media (min-width: 640px) {
+      .mobile-frame {
+        min-height: 844px;
+        height: 844px;
+        border-radius: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 10px #0f172a;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased text-slate-800">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="mobile-frame" data-purpose="mobile-screen-container">
+<!-- BEGIN: StatusBar -->
+<!-- Top iOS Status Bar: Clock, Dynamic Island/Notch zone, Network & Battery indicators -->
+<header class="w-full pt-3 pb-1 px-7 flex items-center justify-between text-slate-900 select-none shrink-0" data-purpose="status-bar">
+<!-- Time -->
+<span class="text-[15px] font-semibold tracking-tight" data-purpose="status-time">9:41</span>
+<!-- Right Status Icons -->
+<div class="flex items-center space-x-2 text-slate-900" data-purpose="status-indicators">
+<!-- Cellular Signal Icon -->
+<svg class="w-4 h-4 fill-current" viewBox="0 0 18 18">
+<path d="M2 14h2.5V8.5H2V14zm4 0h2.5V6H6v8zm4 0h2.5V3.5H10V14zm4 0h2.5V1H14v13z"></path>
+</svg>
+<!-- Wi-Fi Icon -->
+<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+<path d="M10 16.5a2 2 0 100-4 2 2 0 000 4zm6.71-6.71a9.49 9.49 0 00-13.42 0 .75.75 0 01-1.06-1.06 10.99 10.99 0 0115.54 0 .75.75 0 01-1.06 1.06zm-2.83 2.83a5.5 5.5 0 00-7.76 0 .75.75 0 01-1.06-1.06 7 7 0 019.88 0 .75.75 0 01-1.06 1.06z"></path>
+</svg>
+<!-- Battery Icon -->
+<div class="flex items-center">
+<div class="w-6 h-3 rounded-[4px] border border-slate-900 p-0.5 flex items-center">
+<div class="w-full h-full bg-slate-900 rounded-[2px]"></div>
+</div>
+<div class="w-[2px] h-1.5 bg-slate-900 rounded-r-sm -ml-[1px]"></div>
+</div>
+</div>
+</header>
+<!-- END: StatusBar -->
+<!-- BEGIN: NavigationBar -->
+<!-- Top Nav Action Bar with Back Button -->
+<nav class="w-full px-5 py-2 flex items-center shrink-0" data-purpose="navigation-header">
+<button aria-label="Go back" class="p-2 -ml-2 rounded-full hover:bg-slate-100 active:scale-95 transition-all text-slate-800" data-purpose="back-button" type="button">
+<svg class="w-6 h-6 stroke-current stroke-[2.2] fill-none" viewBox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</nav>
+<!-- END: NavigationBar -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 px-8 flex flex-col justify-center" data-purpose="login-form-wrapper">
+<!-- BEGIN: BrandLogoHeader -->
+<!-- InstaCat script logo featuring brand primary orange cat ears accent -->
+<div class="text-center mb-8 select-none" data-purpose="brand-logo-container"><div class="relative inline-flex items-center justify-center"><h1 class="text-4xl font-extrabold tracking-tight text-slate-900">Insta<span class="text-brand-500">Cat</span></h1><span class="absolute -top-3 -right-6 text-brand-500 transform rotate-12"><svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 10.5c-1.8 0-3.2 1.3-3.2 3s1.4 3 3.2 3 3.2-1.3 3.2-3-1.4-3-3.2-3zM7.5 9.5c-.9 0-1.6-.9-1.6-2s.7-2 1.6-2 1.6.9 1.6 2-.7 2-1.6 2zm9 0c-.9 0-1.6-.9-1.6-2s.7-2 1.6-2 1.6.9 1.6 2-.7 2-1.6 2zM9.8 5.8c-.8 0-1.5-.8-1.5-1.8s.7-1.8 1.5-1.8 1.5.8 1.5 1.8-.7 1.8-1.5 1.8zm4.4 0c-.8 0-1.5-.8-1.5-1.8s.7-1.8 1.5-1.8 1.5.8 1.5 1.8-.7 1.8-1.5 1.8z"></path></svg></span></div><p class="text-xs font-bold uppercase tracking-wider text-brand-500 mt-2">The purr-fect pet community</p></div>
+<!-- END: BrandLogoHeader -->
+<!-- BEGIN: LoginForm -->
+<form class="space-y-3.5" data-purpose="login-form" onsubmit="event.preventDefault();">
+<!-- Cat Name / Username / Email Field -->
+<div data-purpose="input-group-username">
+<label class="sr-only" for="username">Cat name, username or email</label>
+<div class="relative">
+<input class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all shadow-sm" id="username" name="username" placeholder="Cat name, username or email" required="" type="text" value="whiskers_the_tabby">
+</div>
+</div>
+<!-- Password Field with Visibility Toggle -->
+<div data-purpose="input-group-password">
+<label class="sr-only" for="password">Password</label>
+<div class="relative">
+<input class="w-full pl-4 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all shadow-sm" id="password" name="password" placeholder="Password" required="" type="password">
+<!-- Toggle password visibility button -->
+<button aria-label="Toggle password visibility" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1" data-purpose="password-visibility-toggle" id="toggle-password" type="button">
+<svg class="w-5 h-5 stroke-current stroke-2 fill-none" id="eye-icon" viewBox="0 0 24 24">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- Forgot Password Link -->
+<div class="flex justify-end pt-0.5" data-purpose="forgot-password-container">
+<a class="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline transition-colors" href="#forgot">
+            Forgot password?
+          </a>
+</div>
+<!-- Primary Log In Button -->
+<div class="pt-2" data-purpose="submit-button-container">
+<button class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white font-semibold rounded-xl text-[15px] tracking-wide shadow-btn flex items-center justify-center space-x-2 transition-all duration-150" data-purpose="login-submit-button" type="submit">
+<!-- Paw Icon -->
+<svg class="w-5 h-5 fill-current opacity-90" viewBox="0 0 24 24">
+<path d="M12 13.5c-2.2 0-4 1.57-4 3.5 0 1.93 1.8 3 4 3s4-1.07 4-3c0-1.93-1.8-3.5-4-3.5zM6.5 12c-1.38 0-2.5-1.34-2.5-3s1.12-3 2.5-3 2.5 1.34 2.5 3-1.12 3-2.5 3zm11 0c-1.38 0-2.5-1.34-2.5-3s1.12-3 2.5-3 2.5 1.34 2.5 3-1.12 3-2.5 3zM9.5 7.5C8.12 7.5 7 6.16 7 4.5S8.12 1.5 9.5 1.5s2.5 1.34 2.5 3-1.12 3-2.5 3zm5 0c-1.38 0-2.5-1.34-2.5-3s1.12-3 2.5-3 2.5 1.34 2.5 3-1.12 3-2.5 3z"></path>
+</svg>
+<span class="">Log In</span>
+</button>
+</div>
+</form>
+<!-- END: LoginForm -->
+<!-- BEGIN: AlternativeLoginSection -->
+<section class="mt-6 flex flex-col items-center" data-purpose="social-login-section">
+<!-- Social Login: Facebook / Apple Option -->
+<button class="flex items-center justify-center space-x-2.5 text-sm font-semibold text-[#1877f2] hover:opacity-90 active:scale-98 transition-all py-1.5" data-purpose="facebook-login-button" type="button">
+<!-- Facebook Brand Icon -->
+<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
+</svg>
+<span class="">Log in with Facebook</span>
+</button>
+<!-- Divider with OR text -->
+<div class="w-full flex items-center my-6" data-purpose="divider">
+<div class="flex-grow border-t border-slate-200"></div>
+<span class="flex-shrink mx-4 text-xs font-bold text-slate-400 tracking-wider uppercase">OR</span>
+<div class="flex-grow border-t border-slate-200"></div>
+</div>
+<!-- Secondary Sign-up prompt -->
+<p class="text-sm text-slate-600" data-purpose="signup-redirect">
+          Don't have an account? 
+          <a class="font-bold text-brand-500 hover:text-brand-600 ml-0.5 hover:underline" href="#signup">
+            Sign up.
+          </a>
+</p>
+</section>
+<!-- END: AlternativeLoginSection -->
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: Footer -->
+<!-- App meta branding & iOS Home Indicator bar -->
+<footer class="w-full pb-3 pt-6 border-t border-slate-100 flex flex-col items-center shrink-0 bg-surface-low/50" data-purpose="app-footer">
+<p class="text-xs text-slate-400 font-medium tracking-wide">
+        InstaCat from <span class="font-semibold text-slate-500">PetSocial</span>
+</p>
+<!-- Bottom Home Indicator Bar (iOS) -->
+<div class="w-32 h-1 bg-slate-900/80 rounded-full mt-5 mb-1" data-purpose="home-indicator"></div>
+</footer>
+<!-- END: Footer -->
+</div>
+<!-- END: MobileDeviceFrame -->
+<!-- BEGIN: InteractiveScripts -->
+<!-- Password visibility toggler behavior -->
+<script data-purpose="password-visibility">
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleBtn = document.getElementById('toggle-password');
+      const passwordInput = document.getElementById('password');
+      const eyeIcon = document.getElementById('eye-icon');
+
+      if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', function() {
+          const isPassword = passwordInput.getAttribute('type') === 'password';
+          passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+          
+          // Switch icon between open eye and slashed eye
+          if (isPassword) {
+            eyeIcon.innerHTML = `
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+            `;
+          } else {
+            eyeIcon.innerHTML = `
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            `;
+          }
+        });
+      }
+    });
+  </script>
+<!-- END: InteractiveScripts -->
+</body></html>

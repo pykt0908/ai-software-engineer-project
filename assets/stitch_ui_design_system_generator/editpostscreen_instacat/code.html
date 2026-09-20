@@ -1,0 +1,367 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>InstaCat - Edit Post</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "interactive-like": "#EF4444",
+            "primary-fixed-dim": "#ffb690",
+            "surface-tertiary": "#F4F4F5",
+            "surface-container-lowest": "#ffffff",
+            "primary-container": "#f97316",
+            "inverse-on-surface": "#f3f0ef",
+            "on-secondary-fixed-variant": "#683c00",
+            "on-error-container": "#93000a",
+            "on-error": "#ffffff",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#601a00",
+            "text-placeholder": "#A1A1AA",
+            "on-primary-fixed": "#341100",
+            "secondary-fixed": "#ffdcbd",
+            "surface-secondary": "#FAFAFA",
+            "border-muted": "#DBDBDB",
+            "surface-bright": "#fcf9f8",
+            "surface": "#fcf9f8",
+            "surface-container-high": "#eae7e7",
+            "on-tertiary-fixed-variant": "#832600",
+            "story-gradient-end": "#FBBF24",
+            "inverse-primary": "#ffb690",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#390c00",
+            "primary-fixed": "#ffdbca",
+            "story-gradient-start": "#F97316",
+            "border-subtle": "#E4E4E7",
+            "surface-container-highest": "#e4e2e1",
+            "surface-tint": "#9d4300",
+            "tertiary": "#ac3400",
+            "secondary-container": "#ffbc76",
+            "surface-canvas": "#FFFFFF",
+            "text-primary": "#262626",
+            "secondary": "#855316",
+            "surface-dim": "#dcd9d9",
+            "outline": "#8c7164",
+            "tertiary-fixed": "#ffdbd0",
+            "on-secondary-fixed": "#2c1600",
+            "on-primary-container": "#582200",
+            "background": "#fcf9f8",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#fcb973",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#ff6d39",
+            "surface-variant": "#e4e2e1",
+            "surface-container": "#f0eded",
+            "tertiary-fixed-dim": "#ffb59d",
+            "outline-variant": "#e0c0b1",
+            "on-surface-variant": "#584237",
+            "on-background": "#1b1c1c",
+            "on-secondary-container": "#79490b",
+            "on-surface": "#1b1c1c",
+            "surface-container-low": "#f6f3f2",
+            "on-secondary": "#ffffff",
+            "primary": "#9d4300",
+            "inverse-surface": "#303030",
+            "on-primary-fixed-variant": "#783200",
+            "text-secondary": "#737373"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-lg": "1rem",
+            "space-2xl": "2rem",
+            "space-sm": "0.5rem",
+            "space-md": "0.75rem",
+            "space-xs": "0.25rem",
+            "gutter": "0.75rem",
+            "space-2xs": "0.125rem",
+            "margin": "1rem",
+            "space-xl": "1.5rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "brand-title": ["Plus Jakarta Sans"],
+            "body-regular": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-sm-bold": ["Plus Jakarta Sans"],
+            "body-bold": ["Plus Jakarta Sans"],
+            "caption-timestamp": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+            "brand-title": ["26px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+            "body-regular": ["14px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+            "headline-lg": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+            "body-sm-bold": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+            "body-bold": ["14px", {"lineHeight": "18px", "fontWeight": "600"}],
+            "caption-timestamp": ["10px", {"lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "400"}]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface-secondary text-text-primary min-h-screen flex flex-col items-center antialiased selection:bg-primary-container selection:text-white pb-12">
+<!-- Mobile Shell Wrapper (Simulating native mobile screen / Max width centered canvas) -->
+<div class="w-full max-w-md min-h-screen bg-surface-canvas flex flex-col shadow-sm border-x border-border-subtle relative">
+<!-- Top Navigation Header (Screen ID: EditPostScreen, Section 4.4) -->
+<header class="sticky top-0 z-40 bg-surface-canvas/95 backdrop-blur-md h-11 px-margin flex items-center justify-between border-b border-border-subtle">
+<!-- Cancel Button -->
+<button class="text-text-primary hover:text-text-secondary active:scale-95 transition-all text-body-bold font-body-bold py-1 flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
+<span>Cancel</span>
+</button>
+<!-- Centered Screen Title -->
+<h1 class="text-headline-md font-headline-md text-text-primary tracking-tight">
+        Edit Post
+      </h1>
+<!-- Top Primary Save Action -->
+<button class="text-primary-container font-label-md text-label-md hover:opacity-80 active:scale-95 transition-all py-1 px-1 flex items-center gap-0.5" id="topSaveBtn" type="button">
+<span>Save</span>
+</button>
+</header>
+<!-- Scrollable Edit Form Content -->
+<main class="flex-1 flex flex-col overflow-y-auto divide-y divide-border-subtle">
+<!-- Section 1: Post Read-Only Image & Caption Input Hub -->
+<section class="p-margin bg-surface-canvas flex flex-col gap-space-md">
+<!-- Post Preview & Caption Header Row -->
+<div class="flex gap-space-md items-start">
+<!-- Post Image Preview (Read-only as per specification) -->
+<div class="relative w-24 h-24 rounded-xl overflow-hidden border border-border-subtle shrink-0 bg-surface-secondary shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A luminous, fluffy blue-point ragdoll cat napping serenely across a sun-drenched wooden windowsill. Soft golden afternoon sunbeams highlight the cat's plush white coat and creamy ears, casting warm diagonal light lines in a peaceful modern living room. The shot is intimate and photographic, featuring warm amber tones and pristine aesthetic fidelity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSpruJ6NZtt2ZotSmUVYRU2H0bImUQp667hVWnzajkj8F9kU4YqFEEML0IBwdd8n8ONKm8eULF5XLrQxl1XKMFtEDH_b3FAy-UJ1zy5C0BcClzO2GmCNBdQ9Y68Le9UYXfJwoGr0FUoQGXnkaS0fiSVgngJRODGi0ByDK7SKDaNu1KtD_gB727Mnk0JsuY65CaMBtxrvZtql51vzykGJoZFJsRE2dDPXLPpFm-hrbUrUxcXFvyd2q2dA">
+<!-- Read-only Badge Overlay -->
+<div class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-white rounded-lg px-1.5 py-0.5 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]" data-icon="lock">lock</span>
+<span class="text-[9px] font-medium leading-none">Original</span>
+</div>
+</div>
+<!-- User Info & Caption Field Container -->
+<div class="flex-1 flex flex-col min-w-0">
+<!-- Account Badge -->
+<div class="flex items-center gap-1.5 mb-1.5">
+<div class="relative">
+<div class="w-6 h-6 rounded-full overflow-hidden border border-primary-container/40">
+<img class="w-full h-full object-cover" data-alt="Close up avatar of an elegant fluffy ragdoll cat with bright sapphire blue eyes and soft grey points on pristine white fur. Natural warm ambient studio lighting accentuates the silky texture of its whiskers, matching the playful InstaCat community aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYWFBnvrAT-Gr8UiNQVBpx6oar2ZlClyepz8YeUc0ObnXt9riI1DHm64ac-UwDOmrsT9ZH77CAIs2rQqfAFUKp_qD4XTncO9t9Xwmca47c_2nIqt7Yl9_zVYmmVE5_NEb9FJQ87GfUjSwRzgLgjVPi-3uWVr56_uOVI0xvLX-rYjqGhDr2Yo6J6ONdMMF8zrRP3ElwCXyINVLWfXo3FCqt_GOJM6vsdFjiyzMfonsJcRRFMh8P93Dd5Q">
+</div>
+<!-- Small Orange Badge -->
+<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-primary-container border-2 border-surface-canvas rounded-full"></span>
+</div>
+<span class="text-body-sm-bold font-body-sm-bold text-text-primary truncate">mochi_the_ragdoll</span>
+<span class="text-caption-timestamp font-caption-timestamp text-text-secondary bg-surface-tertiary px-1.5 py-0.5 rounded-full">Author</span>
+</div>
+<!-- Multi-line Caption Textarea -->
+<div class="relative">
+<textarea class="w-full p-2 text-body-regular font-body-regular text-text-primary bg-surface-bright border border-border-subtle rounded-lg focus:ring-1 focus:ring-primary-container focus:border-primary-container transition-all resize-none outline-none placeholder:text-text-placeholder" id="captionTextarea" maxlength="2200" placeholder="Write a caption for your cat post..." rows="3">Soaking up the afternoon sunbeams! Mochi is having the best weekend nap ✨🐾 #catlife #ragdoll</textarea>
+</div>
+<!-- Character Counter -->
+<div class="flex justify-end mt-1">
+<span class="text-caption-timestamp font-caption-timestamp text-text-secondary" id="charCounter">
+                91/2,200
+              </span>
+</div>
+</div>
+</div>
+<!-- Quick Cat Emoji Bar -->
+<div class="pt-1 flex items-center justify-between border-t border-border-subtle/70">
+<span class="text-label-sm font-label-sm text-text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-primary-container" data-icon="add_reaction">add_reaction</span>
+            Cat Emojis
+          </span>
+<div class="flex items-center gap-1">
+<button class="emoji-btn hover:bg-surface-tertiary active:scale-90 transition p-1.5 rounded-lg text-base" data-emoji="🐾" type="button">🐾</button>
+<button class="emoji-btn hover:bg-surface-tertiary active:scale-90 transition p-1.5 rounded-lg text-base" data-emoji="😺" type="button">😺</button>
+<button class="emoji-btn hover:bg-surface-tertiary active:scale-90 transition p-1.5 rounded-lg text-base" data-emoji="✨" type="button">✨</button>
+<button class="emoji-btn hover:bg-surface-tertiary active:scale-90 transition p-1.5 rounded-lg text-base" data-emoji="🧶" type="button">🧶</button>
+<button class="emoji-btn hover:bg-surface-tertiary active:scale-90 transition p-1.5 rounded-lg text-base" data-emoji="☀️" type="button">☀️</button>
+</div>
+</div>
+</section>
+<!-- Section 2: Post Metadata & Community Tags -->
+<section class="bg-surface-canvas divide-y divide-border-subtle">
+<!-- Tagged Cats / Friends Row -->
+<div class="px-margin py-3 flex items-center justify-between hover:bg-surface-bright/80 cursor-pointer transition">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed/40 text-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]" data-icon="pets">pets</span>
+</div>
+<div class="truncate">
+<div class="text-body-bold font-body-bold text-text-primary">Tag Cats &amp; Friends</div>
+<div class="text-body-sm font-body-sm text-primary-container truncate font-medium">@biscuit_paw tagged</div>
+</div>
+</div>
+<div class="flex items-center gap-1 text-text-secondary shrink-0">
+<span class="text-label-sm font-label-sm text-text-secondary">1 cat</span>
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Location Row -->
+<div class="px-margin py-3 flex items-center justify-between hover:bg-surface-bright/80 cursor-pointer transition">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-8 h-8 rounded-full bg-primary-fixed/50 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]" data-icon="location_on">location_on</span>
+</div>
+<div class="truncate">
+<div class="text-body-bold font-body-bold text-text-primary">Add Location</div>
+<div class="text-body-sm font-body-sm text-text-secondary truncate">Cozy Sunbeam Corner • Tokyo</div>
+</div>
+</div>
+<div class="flex items-center gap-2 text-text-secondary shrink-0">
+<button class="text-text-placeholder hover:text-interactive-like transition p-1" title="Remove location" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="cancel">cancel</span>
+</button>
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Music / Audio Row -->
+<div class="px-margin py-3 flex items-center justify-between hover:bg-surface-bright/80 cursor-pointer transition">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-8 h-8 rounded-full bg-surface-tertiary text-text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]" data-icon="music_note">music_note</span>
+</div>
+<div class="truncate">
+<div class="text-body-bold font-body-bold text-text-primary">Audio Track</div>
+<div class="text-body-sm font-body-sm text-text-secondary truncate flex items-center gap-1">
+<span>Lofi Cat Nap • Gentle Purrs</span>
+<span class="w-1 h-1 rounded-full bg-text-placeholder"></span>
+<span class="text-caption-timestamp font-caption-timestamp">Original Audio</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-text-secondary shrink-0" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Alt Text / Accessibility for Pet Viewers -->
+<div class="px-margin py-3 flex items-center justify-between hover:bg-surface-bright/80 cursor-pointer transition">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-8 h-8 rounded-full bg-surface-tertiary text-text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</div>
+<div class="truncate">
+<div class="text-body-bold font-body-bold text-text-primary">Alt Text &amp; Accessibility</div>
+<div class="text-body-sm font-body-sm text-text-secondary truncate">Custom description for pet screen readers</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-text-secondary shrink-0" data-icon="chevron_right">chevron_right</span>
+</div>
+</section>
+<!-- Section 3: Post Preferences & Engagement Toggles -->
+<section class="bg-surface-canvas p-margin flex flex-col gap-4">
+<h2 class="text-label-sm font-label-sm text-text-secondary tracking-wider">
+          POST PREFERENCES
+        </h2>
+<!-- Toggle: Hide Like & View Counts -->
+<div class="flex items-center justify-between gap-3">
+<div class="flex-1">
+<div class="text-body-bold font-body-bold text-text-primary">Hide Like &amp; View Counts</div>
+<div class="text-body-sm font-body-sm text-text-secondary">
+              Only you will see the total number of likes and paws on this post.
+            </div>
+</div>
+<!-- Switch -->
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input class="sr-only peer" type="checkbox" value="">
+<div class="w-11 h-6 bg-surface-tertiary border border-border-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container peer-checked:border-primary-container"></div>
+</label>
+</div>
+<!-- Toggle: Turn Off Commenting -->
+<div class="flex items-center justify-between gap-3 pt-2">
+<div class="flex-1">
+<div class="text-body-bold font-body-bold text-text-primary">Turn Off Commenting</div>
+<div class="text-body-sm font-body-sm text-text-secondary">
+              Friends and followers will no longer be able to leave comments or cat reactions.
+            </div>
+</div>
+<!-- Switch -->
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input class="sr-only peer" type="checkbox" value="">
+<div class="w-11 h-6 bg-surface-tertiary border border-border-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container peer-checked:border-primary-container"></div>
+</label>
+</div>
+</section>
+<!-- Section 4: Primary Save Changes Button & Danger Zone -->
+<section class="bg-surface-canvas p-margin flex flex-col gap-3">
+<!-- Main Primary Save Button -->
+<button class="w-full h-11 bg-primary-container hover:bg-[#C2410C] active:scale-[0.99] text-white rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm transition-all duration-150" id="mainSaveBtn" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="pets">pets</span>
+<span>Save Changes</span>
+</button>
+<!-- Danger Zone: Delete Post Option -->
+<div class="pt-2 flex justify-center">
+<button class="flex items-center gap-1.5 text-error hover:opacity-80 active:scale-95 transition-all text-body-bold font-body-bold py-2 px-3 rounded-lg" type="button">
+<span class="material-symbols-outlined text-[18px] text-error" data-icon="delete">delete</span>
+<span>Delete Post</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Save Notification Toast (Dismissible interactive element) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none translate-y-4 z-50" id="saveToast">
+<span class="material-symbols-outlined text-primary-container text-[18px]" data-icon="check_circle">check_circle</span>
+<span class="text-body-sm-bold font-body-sm-bold">Post updated successfully!</span>
+</div>
+</div>
+<!-- Interactive Logic for Character Count and Emoji Bar -->
+<script>
+    const textarea = document.getElementById('captionTextarea');
+    const charCounter = document.getElementById('charCounter');
+    const emojiButtons = document.querySelectorAll('.emoji-btn');
+    const mainSaveBtn = document.getElementById('mainSaveBtn');
+    const topSaveBtn = document.getElementById('topSaveBtn');
+    const saveToast = document.getElementById('saveToast');
+
+    function updateCounter() {
+      const length = textarea.value.length;
+      charCounter.textContent = `${length}/2,200`;
+    }
+
+    textarea.addEventListener('input', updateCounter);
+
+    // Quick emoji insertion
+    emojiButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const emoji = button.getAttribute('data-emoji');
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        textarea.value = text.substring(0, start) + emoji + text.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+        textarea.focus();
+        updateCounter();
+      });
+    });
+
+    // Toast Trigger on Save
+    function triggerSave() {
+      saveToast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+      saveToast.classList.add('opacity-100', 'translate-y-0');
+      
+      setTimeout(() => {
+        saveToast.classList.remove('opacity-100', 'translate-y-0');
+        saveToast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+      }, 2500);
+    }
+
+    mainSaveBtn.addEventListener('click', triggerSave);
+    topSaveBtn.addEventListener('click', triggerSave);
+  </script>
+</body></html>

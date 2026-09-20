@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>ExploreScreen - InstaCat</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration for InstaCat Brand Colors & Fonts -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#f97316',
+              50: '#fff7ed',
+              100: '#ffedd5',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c'
+            },
+            surface: '#fcf9f8',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Core Layout Styles -->
+<style data-purpose="custom-scrollbars-and-reset">
+    /* Hide scrollbars for clean native mobile feel while retaining scroll capability */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    /* Touch optimization */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+  </style>
+</head>
+<body class="bg-surface text-stone-800 font-sans antialiased min-h-screen flex justify-center selection:bg-orange-100">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="w-full max-w-[430px] bg-white min-h-screen relative flex flex-col shadow-2xl overflow-x-hidden pb-24 border-x border-stone-200/60">
+<!-- BEGIN: iOSStatusBar -->
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md px-6 pt-3 pb-1 flex justify-between items-center text-xs font-semibold text-stone-900">
+<!-- Time Display -->
+<span class="tracking-tight text-[15px] font-bold">9:41</span>
+<!-- System Status Icons (Cellular, Wifi, Battery) -->
+<div aria-label="Device Status" class="flex items-center space-x-2 text-stone-900">
+<!-- Cellular Signal -->
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 18.23C2.89 16.48 2 14.34 2 12c0-5.52 4.48-10 10-10s10 4.48 10 10c0 2.34-.89 4.48-2.35 6.23l-.62-.62C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 4c-2.76 0-5 2.24-5 5 0 1.25.46 2.39 1.22 3.28l.71-.71C8.35 13.9 8 13 8 12c0-2.21 1.79-4 4-4s4 1.79 4 4c0 1-.35 1.9-.93 2.57l.71.71C16.54 14.39 17 13.25 17 12c0-2.76-2.24-5-5-5zm0 4c-.55 0-1 .45-1 1 0 .28.11.53.29.71l.71-.71V11z"></path>
+<path class="opacity-0" d="M2 20h20v2H2z"></path>
+<rect height="4" rx="0.5" width="3" x="3" y="16"></rect>
+<rect height="7" rx="0.5" width="3" x="8" y="13"></rect>
+<rect height="11" rx="0.5" width="3" x="13" y="9"></rect>
+<rect height="15" rx="0.5" width="3" x="18" y="5"></rect>
+</svg>
+<!-- WiFi -->
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A17.93 17.93 0 0012 4zm0 2c3.99 0 7.62 1.57 10.3 4.14L12 19.38 1.7 10.14C4.38 7.57 8.01 6 12 6z"></path>
+</svg>
+<!-- Battery -->
+<div class="flex items-center space-x-0.5">
+<div class="w-5 h-2.5 border border-stone-900 rounded-[3px] p-0.5 flex items-center">
+<div class="h-full w-full bg-stone-900 rounded-[1px]"></div>
+</div>
+<div class="w-0.5 h-1 bg-stone-900 rounded-r-sm"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: SearchHeaderSection -->
+<section class="sticky top-[34px] z-30 bg-white/95 backdrop-blur-md pt-2 pb-3 px-4 border-b border-stone-100 shadow-sm" data-purpose="search-and-filters">
+<!-- Search Input Container -->
+<div class="flex items-center gap-2">
+<div class="relative flex-1 flex items-center">
+<!-- Search Magnifier Icon -->
+<svg class="w-4 h-4 text-stone-400 absolute left-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="m21 21-4.35-4.35" stroke-linecap="round"></path>
+</svg>
+<!-- Input Bar -->
+<input class="w-full pl-10 pr-4 py-2 bg-stone-100 text-stone-900 placeholder-stone-400 rounded-xl text-[13px] font-medium border-0 focus:ring-2 focus:ring-brand focus:bg-white transition-all outline-none" placeholder="Search cats, breeds, hashtags, treats..." type="text">
+</div>
+<!-- QR / Lens Scanner Action Button -->
+<button aria-label="Scan Cat Code or Lens" class="p-2 text-stone-700 hover:text-brand transition-colors rounded-xl active:bg-stone-100 flex items-center justify-center" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+<path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+<path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+<path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+</button>
+</div>
+<!-- Horizontal Filter Pills (Scrollable) -->
+<div class="flex gap-2 overflow-x-auto no-scrollbar pt-3 pb-0.5 text-xs font-semibold whitespace-nowrap">
+<button class="px-3.5 py-1.5 rounded-full bg-stone-900 text-white flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform">
+<span>🐾</span> All Cats
+        </button>
+<button class="px-3.5 py-1.5 rounded-full bg-white text-stone-700 border border-stone-200/90 hover:border-stone-300 flex items-center gap-1.5 active:scale-95 transition-transform shadow-2xs">
+<span>🐱</span> Reels &amp; Fun
+        </button>
+<button class="px-3.5 py-1.5 rounded-full bg-white text-stone-700 border border-stone-200/90 hover:border-stone-300 flex items-center gap-1.5 active:scale-95 transition-transform shadow-2xs">
+<span>🛍️</span> Cat Shop
+        </button>
+<button class="px-3.5 py-1.5 rounded-full bg-white text-stone-700 border border-stone-200/90 hover:border-stone-300 flex items-center gap-1.5 active:scale-95 transition-transform shadow-2xs">
+<span>🧶</span> Toys
+        </button>
+<button class="px-3.5 py-1.5 rounded-full bg-white text-stone-700 border border-stone-200/90 hover:border-stone-300 flex items-center gap-1.5 active:scale-95 transition-transform shadow-2xs">
+<span>🐟</span> Treats
+        </button>
+<button class="px-3.5 py-1.5 rounded-full bg-white text-stone-700 border border-stone-200/90 hover:border-stone-300 flex items-center gap-1.5 active:scale-95 transition-transform shadow-2xs">
+<span>🩺</span> Vet Care
+        </button>
+<button class="px-3.5 py-1.5 rounded-full bg-white text-stone-700 border border-stone-200/90 hover:border-stone-300 flex items-center gap-1.5 active:scale-95 transition-transform shadow-2xs">
+<span>💤</span> Nap Spots
+        </button>
+</div>
+</section>
+<!-- END: SearchHeaderSection -->
+<!-- BEGIN: ExploreMediaGrid -->
+<!-- Mimics Instagram's dynamic 3-column explore pattern (2 smaller stacked squares + 1 large 2x2 featured card) -->
+<main class="flex-1 px-0.5 py-1">
+<div class="grid grid-cols-3 gap-0.5" data-purpose="explore-staggered-grid">
+<!-- Stacked Column 1: Small Item 1 (Carousel) -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Playful striped kitten" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFRDnQRgwUtd5Yv0fg9bEit0plc8udOg2QVNK_HlO52LYXdoFMf-uhBa3IeuRzCC3uqyRULLre2Q1SYLMDgRH91iFltIvhp9_gJHOgEcFSyVabTnEmfVzoEMFEd_5-b3qAtJrExQ3fhk9loDfpxp-I4ks3IN__OQOJObbYnpxLK-VSwoLDJR2S3ozbnEkGGSMhN3gWLx70SccH0Gm3tlkgqEv3FmGMFcwErO7tbcn3NCjXIgadcaJ3Ww">
+<!-- Multi-photo badge -->
+<div class="absolute top-2 right-2 text-white drop-shadow-md">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"></path>
+</svg>
+</div>
+</article>
+<!-- Big Featured Span (2 cols wide, 2 rows high) -->
+<article class="relative col-span-2 row-span-2 overflow-hidden bg-stone-200 group cursor-pointer">
+<img alt="Fluffy ginger cat close-up look" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_GWNiPrv6ef4Zg1hl57wslNmd_9SxjRtsOAhhRMS3ZElZf5KT8MiAZDgvNiO2Sn6kT5bS24xHLgkbhPEEVF4ri87Y48FjSAxOcPmNp7He80fCfKD7JgrC9twIwkoXLu1QGOt1UiThGXnB7cxW23PUetH_yMvcamiSOxE-YPi2MiILWGfTr9MveQ6jO86AeDvsBFGb0Ta5P9qb1HiG1sV4lfSzUwv6H-BJdeHVYIVpHz-dVVsi4WY4Lw">
+<!-- Video Reels Badge Icon -->
+<div class="absolute top-2.5 right-2.5 bg-black/40 backdrop-blur-xs p-1.5 rounded-lg text-white">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
+</svg>
+</div>
+<!-- Subtitle overlay -->
+<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent p-2.5 text-white">
+<div class="flex items-center space-x-1.5">
+<span class="text-[11px] font-bold tracking-wide">✨ Daily Viral Purr</span>
+<span class="text-[10px] text-white/80">• 482k views</span>
+</div>
+</div>
+</article>
+<!-- Stacked Column 1: Small Item 2 -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Cool cat wearing sunglasses" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB49A1ML0Ok0tP0-bQom7LQzwuOMr4u9KFWaNcrE8lWjg3zYtFXQ26GpOgn-gfZKAc_RabLxZvOt2mnGNpHDhCG5x_9UekW9Y9mBCLUNggn3rjb3UJJs7KygRXQvtA_J24vdUKdXwI6gnRjPsYJgiJfIpXFct1SMn6i-2Lfec09dIp-6xLdV8jTeSqoLV6C9NcMA73Bt7_v0CaLZAUVACtIg0cgHmrA0_aO8Ne9Wirr0_QHSeQw1APrCw">
+</article>
+<!-- 3x3 Standard Grid Rows -->
+<!-- Row 2 Item 1 -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Cute calico cat in daylight" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqvlv_Q1vj1FDF9B1SH10P8obnajjqh4-xicqYNnfopI7q-PIHWTVT5pkPj3WEq1kocGVKD3_nKfbZjY-hShlkoefPpAF22lKGqBvgxMTVtGDT6tXc1jmwdqFwhl-e2tTXJAUdCU_CUKfyu6nvajd-bOjCe5SM3pjbwh8V4p9OIhhHiQCAMf0fdCdUaf2E16qGLnF8ASCP-j6wpNUyB8VeiYHwFnDCDZNLdw7ZEGHUArBhedqR4WiG7g">
+</article>
+<!-- Row 2 Item 2 (Carousel) -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Adorable kitten playing on blanket" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlfFPNSwtQNnj_tZ0XqC3HaLHCMBsfWek2hvKjBPL2IQOYeIYcU9oz94ubOXuyL7LA1slKTUgvQBMtPtb5DPqACfwsJnzDuGC6WPmKIywHE1Y41oWShx_TtzFALbslhuCB72xBGeP1ev0l0ysbHFLtE--HSY6AEg8WTNMhdh7CmyRgHYj32uLvAqnKhZnajCJbLMz4UqdNvUGoANqxtCg3ZSOpVbrWB_-HBjMVt_gOiqMtP9v6U-I3uA">
+<div class="absolute top-2 right-2 text-white drop-shadow-md">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"></path>
+</svg>
+</div>
+</article>
+<!-- Row 2 Item 3 -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Curious grey tabby cat looking up" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr_cpvQTDpVyvAcHfJUaLwJ7iRJzucQth5zyU63zaMrT6bqp9vwjowYL9QC5JPICqLP31Ryams9nEcr-pHvi3hTS3wxM-T7dAm2eT99X6dujNwczSUUAvmoIoWPpAd65_d8aVXqw9V5ZqVhmF4jF3d1hFxr4Td5Dk_7SVO9dal15f97o1OGhtgObXZUp40CjWaqb6yOHQEx7x81gJawtn4vwmg2IAXuO2fb_d99SQy3alqR-4ij1NVNg">
+</article>
+<!-- Row 3 Item 1 -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Fluffy ragdoll cat sitting proudly" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYqLS69lodFY-q-5bue5dIcGT2TTtsISNrTR4XU6hAK1vQJVEEgPKNPLmYbeLNvFagGx7DN17zLqJTb4hX46Kwo0laxTjAJIASgpjRggozgdZnKk3-T4tBG2Df3fKD6Kd7a9ibWG4T7-MIKLpltiRsuyGaRLl-UjFtOvA3fIOhgMo27NfQUqCjKZIDZaZTqwZfn0_s9qlserH-P7WgfZ5JLEVv72CBWSrz-LT4MCwt4-cwf3a_5i2KTQ">
+</article>
+<!-- Row 3 Item 2 -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Clean portrait of cat whiskers" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2Wf-DMyLU3-9qmMxKB5jlTGJ2qSUhVhpWBpf0fkIUqrWKqB03M-oRmxspBwsFWe_Ox6XuYG3jO7vDC1-l4V0NDghBNeHPSXy8pEVK8wbGKJEXpOse5wBrurSb4aX6pTfQRupM-U3Ssoa5DFsjW2XgITHBiqAEWVZOf7YRyq6cC3_KRM2tH7gxmWy6lztiOZ6ZPBYrmNX8Nu-gp7e8QTb4bkkDlKCGU1RrFpEjk9Dp7CCiM9TuI3iCHQ">
+</article>
+<!-- Row 3 Item 3 (Reel Video) -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Cat staring with wide green eyes" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyY6KCMCY5yTKXBYaYJebYkLsqwGKglyFSZZJSD2RQkB5cK9Cwjg8VWmTF2g6ocfO2tSs0WyfRJo3-ev_QIp51xMQOxG_JDbUN2cOH2bfw29V1MAdOTSe0PklgHnmf8MU1wX4sYCKo_OBRkAyS85agfWawQ0GIG79fUuD7yX0elBLUV2kwsgllVbF4h5l4YDCWWPFsEYNE7JDy9hr4gRuuwYil84vJ4H0dnbtEK45tA4GQ3krT9W7lSg">
+<div class="absolute top-2 right-2 text-white drop-shadow-md">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
+</svg>
+</div>
+</article>
+<!-- Row 4 Alternative Layout: Large 2x2 on Left, 2 stacked on Right -->
+<article class="relative col-span-2 row-span-2 overflow-hidden bg-stone-200 group cursor-pointer">
+<img alt="Cat sleeping peacefully on human lap" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0XD-x0dfUjXw3MIH4Lhlyk6wMnHcQp-CBshOZ3azaTzmv0uS67O_9nIHwDGpP7lRmeFng2pWrK1mMwbMXMrGPi4PvSbqLIOCZnDBBbCRYzXuVkXH6NBAy19G-G1Cn3Wi-EAQUnaetj2Un35INsvDzibHUVTFn22q0uArSDNfmqjtFOijKJb2d3YQLmrCGC-FPdw7IQgqzgAVUPjnX8ISOjnzIW154VDqYeJmuKM9mzpg6272nT3s8-Q">
+<!-- Multi-photo Badge -->
+<div class="absolute top-2.5 right-2.5 bg-black/40 backdrop-blur-xs p-1.5 rounded-lg text-white">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"></path>
+</svg>
+</div>
+<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent p-2.5 text-white">
+<div class="flex items-center space-x-1">
+<span class="text-[11px] font-bold">#NapTimeSeries 😴</span>
+</div>
+</div>
+</article>
+<!-- Stacked Column Right 1 -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Two kittens hugging" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfPZZBvk_nvpymjvlymjaX8o639vugOHBNFLexv54LTcTCk3kd_6iuzgcMgkcIo3VantYHBu8EItbvkOgYxoJeyC3DQyuCJPPyp1wEXYiF8u5aA5KkGM57fW-Pjayd0sltLaKhyXa1FgIFDDDfzE8uk2YzexO2eZiXLQ7ddEVjCJwzn6VRr7eROSX73DQETj-Hvzg3I9rN8HgojWroxJD1dpobfCo8jpQoLe4J0SOWpU-_Yi6x_G5qiQ">
+</article>
+<!-- Stacked Column Right 2 -->
+<article class="relative aspect-square overflow-hidden bg-stone-100 group cursor-pointer">
+<img alt="Siamese cat posing elegantly" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYq4h2lgrxJIUEMAoC2uufB-CBuWEEncgcLz6rY8IbnWIFba1UqWQSozpDJ6ssEQir-URYyxtVoQbNw4mdf_2FpgT7t5j7S-quf_r_tn4AoWc8Ey4880pnGnNds3P9U7VkULLxpAKOtwa2LBkcIJ7G4raeBX83K3b_0fsDI8YJXfSsihiM7Itglm9OwfQoyX-2SPfrQ4B26zK2ThXXzLgWKpLXmC8gGW3wlAlI7BEmClUY8YSQpitdgQ">
+<div class="absolute top-2 right-2 text-white drop-shadow-md">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
+</svg>
+</div>
+</article>
+</div>
+</main>
+<!-- END: ExploreMediaGrid -->
+<!-- BEGIN: BottomNavigationBar -->
+<!-- Fixed docked navigation with InstaCat branding & active orange Explore indicator -->
+<nav class="fixed bottom-0 max-w-[430px] w-full bg-white/95 backdrop-blur-lg border-t border-stone-200/80 px-6 py-2.5 flex items-center justify-between z-50 text-stone-700 shadow-lg" data-purpose="mobile-bottom-tabs">
+<!-- Tab 1: Home -->
+<a aria-label="Home Feed" class="flex flex-col items-center justify-center p-1 text-stone-800 hover:text-brand transition-colors active:scale-95" href="#feed">
+<svg class="w-6 h-6 stroke-current fill-none stroke-[2]" viewBox="0 0 24 24">
+<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Tab 2: Explore / Search (ACTIVE - Brand Orange) -->
+<a aria-label="Explore and Search (Current Screen)" class="flex flex-col items-center justify-center p-1 text-brand transition-transform scale-105" href="#explore">
+<svg class="w-6 h-6 stroke-current fill-brand/10 stroke-[2.5]" viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="m21 21-4.35-4.35" stroke-linecap="round"></path>
+</svg>
+<span class="w-1 h-1 rounded-full bg-brand mt-0.5"></span>
+</a>
+<!-- Tab 3: Post / Add (+) -->
+<button aria-label="Create New Cat Post" class="flex items-center justify-center p-1 text-stone-800 hover:text-brand transition-all active:scale-90" type="button">
+<div class="border-[2px] border-stone-800 rounded-lg p-0.5">
+<svg class="w-5 h-5 stroke-current fill-none stroke-[2.5]" viewBox="0 0 24 24">
+<line x1="12" x2="12" y1="5" y2="19"></line>
+<line x1="5" x2="19" y1="12" y2="12"></line>
+</svg>
+</div>
+</button>
+<!-- Tab 4: Likes / Activity -->
+<a aria-label="Activity &amp; Likes" class="flex flex-col items-center justify-center p-1 text-stone-800 hover:text-brand transition-colors active:scale-95" href="#activity">
+<svg class="w-6 h-6 stroke-current fill-none stroke-[2]" viewBox="0 0 24 24">
+<path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Tab 5: Profile Avatar -->
+<a aria-label="User Profile" class="flex flex-col items-center justify-center p-0.5 active:scale-95" href="#profile">
+<div class="w-7 h-7 rounded-full ring-2 ring-transparent hover:ring-brand p-0.5 transition-all overflow-hidden">
+<img alt="Mochi profile avatar" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdhxA01OFreeYRdNNsRKKMQY5l5YgZ_FviuiPa8NqxnuAv3QmnK1I2VL4-MlCkEM-x4j5RY3anHJ3FCyM-XfD6bz-XoBPFXMS3JaR5uQdEYh4Z8Z3DMSfmC0eX4GnL5O9ZM_24f3e1VYvXf3TKPyydiMQAW18_M1GcB8BO46iuUegcEpPb5PrFrQLv1vMVgGXgbIDjt2m2PYyAcxf5GJaff1FsvrZYnlb6l-C7ob_QfYkU34PM6DsypQ">
+</div>
+</a>
+</nav>
+<!-- END: BottomNavigationBar -->
+<!-- iOS Home Bar Indicator (Bottom Home Swipe Handle) -->
+<div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-stone-300 rounded-full z-50 pointer-events-none"></div>
+</div>
+<!-- END: MobileDeviceFrame -->
+</body></html>

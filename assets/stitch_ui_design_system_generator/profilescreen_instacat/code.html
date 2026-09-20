@@ -1,0 +1,374 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>InstaCat - Profile</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed": "#ffdcbd",
+            "surface-tint": "#9d4300",
+            "on-tertiary-fixed": "#390c00",
+            "on-tertiary": "#ffffff",
+            "on-surface": "#1b1c1c",
+            "surface-container-highest": "#e4e2e1",
+            "tertiary-container": "#ff6d39",
+            "surface-container-low": "#f6f3f2",
+            "primary-container": "#f97316",
+            "inverse-on-surface": "#f3f0ef",
+            "text-placeholder": "#A1A1AA",
+            "surface-secondary": "#FAFAFA",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed-variant": "#832600",
+            "secondary-container": "#ffbc76",
+            "surface-container-high": "#eae7e7",
+            "on-error": "#ffffff",
+            "surface-dim": "#dcd9d9",
+            "story-gradient-end": "#FBBF24",
+            "surface": "#fcf9f8",
+            "interactive-like": "#EF4444",
+            "on-primary-fixed-variant": "#783200",
+            "on-secondary-container": "#79490b",
+            "on-background": "#1b1c1c",
+            "background": "#fcf9f8",
+            "surface-variant": "#e4e2e1",
+            "text-primary": "#262626",
+            "story-gradient-start": "#F97316",
+            "on-secondary-fixed-variant": "#683c00",
+            "surface-container": "#f0eded",
+            "surface-bright": "#fcf9f8",
+            "on-secondary-fixed": "#2c1600",
+            "border-muted": "#DBDBDB",
+            "surface-container-lowest": "#ffffff",
+            "error-container": "#ffdad6",
+            "surface-tertiary": "#F4F4F5",
+            "primary": "#9d4300",
+            "tertiary-fixed-dim": "#ffb59d",
+            "tertiary": "#ac3400",
+            "inverse-surface": "#303030",
+            "secondary-fixed-dim": "#fcb973",
+            "primary-fixed": "#ffdbca",
+            "border-subtle": "#E4E4E7",
+            "on-surface-variant": "#584237",
+            "on-secondary": "#ffffff",
+            "outline": "#8c7164",
+            "text-secondary": "#737373",
+            "tertiary-fixed": "#ffdbd0",
+            "outline-variant": "#e0c0b1",
+            "on-primary-fixed": "#341100",
+            "on-tertiary-container": "#601a00",
+            "surface-canvas": "#FFFFFF",
+            "on-primary": "#ffffff",
+            "primary-fixed-dim": "#ffb690",
+            "error": "#ba1a1a",
+            "secondary": "#855316",
+            "on-primary-container": "#582200",
+            "inverse-primary": "#ffb690"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "0.75rem",
+            "space-lg": "1rem",
+            "space-2xl": "2rem",
+            "space-2xs": "0.125rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "margin": "1rem",
+            "space-md": "0.75rem",
+            "space-xl": "1.5rem"
+          },
+          "fontFamily": {
+            "brand-title": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-bold": ["Plus Jakarta Sans"],
+            "caption-timestamp": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-regular": ["Plus Jakarta Sans"],
+            "body-sm-bold": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "brand-title": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+            "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "body-bold": ["14px", { "lineHeight": "18px", "fontWeight": "600" }],
+            "caption-timestamp": ["10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+            "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "body-regular": ["14px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "body-sm-bold": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+            "headline-lg": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-surface-secondary text-text-primary flex justify-center min-h-screen antialiased">
+<!-- Mobile Shell Wrapper (Phone Frame 390px) -->
+<div class="w-full max-w-[420px] bg-surface-canvas min-h-screen flex flex-col relative pb-[70px]">
+<!-- iOS Status Bar Simulation -->
+<div class="w-full h-11 px-margin pt-3 flex justify-between items-center bg-surface-canvas text-text-primary z-40 select-none">
+<span class="font-body-bold text-body-bold tracking-tight">9:41</span>
+<div class="flex items-center gap-space-xs text-text-primary">
+<span class="material-symbols-outlined text-[17px]">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[17px]">wifi</span>
+<span class="material-symbols-outlined text-[20px]">battery_full</span>
+</div>
+</div>
+<!-- Top App Bar / Profile Header Navigation -->
+<header class="h-11 px-margin flex items-center justify-between bg-surface-canvas border-b border-border-subtle sticky top-0 z-30">
+<div class="flex items-center gap-space-xs cursor-pointer active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined text-[18px] text-text-primary">lock</span>
+<span class="font-body-bold text-headline-md text-text-primary">mochi_the_ragdoll</span>
+<span class="material-symbols-outlined text-[20px] text-text-primary">keyboard_arrow_down</span>
+</div>
+<div class="flex items-center gap-space-md">
+<button aria-label="Create new" class="text-text-primary hover:opacity-80 active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[24px]">add_box</span>
+</button>
+<button aria-label="Settings and options" class="text-text-primary hover:opacity-80 active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[26px]">menu</span>
+</button>
+</div>
+</header>
+<!-- Main Profile Content -->
+<main class="flex-1 flex flex-col">
+<!-- Profile Summary Section -->
+<div class="px-margin pt-space-lg pb-space-md">
+<!-- Top Stats Row -->
+<div class="flex items-center justify-between gap-space-md">
+<!-- Profile Avatar with warm InstaCat gradient story ring -->
+<div class="relative shrink-0">
+<div class="w-[86px] h-[86px] rounded-full p-[2.5px] bg-gradient-to-tr from-story-gradient-start to-story-gradient-end flex items-center justify-center shadow-sm">
+<div class="w-full h-full rounded-full p-[2px] bg-surface-canvas">
+<img alt="Mochi the Ragdoll profile avatar" class="w-full h-full object-cover rounded-full" data-alt="A portrait shot of a purebred Ragdoll cat with striking deep sapphire blue eyes, silky cream and chocolate pointed fluffy fur, looking directly into the camera with high-key warm ambient indoor light and a soft neutral ivory studio backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgHq4gqaix1Z8C7wnrG9dw8dQcSa6fwprjccleQOkLGHiHDm_S23rtMaEWSa93Wgjp2ubKkH2fMNZKfI_udBUhr2bUkoz5rb49FiL0FlMYlg_f_ECWWkJb4VYQKqgGmIYkn7mZr0eqo-es1dmY3QvgM7Xd4jiKHlMBmP1pH4bJTNFUkJh0lbGFXhUXK6KsZPKrCpMMFU9l0ZB65hPiJWdCMMStFnaTeUM7_sSSEQbTxXiqTOsFryu3mw">
+</div>
+</div>
+<!-- Verified Paw Badge -->
+<div class="absolute bottom-0 right-0 bg-primary-container text-on-tertiary rounded-full p-[3px] flex items-center justify-center border-2 border-surface-canvas shadow-xs">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">pets</span>
+</div>
+</div>
+<!-- Counter Columns -->
+<div class="flex-1 flex items-center justify-around pl-space-sm text-center">
+<div class="flex flex-col cursor-pointer active:scale-95 transition-transform duration-150">
+<span class="font-headline-md text-headline-md text-text-primary">54</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Posts</span>
+</div>
+<div class="flex flex-col cursor-pointer active:scale-95 transition-transform duration-150">
+<span class="font-headline-md text-headline-md text-text-primary">12.4k</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Followers</span>
+</div>
+<div class="flex flex-col cursor-pointer active:scale-95 transition-transform duration-150">
+<span class="font-headline-md text-headline-md text-text-primary">180</span>
+<span class="font-body-sm text-body-sm text-text-secondary">Following</span>
+</div>
+</div>
+</div>
+<!-- Bio Details -->
+<div class="mt-space-md">
+<div class="flex items-center gap-space-xs">
+<h1 class="font-body-bold text-body-bold text-text-primary">Mochi The Ragdoll 🐾</h1>
+<span class="bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm px-space-xs py-[1px] rounded">Cat Creator</span>
+</div>
+<p class="font-body-regular text-body-regular text-text-primary mt-space-2xs leading-snug">
+            Fluffy cloud living in Tokyo 🐱<br>
+            Sunbeam connoisseur &amp; treat enthusiast ✨<br>
+            Ambassador for @whiskerbox • Meow vibes only
+          </p>
+<a class="font-body-sm-bold text-body-sm-bold text-primary flex items-center gap-space-2xs mt-space-2xs hover:opacity-80" href="#">
+<span class="material-symbols-outlined text-[14px]">link</span>
+            mochi.instacat.pet
+          </a>
+</div>
+<!-- Profile Action Buttons -->
+<div class="flex items-center gap-space-sm mt-space-lg">
+<button class="flex-1 h-9 bg-surface-canvas hover:bg-surface-tertiary border border-border-muted rounded-lg font-body-bold text-body-bold text-text-primary flex items-center justify-center active:scale-[0.98] transition-transform duration-150" type="button">
+            Edit Profile
+          </button>
+<button class="flex-1 h-9 bg-surface-canvas hover:bg-surface-tertiary border border-border-muted rounded-lg font-body-bold text-body-bold text-text-primary flex items-center justify-center active:scale-[0.98] transition-transform duration-150" type="button">
+            Share Profile
+          </button>
+<button aria-label="Discover People" class="w-9 h-9 bg-surface-tertiary hover:bg-surface-container border border-border-muted rounded-lg flex items-center justify-center text-text-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</button>
+</div>
+</div>
+<!-- Story Highlights Tray -->
+<div class="border-t border-border-subtle py-space-md">
+<div class="flex items-center gap-space-md px-margin overflow-x-auto no-scrollbar">
+<!-- Highlight: Add New -->
+<div class="flex flex-col items-center gap-space-xs shrink-0 cursor-pointer active:scale-95 transition-transform duration-150">
+<div class="w-16 h-16 rounded-full border border-border-muted flex items-center justify-center bg-surface-canvas">
+<span class="material-symbols-outlined text-[26px] text-text-primary">add</span>
+</div>
+<span class="font-label-sm text-label-sm text-text-primary text-center">New</span>
+</div>
+<!-- Highlight: Playtime -->
+<div class="flex flex-col items-center gap-space-xs shrink-0 cursor-pointer active:scale-95 transition-transform duration-150">
+<div class="w-16 h-16 rounded-full p-[2px] border border-border-muted bg-surface-canvas flex items-center justify-center">
+<img alt="Playtime story highlight" class="w-full h-full object-cover rounded-full" data-alt="A close-up shot of a playful fluffy ragdoll kitten chasing an orange woolen ball toy on natural birch wood flooring, illuminated by natural morning sunlight casting soft geometric shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-cnCZFq5ROl3D2_Np_9NxvzjfsVUmXeiWd-Eied7ZBHeyWvRCE8wjUYW-QiAyBNXY0tDJwQPjhXKdWKnwQmhNoAeFMcfyyKmtN-Mk6NY5uM6VB333A7865gHB4OJLPBLgg8b6g6IjP0KUFPa06rfZpj7rDUWv1ErbHk0DEg5cnL2M06I5Rh7gshFQrNjTchqo5iYc7Po3Nbig5ZakSVUnC66WQ7AYbv14pHH3qsLzdDihpL1pi0xL-w">
+</div>
+<span class="font-label-sm text-label-sm text-text-primary text-center">Playtime 🎾</span>
+</div>
+<!-- Highlight: Naps -->
+<div class="flex flex-col items-center gap-space-xs shrink-0 cursor-pointer active:scale-95 transition-transform duration-150">
+<div class="w-16 h-16 rounded-full p-[2px] border border-border-muted bg-surface-canvas flex items-center justify-center">
+<img alt="Naps story highlight" class="w-full h-full object-cover rounded-full" data-alt="A cozy top-down perspective of a sleeping longhair cat curled in a warm knit orange blanket on an ivory couch with warm ambient indoor photography and gentle contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8ylKUrK1GTDLJju48QvwDWcsOVad3HKesUW4-gxi4J6APvZWMLmfD8qgs1kTrerDqPl7JdjlmWqmHR0GL5JLOCavR-FZkuwp0jfWXFMlscmZfeQyvLTeUf99eMk3FgTeXlWOsVTxBBcnmlxdsfkAbkOvRgwhlS4TZbZHA2m4tP8hA86OhsDN5YbEH3XUjbMCRW9kBGLO3v6oZozZOMLd01fZU-InRGCtZ_N-SCZvyM_7kfjK3Va_dyQ">
+</div>
+<span class="font-label-sm text-label-sm text-text-primary text-center">Naps 😴</span>
+</div>
+<!-- Highlight: Snacks -->
+<div class="flex flex-col items-center gap-space-xs shrink-0 cursor-pointer active:scale-95 transition-transform duration-150">
+<div class="w-16 h-16 rounded-full p-[2px] border border-border-muted bg-surface-canvas flex items-center justify-center">
+<img alt="Snacks story highlight" class="w-full h-full object-cover rounded-full" data-alt="A macro detail shot of a pristine ceramic bowl filled with organic salmon cat treats surrounded by orange dried flowers on a clean modern white kitchen counter." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAms9Sx-HKR-0bC4IkTaNCtsZ12mfrtzMYPoXRmRHgFAU8bQ2tCA1_yv5QcwsuJEfDURgAy8uOF-zwwoatuMq4rkPUrFrQRLPPyCfWG_jrFCUuwu8v4d_An1gcoM255KfBf9J0s0WE-_HDkPUCS2ztcXnGdMsf_cC5-1hJ6qKGaEI5SALz-TO5LuXl3JWCpt0SRqp_Nl8Em-QFqDqjDmaM30ueL8Tt8NmWPFMgdLMFc_IMDxLkuxt4Xg">
+</div>
+<span class="font-label-sm text-label-sm text-text-primary text-center">Snacks 🐟</span>
+</div>
+<!-- Highlight: Outdoors -->
+<div class="flex flex-col items-center gap-space-xs shrink-0 cursor-pointer active:scale-95 transition-transform duration-150">
+<div class="w-16 h-16 rounded-full p-[2px] border border-border-muted bg-surface-canvas flex items-center justify-center">
+<img alt="Outdoors story highlight" class="w-full h-full object-cover rounded-full" data-alt="A curious ragdoll cat wearing a stylish orange harness exploring a lush green Japanese garden surrounded by bamboo foliage with delicate sun flares." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByuTuXvVX0V_dQOwLHmiJZYmMVRCpI3q6hvrggR-fBrCAcz9icX9UwBfNYsW3LQgU_PvKYEERo19RNGjLpudrN49wfYj-KaBZDawLI_MLTDM_uv1lUYaKFHyyGXFAw7cGggYtyEzYGOndu-ipzh2XI5T27f2ClhNMOak1NwPwt098DUmtfyFqDeFippA7tzDcbVGpn5DA2oVmoeNHme-o4DjkDlHAaJnDA59MJAEOO7jmxBjUIhr4zqA">
+</div>
+<span class="font-label-sm text-label-sm text-text-primary text-center">Outdoors 🌿</span>
+</div>
+</div>
+</div>
+<!-- Tab View Switcher (Grid vs Tagged) -->
+<div class="border-t border-border-subtle flex items-center bg-surface-canvas">
+<button class="flex-1 h-11 flex items-center justify-center border-b-2 border-primary-container text-primary-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[24px]">grid_on</span>
+</button>
+<button class="flex-1 h-11 flex items-center justify-center border-b-2 border-transparent text-text-secondary hover:text-text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[24px]">account_box</span>
+</button>
+</div>
+<!-- Profile 3-Column Square Photo Grid -->
+<div class="grid grid-cols-3 gap-[1.5px] bg-surface-canvas">
+<!-- Post 1 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Cat basking in morning sun" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="A stunning fluffy white cat basking in direct bright morning sunlight on a soft cream wool rug, eyes closed in bliss with subtle orange glow reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBR5IHTWVT_DK85vahCPC_G3wU8gbElA-CPl3MYUX26lPzPDRWk1BpP7T35zwvsAojaUqmaQjGDrjw39T2EOk1lX8JsV54HnMU7hB26H9KaQ1-OWmmpDXSSS7Y4Q7tnd4dRXHY0Xo63_eOkX3KTpmbTJ93Hiff4jWH47jzz3ZpIlT1GqybTiBGWlfpgcgFWucOU9aFRqROwpiOZ1J-AJdkK0x59vWOYKqvxQsA28DZaPA4fi3wBAireKQ">
+<div class="absolute top-2 right-2 text-on-tertiary drop-shadow-md">
+<span class="material-symbols-outlined text-[18px]">filter_none</span>
+</div>
+</div>
+<!-- Post 2 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Kitten inside cat cave" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="An adorable kitten staring curiously with wide eyes from inside a minimalist cardboard cat cave, captured with warm lifestyle portrait photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsioP_vBOkyuV5_4U3Uhwztyv1dJi7ixNP2nbqUeonHqQ-PqHVYufsl4W6XyE1Vwl8ydKjrD96YA4WgBWgPy-Vih50sS9ffAlngyLgHgOHJCW-K-mPeFrl6GTtKtKDAaoKgGk2tjjSkhOguiRZQUWt5LRcBy8CB_4xxyQOGjcIaanNMPONVZZI_0_PCgQ7h0bKAkIX5goXpKY5tC6XP9rUsxno8-i53p0HF_YVDwrrS3MTgBwtnDIllw">
+</div>
+<!-- Post 3 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Cat jumping mid air" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="A dynamic high-speed shot of a cat mid-jump catching a feather wand in mid-air in a bright, modern Scandinavian living room." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpvsF2MlWoYVmpRfLJHEa-0oQnfait4be66-7F726svCwtY_jC0uda2rBBK2XJUIiZI3H3zD52lBXBWMZVKaoaLc8FTe1hs21TX2VbjT4CO3TmBdFmpKqKt2hba3siBOwezuIfl3-4n_QgFPl6sHC80WbDTjAaJyV78oQoOgJlTtaKK2NBCBe08JoRhGqTY-SiJmfnQCNly_G1H7EXzbLl6SOXsTrtMTsu_72UU3-5p-X0mqjfVyGX9w">
+<div class="absolute top-2 right-2 text-on-tertiary drop-shadow-md">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+</div>
+</div>
+<!-- Post 4 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Cat on sunlit window sill" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="A tranquil scene of a ragdoll cat sitting serenely on a sunlit wooden window sill looking out at autumn leaves turning orange and amber." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtjaS5zJyaGGW5mJySjRRUBjINVsFS3nmmsv6PieLVTY_Zc-Ow5jysxwA1Dqfv3Ii4rRpPHZxrpp9fQRFVFkEKdurixU41aW1aIK6g4qWcTdA921z3PNSlP4HmTX28y9KUDmVJc9aOW4UsYHXrUeXuYoJ60MoimBhrYI_B2uzKZrxAxNWNQjjGon1e2Ut3ZUpG7kCSmw5mCUxXJc-iirXCmnpkwLBoWznfW5fqhNtturNvh_kDIuydUQ">
+</div>
+<!-- Post 5 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Cat accessories flat lay" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="A charming flat lay composition of cat grooming accessories, orange brush, ceramic bowl, and a soft sleeping fluffy kitten." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOOhdD9DoyRpemneJkHGZ4dtCJbhmo5zF7eYIT0yiY8yyvIlayZEZEvNQekx1Naf7dj-PqbxzlobJU2vJ3sKsduHwUdJA2IbWCd4UcP8MlwHX7omj1xf7mP-xjRQ7ivtpGDLBOvC9wJzNCycuHGWpduCQzGJgMWxhqWfLU87Xk1EfEaIAis9RT0yEeyJXz2vf9TWclHlWo0waKdR7oDiE8-IjFLATJlmOQiprOhNEJYLhAdnAudgvMqA">
+</div>
+<!-- Post 6 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Cat paw beans on velvet" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="A macro detail shot of a cat's soft pink paw beans gently resting on an orange velvet pillow in soft warm afternoon light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAA7tiDncYsfCbZsvu0W13q7NjhqRjCeTMvqhF1VtPU8fS0Pzu78FGQKNHuW2px2EWUqWHGq-8e60y65E72F-7p0dn2FY5inK3Xq069k0cz2g2sS8hxmL_eYEk9RkHc4_X5zbgM6COOfm1c2F256U6Kvu7gwY_-RM2FQ2JGzs3ah2K3LlAzZToT4E9e6pEeV0mImsZUYZUdLQTn1ES5zCMGQ3FpdTdXGXqv1NVetNx-ltzJ9fjPeviqLA">
+</div>
+<!-- Post 7 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Cat stretching across desk" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="An elegant longhair cat stretching gracefully across an architectural minimalist white desk next to a ceramic cup of coffee." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgyOtVDPpSk6W_na_hUP-m-sfhDrkFwOPvJBqlztMlJaHS8HwGLqZ-PgowpXqO9AnuIKb4FwUBtTeem0m6_YKvqcXNmbdWR-dwEi6rO6LP4CowRtceIlIJFM_VGsDbVdn4481U7rg5Xk8RLX3UXJGMjkV8oYM9qh39ULbfvZE6CCQKLblrKuAtYlQHx3HzJm1VeQ8eH0rHHkIeG5J43rQzxkTrdCYBEQ-RRGdBj9Uz8y-J1mgf7lmDDg">
+</div>
+<!-- Post 8 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Two kittens sleeping in heart shape" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="Two bonded kittens curled together forming a heart shape while sleeping on a plush cream blanket under warm ambient lamp lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_Tuwzsmic0HPVvuOezGG20KJUAjx6T-9TPvhMYq6_G-5xLkMryxdZ_oY8k4g9iMzw_EZLuEWoXC-W6xtVbktQWqXGqimTxSNFA5MlxaPGvuIHkjWaE0QQNTIG1nguK5A1MjccjfH2kSxyW7yKZvIRcVqZeaP1iZRRsHmvIl1D_Cz5nZ5bg4MT9k4oAhFI73KhT77QmBSw8I3NjPQ8b3fSBFsj70AspfOTFO2LuoyZJQ2Zqr9yiU0BWA">
+<div class="absolute top-2 right-2 text-on-tertiary drop-shadow-md">
+<span class="material-symbols-outlined text-[18px]">filter_none</span>
+</div>
+</div>
+<!-- Post 9 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Cat with orange bandana collar" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="A close portrait of a cat with brilliant emerald green eyes wearing an orange bandana collar looking inquisitive in soft daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBbYAfTODWBU4vpVItyn_XmYYbMPv7i8OTgDPE_BEZnm06kZMyLJuXeMy-3Uuwkt7ElgnqATcLsYzfISVrqR1tQP4hldHIieAxfEYA9lxtzdmD_i7ksNTxD2AEXSX5nUOuwQRzyMp2C-vrAE9yrXLhU_9GknFgMmwnzsM-MLc5p0wUaNOkt-Li3VYbCaVVxgvPYQM3f8jdIq7_gLIRVmwNRTW2C3qNeMeN60O2CQm534zRiV_57TzYIw">
+</div>
+<!-- Post 10 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Kitten in orange tote bag" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="A playful kitten peeking over the edge of an orange canvas tote bag with humorous curious expression and warm light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVzc5HJqA3I-22JVCgpm810TsEYmnR5V72KBUYRIkBwkM_rlxw0Ux84987cnop6NEKmYAwEK8wUdsmu2ilAuatcwGv0HMfKxPKD9f1GaF0AQZ3ohh03p9SI5LO2NGmsxBZPaC0eBJ_gt3krNcaBS9eT9kD-9rkfYQsIWRt4BWCGH9skYHvigv7L_mWPxFenwiH2s9btvOlooR3EHv6i0aF3e2glvCJYjfbJnoxN9qkGO-mMhFCgaUqqw">
+</div>
+<!-- Post 11 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Cat in sunlit box" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="A fluffy cat sitting inside an oversized sunlit cardboard box looking satisfied in a bright, modern, plant-filled Tokyo apartment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmbWssKKDuBJEQD6TYf__lC_SqqcgWTHBB4je_BRHuxQfrqvEysi1bsqRNhSnkv8XSHX6s78GdSnDdE1B43Z5izLdyI_S79-nDm3t6-d-MAJRKJTTR5TT-_A91Ttdkkctd11dYirxyAoeqdgYRE-M-6zC2oIUZlJ5DwbGanImc1ugVmXehBixsvMWrgBG18POsSagVbSe4HuueujLUNWAaidyap70cC8je_fEceqbtzzTiT_PQ8NtoIg">
+</div>
+<!-- Post 12 -->
+<div class="aspect-square relative overflow-hidden group cursor-pointer bg-surface-tertiary">
+<img alt="Cat silhouette against sunset" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" data-alt="A golden hour backlit silhouette of a cat sitting on a balcony railing against a vibrant orange and pink sunset sky." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4V1uW3moNLgMxY7reKY0ZXhuaNMTZ89syqmM0KeUpi9ygKTVtYop10VlV9j-Ic7hf6bS2GZTU7LCCyL-tH4qKdcNCnAsufr6VoujXVsKmhtQjkb163xdRw9rfqBoHmnTSgfGI8rwaHsUhkbj8QK2zizNl4uTOAfQ4wrgdwIsPHKq7xIWshDRsQpYfySeGYV8yiQj-mgTuVc1CAFAnZQRJuL4ZpUSFZLClkuL2gkjylkanfLjTkAR--g">
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Executed directly from Shared Components JSON with 'account_circle' / Profile as active destination) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 h-[52px] flex justify-around items-center px-margin bg-surface-canvas border-t border-border-subtle max-w-[420px] left-1/2 -translate-x-1/2 shadow-xs">
+<!-- Destination 1: Home -->
+<a aria-label="Home" class="flex flex-col items-center justify-center text-text-primary py-space-sm hover:text-primary-container active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[26px]">home</span>
+</a>
+<!-- Destination 2: Search -->
+<a aria-label="Search" class="flex flex-col items-center justify-center text-text-primary py-space-sm hover:text-primary-container active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[26px]">search</span>
+</a>
+<!-- Destination 3: Create -->
+<a aria-label="Create Post" class="flex flex-col items-center justify-center text-text-primary py-space-sm hover:text-primary-container active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[26px]">add_box</span>
+</a>
+<!-- Destination 4: Activity / Likes -->
+<a aria-label="Activity" class="flex flex-col items-center justify-center text-text-primary py-space-sm hover:text-primary-container active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[26px]">favorite</span>
+</a>
+<!-- Destination 5: Profile (ACTIVE DESTINATION) -->
+<a aria-label="Profile" class="flex flex-col items-center justify-center text-primary-container py-space-sm active:scale-90 transition-transform duration-150" href="#">
+<!-- Profile Tab Avatar with subtle active indicator ring -->
+<div class="w-7 h-7 rounded-full p-[1.5px] border-2 border-primary-container flex items-center justify-center">
+<img alt="Current user thumbnail" class="w-full h-full object-cover rounded-full" data-alt="A small avatar thumbnail of a fluffy Ragdoll cat face with blue eyes and cream fur on white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV5Fv4E7sDnAf-ZF0cHKa5sMmZ5c35W8WLhQxb6YP_sXTd83CmUMbv-hJZdfo3Y7sdb_SHo1PX-9wncfyJb8sjJnnLVZj2DbvrWj-rf4SxdgouNZO7DuDywnnRCjAB0pTvJeDLkst4tEGiJh2TGAdpydJOI12__cewBPfoXVLzvPHVFASI7QLdN20QOpEl223VmTknu9798vDVnUz9_JYM1Q15mOcgWGdUi2EVC3xcjB0qGURhiP8t_g">
+</div>
+</a>
+</nav>
+</div>
+</body></html>
