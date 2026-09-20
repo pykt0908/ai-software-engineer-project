@@ -32,7 +32,7 @@ flutter test
 
 ### ผลลัพธ์:
 * **`flutter analyze`**: **No issues found!** (ผ่าน 100% ปราศจาก Warning หรือ Lint error)
-* **`flutter test`**: **22 / 22 Tests Passed!** (ผ่านทั้งหมด 22 การทดสอบ)
+* **`flutter test`**: **27 / 27 Tests Passed!** (ผ่านทั้งหมด 27 การทดสอบ)
 
 ---
 

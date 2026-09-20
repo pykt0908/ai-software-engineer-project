@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ai_caption_logs",
+  "info": {
+    "singularName": "ai-caption-log",
+    "pluralName": "ai-caption-logs",
+    "displayName": "AI Caption Log",
+    "description": "Usage log for AI caption generation (rate limiting / analytics)"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "style": {
+      "type": "enumeration",
+      "enum": ["cute", "funny", "sassy", "short"],
+      "required": true
+    },
+    "resultCount": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { factories } from '@strapi/strapi';
+import { createNotification } from '../../notification/services/notification-helper';
 
 export default factories.createCoreController('api::follow.follow', ({ strapi }) => ({
   async followUser(ctx) {
@@ -37,6 +38,13 @@ export default factories.createCoreController('api::follow.follow', ({ strapi })
           follower: user.id,
           following: targetUser.id,
         },
+      });
+
+      await createNotification(strapi, {
+        recipientId: targetUser.id,
+        actorId: user.id,
+        type: 'follow',
+        message: 'started following you.',
       });
     }
 

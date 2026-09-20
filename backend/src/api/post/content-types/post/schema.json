@@ -16,6 +16,13 @@
       "type": "text",
       "maxLength": 2200
     },
+    "location": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "taggedUsernames": {
+      "type": "json"
+    },
     "images": {
       "type": "media",
       "multiple": true,
@@ -42,6 +49,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::post-like.post-like",
+      "mappedBy": "post"
+    },
+    "comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
       "mappedBy": "post"
     }
   }

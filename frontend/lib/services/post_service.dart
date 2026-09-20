@@ -146,6 +146,8 @@ class PostService {
   Future<Post> createPost({
     required String caption,
     required List<int> imageIds,
+    String location = '',
+    List<String> taggedUsernames = const [],
   }) async {
     if (imageIds.isEmpty) {
       throw Exception('Please select at least 1 image');
@@ -160,6 +162,8 @@ class PostService {
         data: {
           'caption': caption.trim(),
           'images': imageIds,
+          'location': location.trim(),
+          'taggedUsernames': taggedUsernames,
         },
       );
 
@@ -177,11 +181,15 @@ class PostService {
     required String documentId,
     String? caption,
     List<int>? imageIds,
+    String? location,
+    List<String>? taggedUsernames,
   }) async {
     try {
       final payload = <String, dynamic>{};
       if (caption != null) payload['caption'] = caption.trim();
       if (imageIds != null) payload['images'] = imageIds;
+      if (location != null) payload['location'] = location.trim();
+      if (taggedUsernames != null) payload['taggedUsernames'] = taggedUsernames;
 
       final response = await _apiClient.dio.put(
         '/posts/$documentId',
@@ -215,12 +223,16 @@ class PostService {
           ? await _apiClient.dio.delete('/posts/$postDocumentId/like')
           : await _apiClient.dio.post('/posts/$postDocumentId/like');
 
-      final data = response.data;
+      final raw = response.data;
+      final payload = (raw is Map && raw['data'] is Map)
+          ? Map<String, dynamic>.from(raw['data'] as Map)
+          : Map<String, dynamic>.from(raw as Map);
+
       return {
-        'liked': data['liked'] == true,
-        'likeCount': data['likeCount'] is int
-            ? data['likeCount']
-            : (int.tryParse(data['likeCount']?.toString() ?? '0') ?? 0),
+        'liked': payload['liked'] == true,
+        'likeCount': payload['likeCount'] is int
+            ? payload['likeCount'] as int
+            : (int.tryParse(payload['likeCount']?.toString() ?? '0') ?? 0),
       };
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import '../data/mock_data.dart';
 import '../models/models.dart';
 import '../services/auth_service.dart';
+import '../services/notification_service.dart';
 import '../services/post_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../widgets/app_dialog.dart';
+import '../widgets/app_snackbar.dart';
 import '../widgets/post_card.dart';
 import '../widgets/story_avatar.dart';
 import 'comment_screen.dart';
@@ -24,23 +27,62 @@ class FeedScreen extends StatefulWidget {
 class _FeedScreenState extends State<FeedScreen> {
   final ScrollController _scrollController = ScrollController();
   List<Post> _posts = [];
-  List<Story> _stories = MockData.stories;
-  bool _hasUnreadNotifications = true;
+  // Stories remain a visual MVP placeholder (out of scope per spec).
+  late List<Story> _stories;
+  bool _hasUnreadNotifications = false;
   bool _isLoading = false;
   bool _hasMore = true;
   int _currentPage = 1;
-  final bool _showingFollowingOnly = false;
+  String? _loadError;
 
   @override
   void initState() {
     super.initState();
-    _stories = MockData.stories;
+    _stories = _buildPlaceholderStories();
     _scrollController.addListener(_onScroll);
+    AuthService().currentUserNotifier.addListener(_onCurrentUserChanged);
     _loadPosts(refresh: true);
+    _refreshUnreadBadge();
+  }
+
+  Future<void> _refreshUnreadBadge() async {
+    try {
+      final count = await NotificationService().unreadCount();
+      if (!mounted) return;
+      setState(() => _hasUnreadNotifications = count > 0);
+    } catch (_) {
+      // Keep prior badge state on failure.
+    }
+  }
+
+  void _onCurrentUserChanged() {
+    if (!mounted) return;
+    setState(() {
+      _stories = _buildPlaceholderStories();
+    });
+  }
+
+  /// Self story uses the real logged-in user; peers stay decorative mock chrome.
+  List<Story> _buildPlaceholderStories() {
+    final self = AuthService().currentUser ?? AuthService().lastUser;
+    final peers = MockData.stories.where((s) => !s.isCurrentUser).toList();
+    if (self == null) {
+      return peers;
+    }
+    return [
+      Story(
+        id: 'story_self',
+        user: self,
+        isCurrentUser: true,
+        isViewed: false,
+      ),
+      ...peers,
+    ];
   }
 
   @override
   void dispose() {
+    AuthService().currentUserNotifier.removeListener(_onCurrentUserChanged);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
@@ -65,21 +107,17 @@ class _FeedScreenState extends State<FeedScreen> {
 
     setState(() {
       _isLoading = true;
+      if (refresh) _loadError = null;
     });
 
     try {
-      final List<Post> fetched = _showingFollowingOnly
-          ? await PostService().getFollowingFeed(page: _currentPage, pageSize: 10)
-          : await PostService().getPublicFeed(page: _currentPage, pageSize: 10);
+      final List<Post> fetched =
+          await PostService().getPublicFeed(page: _currentPage, pageSize: 10);
 
       if (mounted) {
         setState(() {
           if (refresh) {
             _posts = fetched;
-            if (_posts.isEmpty) {
-              // Fallback to mock data if backend has no posts yet
-              _posts = List.from(MockData.feedPosts);
-            }
           } else {
             _posts.addAll(fetched);
           }
@@ -90,13 +128,15 @@ class _FeedScreenState extends State<FeedScreen> {
             _currentPage++;
           }
           _isLoading = false;
+          _loadError = null;
         });
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         setState(() {
-          if (refresh && _posts.isEmpty) {
-            _posts = List.from(MockData.feedPosts);
+          if (refresh) {
+            _posts = [];
+            _loadError = e.toString().replaceFirst('Exception: ', '');
           }
           _isLoading = false;
         });
@@ -105,67 +145,65 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   void _openNotifications() async {
-    setState(() {
-      _hasUnreadNotifications = false;
-    });
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => NotificationScreen(
           onUserSelected: widget.onUserSelected,
+          onUnreadChanged: _refreshUnreadBadge,
         ),
       ),
     );
+    if (mounted) {
+      await _refreshUnreadBadge();
+    }
   }
 
   Future<void> _handleRefresh() async {
     await _loadPosts(refresh: true);
   }
 
-  void _openComments(Post post) {
-    Navigator.of(context).push(
+  void _openComments(Post post) async {
+    final result = await Navigator.of(context).push<int>(
       MaterialPageRoute(
         builder: (context) => CommentScreen(post: post),
       ),
     );
+    if (result != null && mounted) {
+      setState(() {
+        post.commentsCount = result;
+      });
+    }
   }
 
-  void _showDeleteConfirmation(Post post) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Post?'),
-        content: const Text('Are you sure you want to delete this cat post? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              try {
-                await PostService().deletePost(post.id);
-                if (mounted) {
-                  setState(() {
-                    _posts.removeWhere((p) => p.id == post.id);
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Post deleted successfully')),
-                  );
-                }
-              } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to delete post: $e')),
-                  );
-                }
-              }
-            },
-            child: const Text('Delete', style: TextStyle(color: AppColors.error)),
-          ),
-        ],
-      ),
+  void _showComingSoon(String feature) {
+    AppSnackBar.info(context, '$feature is not available in this MVP.');
+  }
+
+  void _showDeleteConfirmation(Post post) async {
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: 'Delete Post?',
+      message:
+          'Are you sure you want to delete this cat post? This action cannot be undone.',
+      icon: Icons.delete_outline,
+      confirmLabel: 'Delete',
+      isDestructive: true,
     );
+    if (!confirmed || !mounted) return;
+
+    try {
+      await PostService().deletePost(post.id);
+      if (mounted) {
+        setState(() {
+          _posts.removeWhere((p) => p.id == post.id);
+        });
+        AppSnackBar.success(context, 'Post deleted successfully');
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.error(context, 'Failed to delete post: $e');
+      }
+    }
   }
 
   void _showMoreBottomSheet(Post post) {
@@ -238,7 +276,6 @@ class _FeedScreenState extends State<FeedScreen> {
                       style: AppTypography.bodyBold.copyWith(color: AppColors.primary),
                     ),
                     onTap: () async {
-                      final messenger = ScaffoldMessenger.of(context);
                       Navigator.pop(context);
                       try {
                         final res = await ProfileService().toggleFollow(
@@ -247,19 +284,35 @@ class _FeedScreenState extends State<FeedScreen> {
                         );
                         if (mounted) {
                           setState(() {
-                            for (var p in _posts) {
-                              if (p.user.id == post.user.id) {
-                                p.user.copyWith(isFollowing: res['following'] as bool);
+                            for (var i = 0; i < _posts.length; i++) {
+                              if (_posts[i].user.id == post.user.id) {
+                                final p = _posts[i];
+                                _posts[i] = Post(
+                                  id: p.id,
+                                  user: p.user.copyWith(
+                                    isFollowing: res['following'] == true,
+                                  ),
+                                  imageUrls: p.imageUrls,
+                                  imageIds: p.imageIds,
+                                  caption: p.caption,
+                                  likesCount: p.likesCount,
+                                  commentsCount: p.commentsCount,
+                                  location: p.location,
+                                  taggedUsernames: p.taggedUsernames,
+                                  timestamp: p.timestamp,
+                                  isLiked: p.isLiked,
+                                  isSaved: p.isSaved,
+                                );
                               }
                             }
                           });
                         }
                       } catch (e) {
-                        if (mounted) {
-                          messenger.showSnackBar(
-                            SnackBar(content: Text('Follow action failed: $e')),
-                          );
-                        }
+                        if (!context.mounted) return;
+                        AppSnackBar.error(
+                          context,
+                          'Follow action failed: $e',
+                        );
                       }
                     },
                   ),
@@ -269,25 +322,7 @@ class _FeedScreenState extends State<FeedScreen> {
                   title: Text('Save Post', style: AppTypography.bodyBold),
                   onTap: () {
                     Navigator.pop(context);
-                    setState(() {
-                      post.isSaved = !post.isSaved;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          children: [
-                            Icon(
-                              post.isSaved ? Icons.bookmark : Icons.bookmark_border,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(post.isSaved ? 'Saved to collection!' : 'Removed from saved.'),
-                          ],
-                        ),
-                        duration: const Duration(seconds: 1),
-                      ),
-                    );
+                    _showComingSoon('Saved posts');
                   },
                 ),
                 ListTile(
@@ -295,17 +330,7 @@ class _FeedScreenState extends State<FeedScreen> {
                   title: Text('Share to...', style: AppTypography.bodyBold),
                   onTap: () {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Row(
-                          children: [
-                            Icon(Icons.link, color: Colors.white, size: 18),
-                            SizedBox(width: 8),
-                            Text('Link copied to clipboard!'),
-                          ],
-                        ),
-                      ),
-                    );
+                    _showComingSoon('Post sharing');
                   },
                 ),
                 ListTile(
@@ -327,6 +352,47 @@ class _FeedScreenState extends State<FeedScreen> {
     );
   }
 
+  Widget _buildEmptyOrErrorState() {
+    final hasError = _loadError != null;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(
+              hasError ? Icons.cloud_off_outlined : Icons.pets,
+              size: 48,
+              color: AppColors.primaryLight,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              hasError ? 'Could not load feed' : 'No cat posts yet!',
+              style: AppTypography.headlineMd.copyWith(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              hasError
+                  ? _loadError!
+                  : 'Be the first to share your adorable kitty moments.',
+              style: AppTypography.bodySm.copyWith(color: AppColors.textPlaceholder),
+              textAlign: TextAlign.center,
+            ),
+            if (hasError) ...[
+              const SizedBox(height: 16),
+              TextButton.icon(
+                onPressed: () => _loadPosts(refresh: true),
+                icon: const Icon(Icons.refresh, size: 18),
+                label: const Text('Try again'),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -334,28 +400,14 @@ class _FeedScreenState extends State<FeedScreen> {
         titleSpacing: 14,
         title: Row(
           children: [
-            // Camera icon
             IconButton(
               icon: const Icon(Icons.photo_camera_outlined, size: 24, color: AppColors.textPrimary),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
               splashRadius: 20,
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Row(
-                      children: [
-                        Icon(Icons.photo_camera, color: Colors.white, size: 18),
-                        SizedBox(width: 8),
-                        Text('Cat camera opened!'),
-                      ],
-                    ),
-                  ),
-                );
-              },
+              onPressed: () => _showComingSoon('Stories camera'),
             ),
             const SizedBox(width: 10),
-            // InstaCat Brand Wordmark & Logo
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -404,7 +456,6 @@ class _FeedScreenState extends State<FeedScreen> {
           ],
         ),
         actions: [
-          // Notifications with Orange Badge
           Stack(
             alignment: Alignment.topRight,
             children: [
@@ -428,23 +479,10 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
             ],
           ),
-          // Direct Messages
           IconButton(
             icon: const Icon(Icons.send_outlined, size: 23, color: AppColors.textPrimary),
             splashRadius: 20,
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Row(
-                    children: [
-                      Icon(Icons.chat_bubble_outline, color: Colors.white, size: 18),
-                      SizedBox(width: 8),
-                      Text('Meow Direct Messages'),
-                    ],
-                  ),
-                ),
-              );
-            },
+            onPressed: () => _showComingSoon('Direct messages'),
           ),
           const SizedBox(width: 4),
         ],
@@ -462,7 +500,7 @@ class _FeedScreenState extends State<FeedScreen> {
             parent: BouncingScrollPhysics(),
           ),
           children: [
-            // 96px Horizontal Stories Tray
+            // Stories tray — visual placeholder only (out of MVP scope).
             Container(
               height: 96,
               color: AppColors.surfaceCanvas,
@@ -474,62 +512,15 @@ class _FeedScreenState extends State<FeedScreen> {
                   final story = _stories[index];
                   return StoryAvatar(
                     story: story,
-                    onTap: () {
-                      if (story.isCurrentUser) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Row(
-                              children: [
-                                Icon(Icons.add_circle_outline, color: Colors.white, size: 18),
-                                SizedBox(width: 8),
-                                Text('Add to Your Story'),
-                              ],
-                            ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Row(
-                              children: [
-                                const Icon(Icons.play_circle_outline, color: Colors.white, size: 18),
-                                const SizedBox(width: 8),
-                                Text('Viewing ${story.user.username}\'s story'),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    },
+                    onTap: () => _showComingSoon('Stories'),
                   );
                 },
               ),
             ),
             const Divider(height: 0.8, color: AppColors.borderSubtle),
 
-            // Posts Stream
             if (_posts.isEmpty && !_isLoading)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
-                child: Center(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.pets, size: 48, color: AppColors.primaryLight),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No cat posts yet!',
-                        style: AppTypography.headlineMd.copyWith(color: AppColors.textSecondary),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Be the first to share your adorable kitty moments.',
-                        style: AppTypography.bodySm.copyWith(color: AppColors.textPlaceholder),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              )
+              _buildEmptyOrErrorState()
             else
               ..._posts.map(
                 (post) => PostCard(

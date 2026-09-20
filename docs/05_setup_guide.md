@@ -57,6 +57,9 @@ DATABASE_NAME=ai-software-project-db
 DATABASE_USERNAME=postgres
 DATABASE_PASSWORD=your_password
 DATABASE_SSL=false
+
+# Google Gemini AI Configuration (for AI Caption Generator)
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 4. สั่ง Compile และเริ่มเซิร์ฟเวอร์ในโหมด Development:
@@ -91,7 +94,11 @@ flutter devices
 
 4. รันแอปพลิเคชัน:
 ```bash
+# รันแบบทั่วไป (ใช้ระบบค้นหาสถานที่ Nominatim / OSM เป็นค่าเริ่มต้น)
 flutter run
+
+# หรือรันพร้อมระบุ Google Maps & Places API Key (เพื่อให้แผนที่แสดงผลเต็มรูปแบบ)
+flutter run --dart-define=GOOGLE_MAPS_API_KEY=your_key_here
 ```
 * หากรันบน **iOS Simulator**: ระบบจะเชื่อมต่อกับ Backend ที่ `http://127.0.0.1:1337`
 * หากรันบน **Android Emulator**: ระบบจะเชื่อมต่อผ่าน Loopback Alias ที่ `http://10.0.2.2:1337` โดยอัตโนมัติ

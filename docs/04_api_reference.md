@@ -15,11 +15,17 @@
 | `POST` | `/api/auth/logout` | ออกจากระบบและยกเลิก Session | ✅ Yes |
 | `GET` | `/api/feed/public` | ดึงฟีดสาธารณะเรียงจากใหม่ไปเก่า | ❌ No / Optional |
 | `GET` | `/api/feed/following` | ดึงฟีดเฉพาะผู้ที่กำลังติดตาม | ✅ Yes |
-| `POST` | `/api/posts` | สร้างโพสต์ใหม่พร้อมรูปภาพ 1-10 รูป | ✅ Yes |
+| `POST` | `/api/posts` | สร้างโพสต์ใหม่พร้อมรูปภาพ 1-10 รูป และระบุ Location | ✅ Yes |
 | `PUT` | `/api/posts/:documentId` | แก้ไขคำบรรยายโพสต์ของตนเอง | ✅ Yes |
 | `DELETE` | `/api/posts/:documentId` | ลบโพสต์ของตนเอง | ✅ Yes |
 | `POST` | `/api/posts/:documentId/like` | กดถูกใจโพสต์ | ✅ Yes |
 | `DELETE` | `/api/posts/:documentId/like` | ยกเลิกการถูกใจโพสต์ | ✅ Yes |
+| `GET` | `/api/comments` | ดึงรายการความคิดเห็นของโพสต์ (`?postId=:id`) | ❌ No / Optional |
+| `POST` | `/api/comments` | ส่งความคิดเห็นใหม่ในโพสต์ | ✅ Yes |
+| `DELETE` | `/api/comments/:id` | ลบความคิดเห็นของตนเอง | ✅ Yes |
+| `GET` | `/api/notifications` | ดึงรายการแจ้งเตือนของผู้ใช้ปัจจุบัน | ✅ Yes |
+| `PUT` | `/api/notifications/:id/read` | ทำเครื่องหมายว่าอ่านการแจ้งเตือนแล้ว | ✅ Yes |
+| `POST` | `/api/ai-caption/generate` | สร้างแคปชันด้วย Google Gemini AI ตามสไตล์ที่เลือก | ✅ Yes |
 | `GET` | `/api/me` | ดึงข้อมูลโปรไฟล์ของตนเองและยอดสถิติ | ✅ Yes |
 | `PUT` | `/api/me` | แก้ไขโปรไฟล์ (รวมถึง Username และ Avatar) | ✅ Yes |
 | `GET` | `/api/profiles/search` | ค้นหาบัญชีผู้ใช้ด้วยคำค้นหา (Query string `?q=...`) | ❌ No / Optional |
@@ -62,163 +68,26 @@
 
 ---
 
-### 2. สมัครสมาชิก (Register)
-* **Method**: `POST`
-* **URL**: `/api/auth/local/register`
-* **Headers**: `Content-Type: application/json`
-* **Request Body**:
-```json
-{
-  "username": "fluffy_cat",
-  "email": "fluffy@example.com",
-  "password": "password123"
-}
-```
-* **Response (200 OK)**:
-```json
-{
-  "jwt": "eyJhbGciOiJIUzI1NiIsIn...",
-  "user": {
-    "id": 2,
-    "documentId": "usr_fluffy_02",
-    "username": "fluffy_cat",
-    "email": "fluffy@example.com"
-  }
-}
-```
+## 4.3 ระบบโพสต์และฟีด (Posts & Feeds Endpoints)
 
----
-
-## 4.3 ระบบฟีดและโพสต์ (Feed & Posts Endpoints)
-
-### 1. ฟีดสาธารณะ (Public Feed)
-* **Method**: `GET`
-* **URL**: `/api/feed/public?page=1&pageSize=10`
-* **Headers**: `Authorization: Bearer <token>` (ใส่หรือไม่ใส่ก็ได้)
-* **Response (200 OK)**:
-```json
-{
-  "data": [
-    {
-      "id": 10,
-      "documentId": "post_doc_001",
-      "caption": "Enjoying the sunny afternoon! ☀️🐾",
-      "createdAt": "2026-09-20T12:00:00.000Z",
-      "likeCount": 15,
-      "isLiked": false,
-      "author": {
-        "id": 1,
-        "username": "testcat",
-        "displayName": "Test Cat",
-        "avatarUrl": "/uploads/avatar_1.jpg"
-      },
-      "images": [
-        {
-          "id": 101,
-          "url": "/uploads/cat_pic_1.jpg"
-        }
-      ]
-    }
-  ],
-  "meta": {
-    "pagination": {
-      "page": 1,
-      "pageSize": 10,
-      "pageCount": 1,
-      "total": 1
-    }
-  }
-}
-```
-
----
-
-### 2. สร้างโพสต์ใหม่ (Create Post)
+### 1. สร้างโพสต์ใหม่ (Create Post)
 * **Method**: `POST`
 * **URL**: `/api/posts`
-* **Headers**:
-  - `Content-Type: application/json`
-  - `Authorization: Bearer <token>`
+* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
 * **Request Body**:
 ```json
 {
   "data": {
-    "caption": "Look at my new toy! 🎾",
-    "images": [101, 102]
-  }
-}
-```
-* **Response (201 Created)**: ส่งคืนข้อมูลของโพสต์ที่สร้างใหม่พร้อม `documentId`
-
----
-
-### 3. กดถูกใจ / ยกเลิกถูกใจ (Like / Unlike)
-* **Like**: `POST /api/posts/:documentId/like`
-* **Unlike**: `DELETE /api/posts/:documentId/like`
-* **Headers**: `Authorization: Bearer <token>`
-* **Response (200 OK)**:
-```json
-{
-  "success": true,
-  "liked": true,
-  "likeCount": 16
-}
-```
-
----
-
-## 4.4 ระบบโปรไฟล์ผู้ใช้งาน (Profile Endpoints)
-
-### 1. ดึงข้อมูลผู้ใช้ปัจจุบัน (Get Current User)
-* **Method**: `GET`
-* **URL**: `/api/me`
-* **Headers**: `Authorization: Bearer <token>`
-* **Response (200 OK)**:
-```json
-{
-  "data": {
-    "id": 1,
-    "documentId": "usr_testcat_01",
-    "username": "testcat",
-    "email": "testcat@example.com",
-    "displayName": "Test Cat",
-    "bio": "Official Test Cat account",
-    "isPublic": true,
-    "postsCount": 5,
-    "followersCount": 42,
-    "followingCount": 18,
-    "avatar": {
-      "id": 5,
-      "url": "/uploads/avatar_testcat.jpg"
-    }
+    "caption": "วันนี้มาเที่ยวคาเฟ่แมว น่ารักมากก 🐾",
+    "location": "Cat Cafe Siam, Bangkok",
+    "images": [12, 13]
   }
 }
 ```
 
----
-
-### 2. อัปเดตข้อมูลผู้ใช้ (Update Profile & Username)
-* **Method**: `PUT`
-* **URL**: `/api/me`
-* **Headers**:
-  - `Content-Type: application/json`
-  - `Authorization: Bearer <token>`
-* **Request Body**:
-```json
-{
-  "username": "super_cat",
-  "displayName": "Super Kitty",
-  "bio": "Cat superhero fighting crime",
-  "isPublic": true
-}
-```
-* **Response (200 OK)**: ส่งคืนข้อมูลที่อัปเดตแล้วสำเร็จ
-
----
-
-### 3. ค้นหาผู้ใช้งาน (Search Users)
+### 2. ดึงฟีดสาธารณะ (Public Feed)
 * **Method**: `GET`
-* **URL**: `/api/profiles/search?q=test`
+* **URL**: `/api/feed/public?page=1&pageSize=10`
 * **Headers**: `Authorization: Bearer <token>` (Optional)
 * **Response (200 OK)**:
 ```json
@@ -226,17 +95,91 @@
   "data": [
     {
       "id": 1,
-      "documentId": "usr_testcat_01",
-      "username": "testcat",
-      "displayName": "Test Cat",
-      "bio": "Official Test Cat account",
-      "isPublic": true,
-      "followersCount": 42,
-      "postsCount": 5,
-      "isFollowing": false,
-      "avatar": {
-        "id": 5,
-        "url": "/uploads/avatar_testcat.jpg"
+      "documentId": "post_doc_01",
+      "caption": "น้องเหมียวขี้เซา",
+      "location": "Bangkok, Thailand",
+      "createdAt": "2026-09-20T10:00:00.000Z",
+      "likesCount": 15,
+      "commentsCount": 3,
+      "isLiked": true,
+      "author": {
+        "id": 2,
+        "username": "mochicat",
+        "displayName": "Mochi The Cat",
+        "avatar": { "url": "/uploads/mochi.jpg" }
+      },
+      "images": [
+        { "id": 10, "url": "/uploads/cat1.jpg" }
+      ]
+    }
+  ],
+  "meta": {
+    "pagination": { "page": 1, "pageSize": 10, "total": 25, "pageCount": 3 }
+  }
+}
+```
+
+---
+
+## 4.4 ระบบความคิดเห็นและการแจ้งเตือน (Comments & Notifications)
+
+### 1. ดึงความคิดเห็นของโพสต์ (Get Comments)
+* **Method**: `GET`
+* **URL**: `/api/comments?postId=1`
+* **Response (200 OK)**:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "content": "น้องน่ารักจังเลยยย!",
+      "createdAt": "2026-09-20T11:00:00.000Z",
+      "author": {
+        "id": 3,
+        "username": "catlover99",
+        "displayName": "Cat Lover",
+        "avatar": { "url": "/uploads/avatar.jpg" }
+      }
+    }
+  ]
+}
+```
+
+### 2. ส่งความคิดเห็น (Create Comment)
+* **Method**: `POST`
+* **URL**: `/api/comments`
+* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
+* **Request Body**:
+```json
+{
+  "data": {
+    "content": "มุมกล้องสวยมากครับ",
+    "post": 1
+  }
+}
+```
+
+### 3. ดึงรายการแจ้งเตือน (Get Notifications)
+* **Method**: `GET`
+* **URL**: `/api/notifications`
+* **Headers**: `Authorization: Bearer <token>`
+* **Response (200 OK)**:
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "type": "like",
+      "isRead": false,
+      "createdAt": "2026-09-20T11:15:00.000Z",
+      "sender": {
+        "id": 2,
+        "username": "mochicat",
+        "displayName": "Mochi The Cat"
+      },
+      "post": {
+        "id": 1,
+        "caption": "วันนี้มาเที่ยวคาเฟ่แมว"
       }
     }
   ]
@@ -245,15 +188,34 @@
 
 ---
 
-### 4. ดึงรายการโพสต์ของผู้ใช้ (Get User Posts)
-* **Method**: `GET`
-* **URL**: `/api/profiles/:username/posts?page=1&pageSize=12`
-* **Headers**: `Authorization: Bearer <token>` (Optional)
-* **Response (200 OK)**: ส่งคืน Array ของโพสต์ที่เป็นของ Username นั้นๆ พร้อมรูปภาพ
+## 4.5 ระบบผู้ช่วยสร้างแคปชันอัจฉริยะ (AI Caption Generator)
+
+### 1. สร้างแคปชันด้วย AI (Generate AI Caption)
+* **Method**: `POST`
+* **URL**: `/api/ai-caption/generate`
+* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
+* **Request Body**:
+```json
+{
+  "tone": "funny",
+  "prompt": "แมวส้มนอนหงายพุงอ้วนกลางบ้าน",
+  "imageUrl": "/uploads/cat_orange.jpg"
+}
+```
+* **Response (200 OK)**:
+```json
+{
+  "captions": [
+    "บ้านนี้ใครใหญ่ไม่รู้ แต่ที่รู้ๆ ข้าคือเจ้าของโซฟา 🛋️😼 #แมวส้ม #ทาสแมว",
+    "นอนกินบ้านกินเมืองของแทร่ พุงนี้ไม่ได้มาเพราะโชคช่วย 🍗😹 #แมวอ้วน",
+    "อย่าเพิ่งปลุก กำลังฝันว่าได้กินปลาทูทอด 🐟💤 #OrangeCat"
+  ]
+}
+```
 
 ---
 
-## 4.5 รูปแบบข้อผิดพลาดมาตรฐาน (Error Responses)
+## 4.6 รูปแบบข้อผิดพลาดมาตรฐาน (Error Responses)
 
 เมื่อเกิดข้อผิดพลาด Strapi 5 จะส่งคืนโครงสร้าง JSON ดังนี้:
 ```json
@@ -267,4 +229,4 @@
   }
 }
 ```
-Client มี `ApiClient` และ `AuthService` ที่จะดึงข้อความจาก `error.message` มาแสดงเป็น SnackBar หรือ Alert Banner ให้ผู้ใช้ทราบโดยอัตโนมัติ
+Client มี `ApiClient` และ `AppSnackBar` ที่จะดึงข้อความจาก `error.message` มาแสดงเป็นแจ้งเตือนให้ผู้ใช้ทราบโดยอัตโนมัติ

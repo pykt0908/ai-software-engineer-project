@@ -126,6 +126,51 @@ void main() {
       expect(post.isLiked, isTrue);
       expect(post.imageUrls.length, 2);
       expect(post.user.username, 'whiskers');
+      expect(post.commentsCount, 0);
+    });
+
+    test('Post.fromJson parses commentCount', () {
+      final json = {
+        'documentId': 'post999',
+        'caption': 'hello',
+        'likeCount': 0,
+        'commentCount': 7,
+        'isLiked': false,
+        'createdAt': DateTime.now().toIso8601String(),
+        'author': {
+          'documentId': 'usr123',
+          'username': 'whiskers',
+          'displayName': 'Whiskers',
+        },
+        'images': [
+          {'url': '/uploads/cat1.jpg'},
+        ],
+      };
+
+      final post = Post.fromJson(json);
+      expect(post.commentsCount, 7);
+    });
+
+    test('Comment.fromJson parses Strapi comment response correctly', () {
+      final json = {
+        'documentId': 'cmt456',
+        'text': 'Meow meow!',
+        'createdAt': DateTime.now().toIso8601String(),
+        'author': {
+          'documentId': 'usr123',
+          'username': 'whiskers',
+          'displayName': 'Whiskers The Cat',
+          'avatarUrl': '/uploads/avatar.jpg',
+        },
+      };
+
+      final comment = Comment.fromJson(json);
+      expect(comment.id, 'cmt456');
+      expect(comment.text, 'Meow meow!');
+      expect(comment.user.username, 'whiskers');
+      expect(comment.user.displayName, 'Whiskers The Cat');
+      expect(comment.user.avatarUrl, contains('/uploads/avatar.jpg'));
+      expect(comment.timestamp, isNotEmpty);
     });
 
     test('Post.fromJson parses /api/profiles/:username/posts response correctly', () {
@@ -225,8 +270,8 @@ void main() {
       );
 
       await auth.saveLastUser(testUser, identifier: 'real_last_cat', password: 'securepass');
-      expect(auth.lastUser.username, 'real_last_cat');
-      expect(auth.lastUser.category, 'Siamese Cat');
+      expect(auth.lastUser?.username, 'real_last_cat');
+      expect(auth.lastUser?.category, 'Siamese Cat');
     });
 
     test('ProfileService searchUsers filters users by query', () async {

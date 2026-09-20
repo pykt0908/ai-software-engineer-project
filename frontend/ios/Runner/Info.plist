@@ -45,5 +45,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>InstaCat needs access to your photo library to create posts.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>InstaCat needs permission to save photos.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>InstaCat needs camera access to take photos for posts.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>InstaCat needs your location to tag posts with a real place.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>InstaCat needs your location to tag posts with a real place.</string>
+	<key>GoogleMapsApiKey</key>
+	<string></string>
 </dict>
 </plist>

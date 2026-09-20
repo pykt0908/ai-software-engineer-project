@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/main_shell.dart';
-import 'screens/one_tap_login_screen.dart';
+import 'screens/switch_account_screen.dart';
 import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
 
@@ -19,6 +19,7 @@ class InstaCatApp extends StatefulWidget {
 class _InstaCatAppState extends State<InstaCatApp> {
   bool _isLoggedIn = false;
   bool _isInitialized = false;
+  int _shellGeneration = 0;
 
   @override
   void initState() {
@@ -34,6 +35,30 @@ class _InstaCatAppState extends State<InstaCatApp> {
         _isInitialized = true;
       });
     }
+  }
+
+  void _onLoginSuccess() {
+    setState(() {
+      _isLoggedIn = true;
+      _shellGeneration++;
+    });
+  }
+
+  void _onLogout() async {
+    await AuthService().logout();
+    if (mounted) {
+      setState(() {
+        _isLoggedIn = false;
+      });
+    }
+  }
+
+  void _onAccountSwitched() {
+    // Session already replaced by AuthService.login; rebuild MainShell for new user.
+    setState(() {
+      _isLoggedIn = true;
+      _shellGeneration++;
+    });
   }
 
   @override
@@ -53,27 +78,20 @@ class _InstaCatAppState extends State<InstaCatApp> {
       );
     }
 
+    final userId = AuthService().currentUser?.id ?? 'guest';
+
     return MaterialApp(
       title: 'InstaCat',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: _isLoggedIn
           ? MainShell(
-              onLogout: () async {
-                await AuthService().logout();
-                if (mounted) {
-                  setState(() {
-                    _isLoggedIn = false;
-                  });
-                }
-              },
+              key: ValueKey('shell_${userId}_$_shellGeneration'),
+              onLogout: _onLogout,
+              onAccountSwitched: _onAccountSwitched,
             )
-          : OneTapLoginScreen(
-              onLoginSuccess: () {
-                setState(() {
-                  _isLoggedIn = true;
-                });
-              },
+          : SwitchAccountScreen(
+              onLoginSuccess: _onLoginSuccess,
             ),
     );
   }

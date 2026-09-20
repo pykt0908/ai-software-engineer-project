@@ -3,6 +3,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 
 import '../services/auth_service.dart';
+import '../widgets/app_snackbar.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -33,11 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text;
 
     if (identifier.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter both username/email and password'),
-          backgroundColor: AppColors.error,
-        ),
+      AppSnackBar.error(
+        context,
+        'Please enter both username/email and password',
       );
       return;
     }
@@ -59,11 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: AppColors.error,
-          ),
+        AppSnackBar.error(
+          context,
+          e.toString().replaceAll('Exception: ', ''),
         );
       }
     }
@@ -271,20 +268,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Row(
-                            children: [
-                              Icon(
-                                Icons.mail_outline,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                              SizedBox(width: 8),
-                              Text('Password reset instructions sent'),
-                            ],
-                          ),
-                        ),
+                      AppSnackBar.info(
+                        context,
+                        'Password reset instructions sent',
                       );
                     },
                     child: Text(

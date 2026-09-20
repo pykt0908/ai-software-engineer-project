@@ -5,6 +5,7 @@ import '../models/models.dart';
 import '../services/profile_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../widgets/app_snackbar.dart';
 import 'profile_screen.dart';
 
 class ExploreScreen extends StatefulWidget {
@@ -74,71 +75,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
         }
       }
     });
-  }
-
-  void _showMediaDetail(BuildContext context, String imageUrl, int index) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Stack(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 1.0,
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.6),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.pets, color: AppColors.primary, size: 14),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Cat Explore #${index + 1}',
-                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.6),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.close, color: Colors.white, size: 18),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _buildSearchResults() {
@@ -383,7 +319,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 final isMulti = index % 4 == 0;
 
                 return GestureDetector(
-                  onTap: () => _showMediaDetail(context, imageUrl, index),
+                  onTap: () {
+                    AppSnackBar.info(
+                      context,
+                      'Explore media grid is a visual placeholder (outside MVP).',
+                    );
+                  },
                   child: Stack(
                     fit: StackFit.expand,
                     children: [

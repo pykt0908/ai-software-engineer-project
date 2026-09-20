@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
-import 'login_screen.dart';
+import 'switch_account_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   final VoidCallback onRegisterSuccess;
@@ -123,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } else {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => LoginScreen(
+          builder: (context) => SwitchAccountScreen(
             onLoginSuccess: widget.onRegisterSuccess,
           ),
         ),

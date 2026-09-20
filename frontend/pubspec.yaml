@@ -41,6 +41,14 @@ dependencies:
   flutter_image_compress: ^2.3.0
   cached_network_image: ^3.4.1
   path_provider: ^2.1.5
+  photo_manager: ^3.12.0
+  geolocator: ^14.0.2
+  geocoding: ^5.0.0
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+  google_maps_flutter: ^2.10.0
+  webview_flutter: ^4.14.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

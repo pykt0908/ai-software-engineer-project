@@ -30,7 +30,6 @@ export default {
       path: '/profiles/:username',
       handler: 'profile.getProfile',
       config: {
-        auth: false,
         policies: [],
       },
     },
@@ -39,7 +38,6 @@ export default {
       path: '/profiles/:username/posts',
       handler: 'profile.getUserPosts',
       config: {
-        auth: false,
         policies: [],
       },
     },

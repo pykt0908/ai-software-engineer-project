@@ -6,22 +6,31 @@ import '../services/post_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../widgets/app_dialog.dart';
+import '../widgets/app_snackbar.dart';
 import 'edit_profile_screen.dart';
-import 'one_tap_login_screen.dart';
+import 'in_app_browser_screen.dart';
 import 'post_detail_screen.dart';
+import 'switch_account_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final CatUser? user;
   final VoidCallback? onLogout;
+  final VoidCallback? onAccountSwitched;
 
-  const ProfileScreen({super.key, this.user, this.onLogout});
+  const ProfileScreen({
+    super.key,
+    this.user,
+    this.onLogout,
+    this.onAccountSwitched,
+  });
 
   @override
   ProfileScreenState createState() => ProfileScreenState();
 }
 
 class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
-  CatUser _user = MockData.currentUser;
+  late CatUser _user;
   late TabController _tabController;
   List<Post> _userPosts = [];
   final List<StoryHighlight> _highlights = MockData.profileHighlights;
@@ -41,12 +50,16 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
       _user = widget.user!;
     } else if (AuthService().currentUser != null) {
       _user = AuthService().currentUser!;
-    }
-    if (_user.username == 'mochi_the_ragdoll') {
-      _userPosts = MockData.currentUserPosts;
     } else {
-      _userPosts = [];
+      // Should not happen when logged in; keep a minimal placeholder until load.
+      _user = const CatUser(
+        id: '',
+        username: '',
+        displayName: '',
+        avatarUrl: '',
+      );
     }
+    _userPosts = [];
     _tabController = TabController(length: 3, vsync: this);
     _loadProfile();
   }
@@ -104,127 +117,159 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
     } catch (_) {
       if (mounted) {
         setState(() {
-          if (_userPosts.isEmpty && _user.username == 'mochi_the_ragdoll') {
-            _userPosts = MockData.currentUserPosts;
-          }
+          // Keep whatever posts we already have; do not fall back to mock data.
           _isLoadingPosts = false;
         });
       }
     }
   }
 
+  bool _isTogglingFollow = false;
+
   Future<void> _toggleFollow() async {
+    if (_isTogglingFollow) return;
+    _isTogglingFollow = true;
+
+    final wasFollowing = _user.isFollowing;
+    final previousCount = int.tryParse(_user.followersCount) ?? 0;
+    final optimisticCount = wasFollowing
+        ? (previousCount - 1).clamp(0, 1 << 30)
+        : previousCount + 1;
+
+    setState(() {
+      _user = _user.copyWith(
+        isFollowing: !wasFollowing,
+        followersCount: optimisticCount.toString(),
+      );
+    });
+
     try {
       final res = await ProfileService().toggleFollow(
         targetDocumentId: _user.id,
-        currentFollowing: _user.isFollowing,
+        currentFollowing: wasFollowing,
       );
       if (mounted) {
         setState(() {
           _user = _user.copyWith(
-            isFollowing: res['following'] as bool,
+            isFollowing: res['following'] == true,
             followersCount: res['followersCount'].toString(),
           );
         });
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Follow action failed: $e')),
-        );
+        setState(() {
+          _user = _user.copyWith(
+            isFollowing: wasFollowing,
+            followersCount: previousCount.toString(),
+          );
+        });
+        AppSnackBar.error(context, 'Follow action failed: $e');
       }
+    } finally {
+      _isTogglingFollow = false;
     }
   }
 
   void _showChangePasswordDialog() {
-    final messenger = ScaffoldMessenger.of(context);
     final currentPassCtrl = TextEditingController();
     final newPassCtrl = TextEditingController();
     final confirmPassCtrl = TextEditingController();
     bool isChanging = false;
     String? errorText;
 
-    showDialog(
-      context: context,
+    AppDialog.showCustom(
+      context,
       builder: (ctx) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text('Change Password', style: AppTypography.headlineMd),
+        builder: (dialogContext, setDialogState) => AppDialog(
+          title: 'Change Password',
+          icon: Icons.lock_outline,
+          confirmLabel: 'Update',
+          isConfirmLoading: isChanging,
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (errorText != null) ...[
-                  Text(errorText!, style: AppTypography.captionSm.copyWith(color: AppColors.error)),
-                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: AppColors.error.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Text(
+                      errorText!,
+                      style: AppTypography.captionSm.copyWith(
+                        color: AppColors.error,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                 ],
                 TextField(
                   controller: currentPassCtrl,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Current Password'),
+                  decoration: appDialogInputDecoration('Current Password'),
                 ),
+                const SizedBox(height: 10),
                 TextField(
                   controller: newPassCtrl,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: 'New Password (min 6 chars)'),
+                  decoration: appDialogInputDecoration('New Password (min 6 chars)'),
                 ),
+                const SizedBox(height: 10),
                 TextField(
                   controller: confirmPassCtrl,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Confirm New Password'),
+                  decoration: appDialogInputDecoration('Confirm New Password'),
                 ),
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: isChanging
-                  ? null
-                  : () async {
-                      if (newPassCtrl.text != confirmPassCtrl.text) {
-                        setDialogState(() => errorText = 'New passwords do not match');
-                        return;
-                      }
-                      if (newPassCtrl.text.length < 6) {
-                        setDialogState(() => errorText = 'Password must be at least 6 characters');
-                        return;
-                      }
-                      setDialogState(() {
-                        isChanging = true;
-                        errorText = null;
-                      });
-                      try {
-                        await AuthService().changePassword(
-                          currentPassword: currentPassCtrl.text,
-                          password: newPassCtrl.text,
-                          passwordConfirmation: confirmPassCtrl.text,
-                        );
-                        if (ctx.mounted) Navigator.pop(ctx);
-                        if (mounted) {
-                          messenger.showSnackBar(
-                            const SnackBar(content: Text('Password updated successfully!')),
-                          );
-                        }
-                      } catch (e) {
-                        setDialogState(() {
-                          isChanging = false;
-                          errorText = e.toString().replaceAll('Exception: ', '');
-                        });
-                      }
-                    },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-              ),
-              child: isChanging
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('Update'),
-            ),
-          ],
+          onCancel: isChanging ? null : () => Navigator.pop(ctx),
+          onConfirm: isChanging
+              ? null
+              : () async {
+                  if (newPassCtrl.text != confirmPassCtrl.text) {
+                    setDialogState(() => errorText = 'New passwords do not match');
+                    return;
+                  }
+                  if (newPassCtrl.text.length < 6) {
+                    setDialogState(
+                      () => errorText = 'Password must be at least 6 characters',
+                    );
+                    return;
+                  }
+                  setDialogState(() {
+                    isChanging = true;
+                    errorText = null;
+                  });
+                  try {
+                    await AuthService().changePassword(
+                      currentPassword: currentPassCtrl.text,
+                      password: newPassCtrl.text,
+                      passwordConfirmation: confirmPassCtrl.text,
+                    );
+                    if (ctx.mounted) Navigator.pop(ctx);
+                    if (mounted) {
+                      AppSnackBar.success(
+                        context,
+                        'Password updated successfully!',
+                      );
+                    }
+                  } catch (e) {
+                    setDialogState(() {
+                      isChanging = false;
+                      errorText = e.toString().replaceAll('Exception: ', '');
+                    });
+                  }
+                },
         ),
       ),
     );
@@ -257,42 +302,18 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
     }
   }
 
-  void _confirmLogout() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            const Icon(Icons.logout, color: AppColors.interactiveLike, size: 22),
-            const SizedBox(width: 8),
-            Text('Log Out', style: AppTypography.headlineMd.copyWith(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        content: Text(
-          'Are you sure you want to log out of @${_user.username}?',
-          style: AppTypography.bodyRegular,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: AppTypography.bodyBold.copyWith(color: AppColors.textSecondary)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.interactiveLike,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            onPressed: () {
-              Navigator.pop(ctx);
-              _performLogout();
-            },
-            child: const Text('Log Out'),
-          ),
-        ],
-      ),
+  void _confirmLogout() async {
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: 'Log Out',
+      message: 'Are you sure you want to log out of @${_user.username}?',
+      icon: Icons.logout,
+      confirmLabel: 'Log Out',
+      isDestructive: true,
     );
+    if (confirmed) {
+      _performLogout();
+    }
   }
 
   void _performLogout() async {
@@ -303,7 +324,7 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
       } else {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-            builder: (context) => OneTapLoginScreen(
+            builder: (context) => SwitchAccountScreen(
               onLoginSuccess: () {},
             ),
           ),
@@ -311,6 +332,26 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
         );
       }
     }
+  }
+
+  void _openSwitchAccount() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => SwitchAccountScreen(
+          onBack: () => Navigator.of(context).pop(),
+          onLoginSuccess: () {
+            // Drop switch screen (and any sheets) then rebuild shell for new user.
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            if (widget.onAccountSwitched != null) {
+              widget.onAccountSwitched!();
+            } else if (widget.onLogout != null) {
+              // Fallback: force re-auth entry if switch callback missing.
+              widget.onLogout!();
+            }
+          },
+        ),
+      ),
+    );
   }
 
   void _showAccountSwitcher() {
@@ -350,16 +391,10 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                     child: Icon(Icons.add, color: AppColors.textPrimary),
                   ),
                   title: Text('Switch or Add Account', style: AppTypography.bodyBold),
-                  subtitle: Text('Open Login or One-Tap Login', style: AppTypography.captionTimestamp),
+                  subtitle: Text('Log in with another username', style: AppTypography.captionTimestamp),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => OneTapLoginScreen(
-                          onLoginSuccess: () => Navigator.pop(context),
-                        ),
-                      ),
-                    );
+                    _openSwitchAccount();
                   },
                 ),
                 if (_isOwnProfile) ...[
@@ -430,16 +465,10 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
               ListTile(
                 leading: const Icon(Icons.switch_account_outlined, color: AppColors.textPrimary),
                 title: Text('Switch Account', style: AppTypography.bodyBold),
-                subtitle: Text('Open Login or One-Tap Login screen', style: AppTypography.captionTimestamp),
+                subtitle: Text('Log in with another username', style: AppTypography.captionTimestamp),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => OneTapLoginScreen(
-                        onLoginSuccess: () => Navigator.pop(context),
-                      ),
-                    ),
-                  );
+                  _openSwitchAccount();
                 },
               ),
               const Divider(color: AppColors.borderSubtle),
@@ -498,9 +527,7 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                 IconButton(
                   icon: const Icon(Icons.add_box_outlined, size: 24, color: AppColors.textPrimary),
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Create Story or Reel')),
-                    );
+                    AppSnackBar.info(context, 'Create Story or Reel');
                   },
                 ),
                 IconButton(
@@ -627,16 +654,12 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                     if (_user.website.isNotEmpty)
                       GestureDetector(
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: [
-                                  const Icon(Icons.language, color: Colors.white, size: 18),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text('Opening https://${_user.website}')),
-                                ],
-                              ),
-                            ),
+                          openInAppBrowser(
+                            context,
+                            url: _user.website,
+                            title: _user.displayName.isNotEmpty
+                                ? _user.displayName
+                                : _user.username,
                           );
                         },
                         child: Row(
@@ -645,7 +668,10 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                             const Icon(Icons.link, size: 15, color: AppColors.primary),
                             const SizedBox(width: 4),
                             Text(
-                              _user.website,
+                              _user.website.replaceFirst(
+                                RegExp(r'^https?://', caseSensitive: false),
+                                '',
+                              ),
                               style: AppTypography.bodySmBold.copyWith(color: AppColors.primary),
                             ),
                           ],
@@ -671,44 +697,40 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                           )
                         else
                           Expanded(
-                            child: _user.isFollowing
-                                ? OutlinedButton(
-                                    onPressed: _toggleFollow,
-                                    style: OutlinedButton.styleFrom(
-                                      backgroundColor: AppColors.surfaceCanvas,
-                                      side: const BorderSide(color: AppColors.borderMuted),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                      padding: const EdgeInsets.symmetric(vertical: 7),
-                                    ),
-                                    child: Text('Following', style: AppTypography.bodyBold),
-                                  )
-                                : ElevatedButton(
-                                    onPressed: _toggleFollow,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary,
-                                      foregroundColor: Colors.white,
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                      padding: const EdgeInsets.symmetric(vertical: 7),
-                                    ),
-                                    child: Text('Follow', style: AppTypography.bodyBold.copyWith(color: Colors.white)),
-                                  ),
+                            child: OutlinedButton(
+                              onPressed: _toggleFollow,
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: _user.isFollowing
+                                    ? AppColors.surfaceCanvas
+                                    : AppColors.primary,
+                                foregroundColor: _user.isFollowing
+                                    ? AppColors.textPrimary
+                                    : Colors.white,
+                                side: BorderSide(
+                                  color: _user.isFollowing
+                                      ? AppColors.borderMuted
+                                      : AppColors.primary,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 7),
+                              ),
+                              child: Text(
+                                _user.isFollowing ? 'Following' : 'Follow',
+                                style: AppTypography.bodyBold.copyWith(
+                                  color: _user.isFollowing
+                                      ? AppColors.textPrimary
+                                      : Colors.white,
+                                ),
+                              ),
+                            ),
                           ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Row(
-                                    children: [
-                                      Icon(Icons.share, color: Colors.white, size: 18),
-                                      SizedBox(width: 8),
-                                      Text('Profile link shared!'),
-                                    ],
-                                  ),
-                                ),
-                              );
+                              AppSnackBar.success(context, 'Profile link shared!');
                             },
                             style: OutlinedButton.styleFrom(
                               backgroundColor: AppColors.surfaceCanvas,
@@ -746,7 +768,14 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                         itemCount: _highlights.length,
                         itemBuilder: (context, index) {
                           final hl = _highlights[index];
-                          return Container(
+                          return GestureDetector(
+                            onTap: () {
+                              AppSnackBar.info(
+                                context,
+                                'Story highlights are outside the MVP scope.',
+                              );
+                            },
+                            child: Container(
                             margin: const EdgeInsets.only(right: 12),
                             child: Column(
                               children: [
@@ -778,6 +807,7 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
                                 ),
                               ],
                             ),
+                          ),
                           );
                         },
                       ),
@@ -938,69 +968,7 @@ class ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderS
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => Dialog(
-                        backgroundColor: Colors.transparent,
-                        insetPadding: const EdgeInsets.all(16),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 0.75,
-                                child: Image.network(
-                                  MockData.exploreImages[index],
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Positioned(
-                                top: 12,
-                                left: 12,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.6),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Row(
-                                    children: [
-                                      Icon(Icons.pets, color: AppColors.primary, size: 14),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'Reel Preview',
-                                        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 12,
-                                right: 12,
-                                child: GestureDetector(
-                                  onTap: () => Navigator.pop(context),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withValues(alpha: 0.6),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.close, color: Colors.white, size: 18),
-                                  ),
-                                ),
-                              ),
-                              Icon(
-                                Icons.play_circle_fill,
-                                color: Colors.white.withValues(alpha: 0.85),
-                                size: 64,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
+                    AppSnackBar.info(context, 'Reels are outside the MVP scope.');
                   },
                   child: Stack(
                     fit: StackFit.expand,

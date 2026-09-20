@@ -16,5 +16,22 @@ export default {
         policies: [],
       },
     },
+    {
+      method: 'GET',
+      path: '/posts/:documentId/comments',
+      handler: 'post.listComments',
+      config: {
+        policies: [],
+        auth: false,
+      },
+    },
+    {
+      method: 'POST',
+      path: '/posts/:documentId/comments',
+      handler: 'post.createComment',
+      config: {
+        policies: [],
+      },
+    },
   ],
 };

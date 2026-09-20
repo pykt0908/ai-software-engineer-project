@@ -8,33 +8,46 @@
 
 ```
 frontend/lib/
-├── main.dart                 # จุดเริ่มต้นของแอปพลิเคชันและการตรวจสอบ Session
+├── main.dart                      # จุดเริ่มต้นของแอปพลิเคชันและการตรวจสอบ Session
 ├── models/
-│   └── models.dart           # Data Models: CatUser, Post, Comment, NotificationItem
+│   └── models.dart                # Data Models: CatUser, Post, Comment, NotificationItem, PlaceSuggestion
 ├── services/
-│   ├── api_config.dart       # Network URLs & Image Resolution
-│   ├── api_client.dart       # Dio HTTP Client, Secure Storage & Interceptors
-│   ├── auth_service.dart     # Authentication & Last Logged-in User Management
-│   ├── post_service.dart     # Post creation, Feeds, Likes, and Compression
-│   └── profile_service.dart  # Profile Management, Following, and Avatar Upload
+│   ├── api_config.dart            # Network URLs, Google Maps API Key, & Image Resolution
+│   ├── api_client.dart            # Dio HTTP Client, Secure Storage & Interceptors
+│   ├── auth_service.dart          # Authentication & Multi-Account Switcher Persistence
+│   ├── post_service.dart          # Post creation, Feeds, Likes, and Compression
+│   ├── profile_service.dart       # Profile Management, Following, and Avatar Upload
+│   ├── ai_caption_service.dart    # Google Gemini AI Caption Generator Service
+│   ├── comment_service.dart       # Real-time Comments Management Service
+│   ├── location_service.dart      # GPS, Google Places Text Search, & Nominatim Geocoding
+│   └── notification_service.dart  # In-App Notifications Service
 ├── theme/
-│   ├── colors.dart           # InstaCat Brand Colors (Orange primary, Gradients)
-│   ├── typography.dart       # Inter Font Typography Tokens
-│   └── app_theme.dart        # Material 3 Theme Definition
+│   ├── app_colors.dart            # InstaCat Brand Colors (Vibrant Orange, Gradients)
+│   ├── app_typography.dart        # LINESeedSansTH & Inter Typography Tokens
+│   └── app_theme.dart             # Material 3 Theme Definition
 ├── screens/
-│   ├── one_tap_login_screen.dart # หน้า One-Tap Quick Login แสดงบัญชีจริงล่าสุด
-│   ├── login_screen.dart         # หน้า Login ปกติ (สะอาด ไม่มี predata)
-│   ├── register_screen.dart      # หน้าสมัครสมาชิกใหม่พร้อมการตรวจสอบข้อมูล
-│   ├── main_shell.dart           # Shell ครอบ Bottom Navigation Bar 5 แท็บ
-│   ├── feed_screen.dart          # หน้า Feed ข่าวสาร (Infinite Scroll & Pull-to-refresh)
-│   ├── explore_screen.dart       # หน้าค้นหาและสำรวจรูปภาพ
-│   ├── create_post_screen.dart   # หน้าสร้างโพสต์และเลือกหลายรูปภาพ
-│   ├── edit_post_screen.dart     # หน้าแก้ไขคำบรรยายโพสต์
-│   ├── notification_screen.dart  # หน้ารายการแจ้งเตือน
-│   ├── direct_messages_screen.dart # หน้าข้อความแชท
-│   ├── profile_screen.dart       # หน้าโปรไฟล์พร้อมตารางโพสต์รูปภาพ
-│   └── edit_profile_screen.dart  # หน้าแก้ไขข้อมูลโปรไฟล์และรูป Avatar
-└── widgets/                  # Reusable UI Components (PostCard, StoryBar, etc.)
+│   ├── switch_account_screen.dart # สลับบัญชีผู้ใช้ (Multi-Account Switcher & Quick Login)
+│   ├── login_screen.dart          # หน้า Login ปกติ (สะอาด ไม่มี predata พร้อมปุ่มย้อนกลับ)
+│   ├── register_screen.dart       # หน้าสมัครสมาชิกใหม่พร้อมการตรวจสอบฟิลด์
+│   ├── main_shell.dart            # Shell ครอบ Bottom Navigation Bar 5 แท็บ
+│   ├── feed_screen.dart           # หน้า Feed ข่าวสาร (Infinite Scroll & Pull-to-refresh)
+│   ├── explore_screen.dart        # หน้าค้นหาผู้ใช้ ค้นหาโพสต์ และสำรวจรูปภาพ
+│   ├── create_post_screen.dart    # หน้าสร้างโพสต์ (พร้อม AI Caption, Tag Friends, Location)
+│   ├── gallery_picker_screen.dart # ตัวเลือกรูปภาพจากเครื่องสไตล์ Instagram (Multi-select, Zoom)
+│   ├── location_picker_screen.dart# ตัวเลือกสถานที่ค้นหาแบบ Full-Screen รองรับ Google Places / OSM
+│   ├── edit_post_screen.dart      # หน้าแก้ไขคำบรรยายโพสต์และสถานที่
+│   ├── comment_screen.dart        # หน้าต่างความคิดเห็นและส่งคอมเมนต์
+│   ├── notifications_screen.dart  # หน้ารายการแจ้งเตือน (Likes, Comments, Follows)
+│   ├── in_app_browser_screen.dart # เบราว์เซอร์ภายในแอปสำหรับเปิดลิงก์ภายนอก
+│   ├── profile_screen.dart        # หน้าโปรไฟล์พร้อมตารางโพสต์รูปภาพและตัวนับสถิติ
+│   └── edit_profile_screen.dart   # หน้าแก้ไขข้อมูลโปรไฟล์ รูป Avatar และ Username
+├── utils/                         # Helper utilities (image formatting, debounce)
+└── widgets/                       # Reusable UI Components:
+    ├── post_card.dart             # การ์ดแสดงโพสต์ (Carousel, Like, Comment, Location, Time)
+    ├── ai_caption_widgets.dart    # BottomSheet ผู้ช่วยเขียนแคปชัน AI และเลือกโทนอารมณ์
+    ├── post_composer_extras.dart  # แถบเลือกสถานที่ แท็กเพื่อน และฟังก์ชันเสริมในการโพสต์
+    ├── app_dialog.dart            # Confirm & Alert Dialogs สไตล์พรีเมียม
+    └── app_snackbar.dart          # แจ้งเตือนข้อความ Success / Error ที่สวยงาม
 ```
 
 ---
@@ -45,88 +58,51 @@ frontend/lib/
 * `AuthService().currentUserNotifier`: เป็น `ValueNotifier<CatUser?>` คอยกระจายสถานะผู้ใช้ที่ล็อกอินอยู่
 * ใน `main.dart` ใช้ `ValueListenableBuilder` คอยฟังค่า `currentUserNotifier`:
   - หากมีค่า (`user != null`) → แสดงผลหน้า `MainShell` (แอปหลัก)
-  - หากเป็นค่าว่าง (`user == null`) → แสดงผลหน้า `OneTapLoginScreen` (หน้าล็อกอิน)
+  - หากเป็นค่าว่าง (`user == null`) → แสดงผลหน้า `SwitchAccountScreen` (หน้าสลับบัญชี/ล็อกอิน)
 
 ```dart
 ValueListenableBuilder<CatUser?>(
-  valueListenable: AuthService().currentUserNotifier,
+  valueListenable: AuthService.instance.currentUserNotifier,
   builder: (context, user, child) {
     if (user != null) {
       return MainShell(key: ValueKey(user.id));
     }
-    return const OneTapLoginScreen();
+    return const SwitchAccountScreen();
   },
 )
 ```
 
 ---
 
-## 3.3 ระบบบริการ (Service Layer Architecture)
+## 3.3 ฟีเจอร์หลักและการทำงานของ UI Flow
 
-### 1. ApiClient (`api_client.dart`)
-- ใช้ **Dio** เป็น HTTP Client หลัก
-- **In-Memory Cache**: เก็บ Token ในตัวแปร `_accessToken` เพื่อให้ส่งคำขอได้ทันทีโดยไม่ต้องรออ่าน Keychain แบบ Asynchronous ทุกครั้ง
-- **Request Interceptor**: แนบ `Authorization: Bearer <token>` ให้อัตโนมัติ ยกเว้นคำขอ Public
-- **Response & Error Interceptor**: ดักจับ HTTP 401 Unauthorized หากพบว่า Token หมดอายุ จะทำการเรียก `/api/auth/refresh` เพื่อขอ Token ใหม่ และ Retry คำขอเดิมให้อัตโนมัติ
+### 1. ระบบสลับบัญชี (Switch Account Screen)
+* แสดงรายการบัญชีที่เคยล็อกอินไว้บนเครื่อง พร้อมรูปโปรไฟล์และชื่อแสดงผล
+* สามารถแตะเพื่อเข้าใช้งานได้ทันที (Quick Login) ด้วยรหัสผ่านที่บันทึกไว้อย่างปลอดภัย
+* มีปุ่ม "Log in to another account" สำหรับเข้าสู่ระบบบัญชีอื่น และ "Create new account" สำหรับสมัครสมาชิกใหม่
 
-### 2. AuthService (`auth_service.dart`)
-- รับผิดชอบกระบวนการ Authentication:
-  - `login(identifier, password)`: ล็อกอินผ่าน API, อัปเดต Tokens และบันทึกข้อมูลเป็นบัญชีล่าสุด
-  - `register(username, email, password)`: สมัครสมาชิกและเข้าสู่ระบบทันที
-  - `logout()`: ยิง API Logout, ล้าง Tokens ในหน่วยความจำ และรีเซ็ตสถานะหน้าจอ
-  - `saveLastUser(user, {identifier, password})`: บันทึกข้อมูลโปรไฟล์และรหัสผ่านของบัญชีล่าสุดลง Secure Storage
-  - `loadLastUser()`: โหลดข้อมูลบัญชีล่าสุดขึ้นมาเพื่อใช้แสดงในหน้า One-Tap Login
-  - `currentUserNotifier`: แจ้งเตือนการเปลี่ยนแปลงผู้ใช้งานไปยังทุกส่วนของแอป
+### 2. ตัวช่วยสร้างแคปชันอัจฉริยะ (AI Caption Generator)
+* ในหน้าสร้างโพสต์ มีปุ่ม **"AI Caption"** เปิด BottomSheet ผู้ช่วยสร้างคำบรรยาย
+* เลือกอารมณ์/สไตล์ของแคปชันได้ 5 รูปแบบ:
+  - 🐱 **Cute** (น่ารัก มุ้งมิ้ง)
+  - 😂 **Funny** (ตลก อารมณ์ดี)
+  - 😼 **Sarcastic** (กวนๆ ประชดแบบแมวๆ)
+  - ✨ **Poetic** (บทกวี อ่อนโยน)
+  - 🔥 **Trendy** (วัยรุ่น ตามเทรนด์)
+* สามารถใส่ Prompt พิเศษเพิ่มเติมได้
+* สร้างผลลัพธ์เป็นตัวเลือกแคปชันภาษาไทย/อังกฤษ พร้อมแฮชแท็ก เพียง 1 แตะสามารถนำไปใส่ในกล่องข้อความได้ทันที
 
-### 3. PostService (`post_service.dart`)
-- `getPublicFeed(page, pageSize)`: ดึงฟีดสาธารณะ
-- `getFollowingFeed(page, pageSize)`: ดึงฟีดของผู้ที่กำลังติดตาม
-- `uploadImages(List<File>)`: ลดขนาดรูปภาพด้วย `FlutterImageCompress` ก่อนส่งไฟล์ Multipart ไปยัง `/api/upload`
-- `createPost(caption, imageIds)`: สร้างโพสต์ใหม่พร้อมเชื่อมโยง Media ID
-- `toggleLike(postDocumentId, currentLiked)`: จัดการสถานะ Like แบบ Optimistic UI
+### 3. ตัวเลือกสถานที่แบบ Full-Screen (Location Picker Screen)
+* ระบบเลือกสถานที่รองรับทั้ง **Google Places API** และ **OpenStreetMap Nominatim**
+* เมื่อพิมพ์ค้นหา รายการผลลัพธ์จะขยายเต็มหน้าจอ (Full-Screen List) แสดงชื่อสถานที่ชัดเจนพร้อมที่อยู่ย่อย
+* มีปุ่มทางลัด `Use "<ชื่อที่พิมพ์>"` สำหรับใช้ชื่อสถานที่ที่กำหนดเองทันที
+* รองรับปุ่ม **"Use Current Location"** ดึงพิกัด GPS อัตโนมัติ
 
-### 4. ProfileService (`profile_service.dart`)
-- `getMe()`: ดึงข้อมูลโปรไฟล์ของตนเองพร้อมสถิติสด
-- `updateMe(...)`: ส่งคำขออัปเดตข้อมูลผู้ใช้ รวมถึง `username`
-- `searchUsers(query)`: ค้นหาผู้ใช้จริงผ่าน Backend `/api/profiles/search?q=...`
-- `getUserPosts(username)`: ดึงรายการโพสต์ทั้งหมดของบัญชีที่ระบุ
-- `uploadAvatar(File)`: บีบอัดภาพและอัปโหลดเป็นรูปโปรไฟล์
+### 4. ตัวเลือกรูปภาพจากเครื่องสไตล์ Instagram (Gallery Picker Screen)
+* พัฒนาขึ้นโดยใช้ `photo_manager` เข้าถึง Photo Library บนอุปกรณ์โดยตรง
+* แสดงภาพขนาดใหญ่ด้านบนพร้อมพรีวิวแบบสลับดูได้ และตาราง Grid แสดงรูปภาพทั้งหมดในอัลบั้ม
+* รองรับโหมด Multi-selection เลือกได้สูงสุด 10 รูป พร้อมตัวเลขลำดับ 1, 2, 3...
 
----
-
-## 3.4 ระบบจดจำบัญชีล่าสุดและการยืนยันรหัสผ่าน (Last Logged-in & Secure Re-login)
-
-หนึ่งในฟังก์ชันเด่นคือการจำลองประสบการณ์ One-Tap Login เหมือน Instagram ของจริง พร้อมมาตรการรักษาความปลอดภัย:
-
-```mermaid
-graph TD
-    A[ผู้ใช้ล็อกอินสำเร็จ] --> B[บันทึก User Profile ลง Keychain]
-    B --> C[บันทึก Password ที่เข้ารหัสไว้สำหรับ One-Tap ครั้งถัดไป]
-    C --> D[ผู้ใช้กด Log Out จากหน้า Profile]
-    D --> E[ลบ JWT Tokens และลบรหัสผ่าน keyLastPassword ออกจาก Secure Storage]
-    E --> F[ยังคงเหลือข้อมูลโปรไฟล์ lastUser ไว้เพื่อแสดงผล Avatar & Username]
-    F --> G[หน้า One-Tap Login แสดงรูปและชื่อของบัญชีล่าสุด]
-    G --> H{ผู้ใช้กด Log In}
-    H -->|มี Password ค้างอยู่| I[เข้าสู่ระบบอัตโนมัติทันที]
-    H -->|เพิ่ง Logout / ไม่มี Password| J[เปิด Instagram-style Password Bottom Sheet ให้กรอกรหัสผ่าน]
-    J --> K[เข้าสู่ระบบสำเร็จ พร้อมบันทึก Password สำหรับ One-Tap ถัดไป]
-```
-
-* **ความปลอดภัยระดับสูง**: เมื่อกดออกจากระบบ (Log Out) แอปจะลบรหัสผ่านที่บันทึกไว้ทิ้งทันที เพื่อป้องกันบุคคลอื่นที่หยิบเครื่องมากด Log In ซ้ำโดยไม่ต้องยืนยันตัวตน
-* **หน้าค้นหาใน Explore (`explore_screen.dart`)**:
-  - รองรับการค้นหาผู้ใช้จริงด้วยระบบ Debounce (250ms) ป้องกันการส่งคำขอถี่เกินไป
-  - แสดงผลลัพธ์รายชื่อผู้ใช้งานจริง พร้อม Avatar, Display Name, ยอดผู้ติดตาม และ Badge Verified
-  - เมื่อกดที่ผู้ใช้คนใด สามารถเปิดดูหน้า [ProfileScreen](file:///Users/panya/Documents/ai-engineer-course/frontend/lib/screens/profile_screen.dart) ของผู้ใช้นั้นได้ พร้อมปุ่มย้อนกลับ (Back Button)
-* **ความยืดหยุ่น**: หากผู้ใช้ต้องการเปลี่ยนไปใช้บัญชีอื่น สามารถกดปุ่ม **"Switch accounts"** เพื่อเปิดหน้า [LoginScreen](file:///Users/panya/Documents/ai-engineer-course/frontend/lib/screens/login_screen.dart) ปกติได้ทันที
-* **ความสะอาดของหน้าจอ**: ในหน้า `LoginScreen` จะเริ่มต้นด้วยช่องกรอกที่ว่างเปล่า 100% (ไม่มีการใส่ข้อมูลค้างไว้) เพื่อความปลอดภัยและความเป็นส่วนตัว
-
----
-
-## 3.5 การอัปเดต Username แบบทันที (Real-time Reflection)
-
-เมื่อผู้ใช้แก้ไข Username ในหน้า `EditProfileScreen`:
-1. ส่งคำขอ `PUT /api/me` พร้อมชื่อผู้ใช้ใหม่
-2. เมื่อเซิร์ฟเวอร์ตอบรับสำเร็จ จะอัปเดต `AuthService().currentUserNotifier` ทันที
-3. ส่งอ็อบเจกต์ `CatUser` ใหม่กลับมายัง `ProfileScreen`
-4. `ProfileScreen` สั่ง `setState` ทำให้ Title บน AppBar เปลี่ยนเป็นชื่อใหม่ทันที โดยไม่ต้องรอรีสตาร์ตแอป
-5. สั่งรีเฟรชรายการโพสต์ของตนเองด้วยชื่อใหม่ เพื่อให้โพสต์ยังคงแสดงผลอย่างต่อเนื่อง
+### 5. ความคิดเห็นและการแจ้งเตือน (Comments & Notifications)
+* หน้ารายการความคิดเห็น (`CommentScreen`) เปิดเป็น BottomSheet หรือหน้ารายการสด
+* หน้ารายการแจ้งเตือน (`NotificationsScreen`) แยกหมวดหมู่การกดไลก์ คอมเมนต์ และการติดตาม พร้อมสถานะ unread

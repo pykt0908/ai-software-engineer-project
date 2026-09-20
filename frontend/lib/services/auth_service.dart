@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../data/mock_data.dart';
 import '../models/models.dart';
+import '../utils/platform_utils.dart';
 import 'api_client.dart';
 
 class AuthService {
@@ -17,7 +17,7 @@ class AuthService {
   static const String keyLastPassword = 'instacat_last_password';
 
   CatUser? _lastUser;
-  CatUser get lastUser => _lastUser ?? MockData.currentUser;
+  CatUser? get lastUser => _lastUser;
 
   final ValueNotifier<CatUser?> currentUserNotifier = ValueNotifier<CatUser?>(null);
   CatUser? get currentUser => currentUserNotifier.value;
@@ -80,7 +80,7 @@ class AuthService {
 
   Future<bool> init() async {
     await loadLastUser();
-    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+    if (isFlutterTest) {
       return false;
     }
     final token = await _apiClient.getAccessToken();
@@ -108,7 +108,7 @@ class AuthService {
     required String identifier,
     required String password,
   }) async {
-    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+    if (isFlutterTest) {
       currentUserNotifier.value = MockData.currentUser;
       return MockData.currentUser;
     }

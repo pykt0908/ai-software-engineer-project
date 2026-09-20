@@ -4,6 +4,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 
 import '../services/post_service.dart';
+import 'app_snackbar.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
@@ -72,12 +73,14 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
           postDocumentId: widget.post.id,
           currentLiked: false,
         );
-        if (mounted) {
-          setState(() {
-            widget.post.isLiked = res['liked'] as bool;
-            widget.post.likesCount = res['likeCount'] as int;
-          });
-        }
+        if (!mounted) return;
+        setState(() {
+          widget.post.isLiked = res['liked'] == true;
+          final likeCount = res['likeCount'];
+          if (likeCount is int) {
+            widget.post.likesCount = likeCount;
+          }
+        });
       } catch (_) {}
     }
   }
@@ -99,12 +102,15 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
         postDocumentId: widget.post.id,
         currentLiked: wasLiked,
       );
-      if (mounted) {
-        setState(() {
-          widget.post.isLiked = res['liked'] as bool;
-          widget.post.likesCount = res['likeCount'] as int;
-        });
-      }
+      if (!mounted) return;
+      final liked = res['liked'] == true;
+      final likeCount = res['likeCount'];
+      setState(() {
+        widget.post.isLiked = liked;
+        if (likeCount is int) {
+          widget.post.likesCount = likeCount;
+        }
+      });
     } catch (_) {
       if (mounted) {
         setState(() {
@@ -169,7 +175,7 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                   ),
                 ),
                 const SizedBox(width: 10),
-                // Username & Location
+                // Username, tagged friends & location
                 Expanded(
                   child: GestureDetector(
                     onTap: widget.onUserTap,
@@ -178,9 +184,12 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                       children: [
                         Row(
                           children: [
-                            Text(
-                              post.user.username,
-                              style: AppTypography.bodyBold,
+                            Flexible(
+                              child: Text(
+                                post.user.username,
+                                style: AppTypography.bodyBold,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             if (post.user.isVerified) ...[
                               const SizedBox(width: 4),
@@ -192,6 +201,17 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                             ],
                           ],
                         ),
+                        if (post.taggedUsernames.isNotEmpty)
+                          Text(
+                            _taggedPeopleLabel(post.taggedUsernames),
+                            style: AppTypography.bodySm.copyWith(
+                              fontSize: 12,
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         if (post.location.isNotEmpty)
                           Text(
                             post.location,
@@ -199,6 +219,8 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                               fontSize: 11,
                               color: AppColors.textSecondary,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                       ],
                     ),
@@ -269,6 +291,36 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                       ),
                     ),
                   ),
+                // Tagged people badge (Instagram-style)
+                if (post.taggedUsernames.isNotEmpty)
+                  Positioned(
+                    left: 12,
+                    bottom: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.65),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.person, color: Colors.white, size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            post.taggedUsernames.length == 1
+                                ? '@${post.taggedUsernames.first}'
+                                : '${post.taggedUsernames.length} people',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 // Big Animated Heart on double tap
                 if (_showBigHeart)
                   ScaleTransition(
@@ -303,7 +355,7 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                     child: Icon(
                       post.isLiked ? Icons.favorite : Icons.favorite_border,
                       key: ValueKey<bool>(post.isLiked),
-                      color: post.isLiked ? AppColors.interactiveLike : AppColors.textPrimary,
+                      color: post.isLiked ? AppColors.primary : AppColors.textPrimary,
                       size: 26,
                     ),
                   ),
@@ -322,18 +374,7 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                 // Share Button
                 GestureDetector(
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Row(
-                          children: [
-                            Icon(Icons.send, color: Colors.white, size: 18),
-                            SizedBox(width: 8),
-                            Text('Sharing cute cat post!'),
-                          ],
-                        ),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
+                    AppSnackBar.info(context, 'Sharing cute cat post!');
                   },
                   child: const Icon(
                     Icons.send_outlined,
@@ -390,6 +431,20 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
 
                 // Rich Caption with Bold username & hashtags
                 _buildRichCaption(context, post.user.username, post.caption),
+                if (post.taggedUsernames.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text.rich(
+                    TextSpan(
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      children: [
+                        const TextSpan(text: 'with '),
+                        ..._taggedNameSpans(post.taggedUsernames),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 4),
 
                 // Comments link
@@ -423,6 +478,33 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
     );
   }
 
+  String _taggedPeopleLabel(List<String> names) {
+    if (names.isEmpty) return '';
+    if (names.length == 1) return 'with @${names.first}';
+    if (names.length == 2) return 'with @${names[0]} and @${names[1]}';
+    return 'with @${names.first} and ${names.length - 1} others';
+  }
+
+  List<InlineSpan> _taggedNameSpans(List<String> names) {
+    final spans = <InlineSpan>[];
+    for (var i = 0; i < names.length; i++) {
+      if (i > 0) {
+        spans.add(TextSpan(
+          text: i == names.length - 1 ? ' and ' : ', ',
+          style: AppTypography.bodySm.copyWith(color: AppColors.textSecondary),
+        ));
+      }
+      spans.add(TextSpan(
+        text: '@${names[i]}',
+        style: AppTypography.bodySm.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w600,
+        ),
+      ));
+    }
+    return spans;
+  }
+
   Widget _buildRichCaption(BuildContext context, String username, String caption) {
     final words = caption.split(' ');
     final spans = <TextSpan>[
@@ -433,7 +515,7 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
     ];
 
     for (final word in words) {
-      if (word.startsWith('#')) {
+      if (word.startsWith('#') || word.startsWith('@')) {
         spans.add(
           TextSpan(
             text: '$word ',

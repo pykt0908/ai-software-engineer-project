@@ -10,9 +10,15 @@
 erDiagram
     USER ||--o{ POST : "author"
     USER ||--o{ POST_LIKE : "likes"
+    USER ||--o{ COMMENT : "comments"
     USER ||--o{ FOLLOW : "following (as follower)"
     USER ||--o{ FOLLOW : "followers (as following)"
+    USER ||--o{ NOTIFICATION : "recipient"
+    USER ||--o{ NOTIFICATION : "sender"
+    USER ||--o{ AI_CAPTION_LOG : "generations"
     POST ||--o{ POST_LIKE : "received likes"
+    POST ||--o{ COMMENT : "received comments"
+    POST ||--o{ NOTIFICATION : "post context"
     POST ||--o{ FILE : "images (1-10)"
     USER ||--o| FILE : "avatar"
 
@@ -33,8 +39,19 @@ erDiagram
         int id PK
         string documentId
         text caption
+        string location
         string moderationStatus "visible | hidden"
         int author_id FK
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    COMMENT {
+        int id PK
+        string documentId
+        text content
+        int author_id FK
+        int post_id FK
         datetime createdAt
         datetime updatedAt
     }
@@ -52,6 +69,27 @@ erDiagram
         string documentId
         int follower_id FK
         int following_id FK
+        datetime createdAt
+    }
+
+    NOTIFICATION {
+        int id PK
+        string documentId
+        string type "like | comment | follow"
+        boolean isRead
+        int recipient_id FK
+        int sender_id FK
+        int post_id FK
+        datetime createdAt
+    }
+
+    AI_CAPTION_LOG {
+        int id PK
+        string documentId
+        string tone
+        string prompt
+        text generatedText
+        int user_id FK
         datetime createdAt
     }
 
@@ -77,6 +115,7 @@ erDiagram
 * `avatar`: ความสัมพันธ์แบบ One-to-One ไปยัง Media Library (`plugin::upload.file`)
 * `posts`: ความสัมพันธ์ One-to-Many ไปยัง `api::post.post`
 * `likes`: ความสัมพันธ์ One-to-Many ไปยัง `api::post-like.post-like`
+* `comments`: ความสัมพันธ์ One-to-Many ไปยัง `api::comment.comment`
 * `following`: ความสัมพันธ์ One-to-Many ไปยัง `api::follow.follow` (ในฐานะผู้ติดตาม)
 * `followers`: ความสัมพันธ์ One-to-Many ไปยัง `api::follow.follow` (ในฐานะผู้ถูกติดตาม)
 
@@ -87,6 +126,7 @@ erDiagram
 ### 1. โพสต์ (Post API)
 * **โมเดล**: [schema.json](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/post/content-types/post/schema.json)
   - `caption`: ข้อความบรรยายโพสต์
+  - `location`: ข้อความระบุชื่อสถานที่ที่แท็ก (เช่น "Siam Paragon", "Bangkok, Thailand")
   - `images`: มัลติมีเดีย (รองรับ 1 ถึง 10 รูปภาพ)
   - `author`: ความสัมพันธ์เชื่อมโยงกับ `plugin::users-permissions.user`
   - `moderationStatus`: ข้อความประเภท Enum (`visible`, `hidden`) ค่าเริ่มต้นคือ `visible`
@@ -95,45 +135,63 @@ erDiagram
   - บังคับให้โพสต์ต้องมีรูปภาพระหว่าง 1 ถึง 10 รูป
   - การแก้ไข (`update`) หรือการลบ (`delete`) จะอนุญาตให้เฉพาะเจ้าของโพสต์ (`post.author.id === user.id`) หรือ Admin เท่านั้น
 
-### 2. การกดถูกใจโพสต์ (PostLike API)
+### 2. ความคิดเห็น (Comment API)
+* **โมเดล**: `api::comment.comment`
+  - `content`: ข้อความแสดงความคิดเห็น
+  - `author`: ผู้เขียนความคิดเห็น
+  - `post`: โพสต์เป้าหมาย
+* **Controller**: [comment.ts](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/comment/controllers/comment.ts)
+* **Endpoints**:
+  - `GET /api/comments?postId=:id`: ดึงรายการความคิดเห็นทั้งหมดของโพสต์ พร้อมข้อมูล avatar และ username ของผู้เขียน
+  - `POST /api/comments`: สร้างความคิดเห็นใหม่ พร้อมสร้าง Notification ส่งไปยังเจ้าของโพสต์โดยอัตโนมัติ
+  - `DELETE /api/comments/:id`: ลบความคิดเห็น (อนุญาตเฉพาะเจ้าของคอมเมนต์หรือเจ้าของโพสต์)
+
+### 3. การแจ้งเตือน (Notification API)
+* **โมเดล**: `api::notification.notification`
+  - `type`: ประเภทการแจ้งเตือน (`like`, `comment`, `follow`)
+  - `isRead`: สถานะการเปิดอ่าน
+  - `sender`: ผู้กระทำการ
+  - `recipient`: ผู้รับการแจ้งเตือน
+  - `post`: โพสต์ที่เกี่ยวข้อง (สำหรับ like หรือ comment)
+* **Controller**: [notification.ts](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/notification/controllers/notification.ts)
+* **Endpoints**:
+  - `GET /api/notifications`: ดึงรายการแจ้งเตือนของผู้ใช้ปัจจุบัน เรียงจากใหม่ไปเก่า พร้อมนับ unread count
+  - `PUT /api/notifications/:id/read`: อัปเดตสถานะเป็นอ่านแล้ว
+
+### 4. ผู้ช่วยสร้างแคปชันอัจฉริยะ (AI Caption Generator API)
+* **Controller**: [ai-caption.ts](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/ai-caption/controllers/ai-caption.ts)
+* **Endpoints**:
+  - `POST /api/ai-caption/generate`: รับรูปภาพและคำค้นหา/สไตล์ (Tone: Cute, Funny, Sarcastic, Poetic, Trendy) แล้วเรียก **Google Gemini 2.5 Flash** เพื่อสร้างตัวเลือกแคปชันภาษาไทยและอังกฤษ พร้อมแฮชแท็กที่เหมาะสม
+* **โมเดล Log**: `api::ai-caption-log.ai-caption-log` บันทึกประวัติการสร้างแคปชันสำหรับวิเคราะห์การใช้งาน
+
+### 5. การกดถูกใจโพสต์ (PostLike API)
 * **โมเดล**: [schema.json](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/post-like/content-types/post-like/schema.json)
 * **Controller**: [post-like.ts](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/post-like/controllers/post-like.ts)
 * **Routes**:
-  - `POST /api/posts/:documentId/like`: ตรวจสอบว่าเคยกดไลก์ไปแล้วหรือไม่ หากยังไม่เคยจะทำการสร้าง Record การไลก์ใหม่
+  - `POST /api/posts/:documentId/like`: ตรวจสอบว่าเคยกดไลก์ไปแล้วหรือไม่ หากยังไม่เคยจะทำการสร้าง Record การไลก์ใหม่ พร้อมส่งการแจ้งเตือน
   - `DELETE /api/posts/:documentId/like`: ลบ Record การไลก์ของผู้ใช้ออกจากโพสต์เป้าหมาย
   - ป้องกันการเกิด Duplicate Like จากการกดย้ำอย่างสมบูรณ์
 
-### 3. การติดตามผู้ใช้งาน (Follow API)
+### 6. การติดตามผู้ใช้งาน (Follow API)
 * **โมเดล**: [schema.json](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/follow/content-types/follow/schema.json)
 * **Controller**: [follow.ts](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/follow/controllers/follow.ts)
 * **Routes**:
-  - `POST /api/users/:documentId/follow`: ติดตามผู้ใช้เป้าหมาย
+  - `POST /api/users/:documentId/follow`: ติดตามผู้ใช้เป้าหมาย พร้อมส่งการแจ้งเตือน
   - `DELETE /api/users/:documentId/follow`: ยกเลิกการติดตาม
-  - **ตรรกะความปลอดภัย**:
-    - ตรวจสอบห้ามผู้ใช้กดติดตามบัญชีตัวเองโดยเด็ดขาด (`SELF_FOLLOW_NOT_ALLOWED`)
-    - ตรวจสอบความซ้ำซ้อนของการติดตาม
+  - ป้องกันการกดติดตามบัญชีตัวเองโดยเด็ดขาด (`SELF_FOLLOW_NOT_ALLOWED`)
 
-### 4. ระบบฟีดข่าว (Feed API)
+### 7. ระบบฟีดข่าว (Feed API)
 * **Controller**: [feed.ts](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/feed/controllers/feed.ts)
-* **Public Feed (`GET /api/feed/public`)**:
-  - เปิดให้เข้าถึงได้ทั้งผู้ใช้ทั่วไป (Guest) และผู้ใช้ที่ล็อกอินแล้ว
-  - กรองเฉพาะโพสต์ที่เป็นของผู้ใช้ที่เป็นบัญชีสาธารณะ (`author.isPublic = true`) และมีสถานะ `moderationStatus = 'visible'`
-  - เรียงลำดับจากโพสต์ใหม่ล่าสุดไปเก่าสุด (`createdAt:desc`)
-  - รองรับ Pagination (`page`, `pageSize`)
-  - หากมี Token ล็อกอิน จะทำการตรวจสอบสถานะ `isLiked` ของผู้ใช้ต่อแต่ละโพสต์ให้อัตโนมัติ
-* **Following Feed (`GET /api/feed/following`)**:
-  - ต้องมีการยืนยันตัวตน (Authenticated User)
-  - ค้นหารายชื่อผู้ใช้ที่กำลังติดตาม (`following`) แล้วดึงเฉพาะโพสต์ของบุคคลเหล่านั้น
+* **Public Feed (`GET /api/feed/public`)**: กรองเฉพาะโพสต์ของบัญชีสาธารณะ (`author.isPublic = true`) เรียงจากใหม่ไปเก่า รองรับ Pagination และตรวจจับสถานะ `isLiked`, `commentCount`
+* **Following Feed (`GET /api/feed/following`)**: ดึงเฉพาะโพสต์ของบุคคลที่กำลังติดตาม
 
-### 5. ระบบโปรไฟล์และการค้นหาผู้ใช้ (Profile & Search API)
+### 8. ระบบโปรไฟล์และการค้นหาผู้ใช้ (Profile & Search API)
 * **Controller**: [profile.ts](file:///Users/panya/Documents/ai-engineer-course/backend/src/api/profile/controllers/profile.ts)
-* **Endpoints**:
-  - `GET /api/me`: ส่งคืนข้อมูลโปรไฟล์ของผู้ใช้ปัจจุบัน พร้อมนับยอดสถิติสดจากฐานข้อมูล ได้แก่ `postsCount`, `followersCount`, และ `followingCount`
-  - `PUT /api/me`: รองรับการแก้ไข `displayName`, `bio`, `isPublic`, รูปภาพ `avatar`, และ **`username`**
-    - เมื่อมีการแก้ไข `username` ระบบจะตรวจสอบความยาว (อย่างน้อย 3 ตัวอักษร), ตัวอักษรที่อนุญาต, และตรวจเช็กความซ้ำซ้อนกับผู้ใช้อื่นในระบบอย่างรัดกุม
-  - `GET /api/profiles/search?q=:query`: ค้นหาบัญชีผู้ใช้จริงในระบบจาก `username` หรือ `displayName` แบบ Case-insensitive พร้อมส่งคืนข้อมูล Avatar, สถิติโพสต์ และยอดผู้ติดตาม
-  - `GET /api/profiles/:username`: ส่งคืนข้อมูลโปรไฟล์สาธารณะของผู้ใช้ พร้อมระบุว่าผู้เรียกกำลังติดตามอยู่หรือไม่ (`isFollowing`)
-  - `GET /api/profiles/:username/posts`: ส่งคืนรายการโพสต์ทั้งหมดของบัญชีนั้นๆ พร้อมนับยอดไลก์และสถานะการไลก์ เรียงจากใหม่ไปเก่า เพื่อนำไปแสดงในตาราง Profile Grid
+* `GET /api/me`: ข้อมูลโปรไฟล์ของผู้ใช้ปัจจุบัน พร้อมนับยอดสถิติสด `postsCount`, `followersCount`, `followingCount`
+* `PUT /api/me`: แก้ไข `displayName`, `bio`, `isPublic`, `avatar`, และ `username`
+* `GET /api/profiles/search?q=:query`: ค้นหาบัญชีผู้ใช้จริงในระบบจาก `username` หรือ `displayName`
+* `GET /api/profiles/:username`: ส่งคืนข้อมูลโปรไฟล์สาธารณะและสถานะ `isFollowing`
+* `GET /api/profiles/:username/posts`: ส่งคืนรายการโพสต์ทั้งหมดของบัญชีนั้นๆ
 
 ---
 
@@ -141,12 +199,12 @@ erDiagram
 
 ไฟล์คอนฟิก: [backend/src/index.ts](file:///Users/panya/Documents/ai-engineer-course/backend/src/index.ts)
 
-เพื่อตัดปัญหาเรื่องการต้องไปตั้งค่าสิทธิ์ผ่าน Strapi Admin UI ด้วยตนเอง Strapi จะรันฟังก์ชัน `bootstrap()` อัตโนมัติทุกครั้งที่เริ่มรัน Server:
-1. ปิดระบบ Email Confirmation (`email_confirmation = false`) เพื่อให้ผู้ใช้ที่สมัครสมาชิกผ่านแอปสามารถเข้าสู่ระบบและได้รับ JWT ทันที
+Strapi จะรันฟังก์ชัน `bootstrap()` อัตโนมัติทุกครั้งที่เริ่มรัน Server:
+1. ปิดระบบ Email Confirmation (`email_confirmation = false`) เพื่อให้ผู้ใช้ที่สมัครสมาชิกสามารถใช้งานได้ทันที
 2. ผูกสิทธิ์สำหรับ Role **`Public`**:
-   - `post.find`, `post.findOne`
-   - `feed.getPublicFeed`
+   - `post.find`, `post.findOne`, `feed.getPublicFeed`
    - `profile.getProfile`, `profile.getUserPosts`, `profile.searchUsers`
+   - `comment.find`
 3. ผูกสิทธิ์สำหรับ Role **`Authenticated`**:
    - ทุกสิทธิ์ของ Public
    - `post.create`, `post.update`, `post.delete`
@@ -154,4 +212,7 @@ erDiagram
    - `follow.follow`, `follow.unfollow`
    - `feed.getFollowingFeed`
    - `profile.getMe`, `profile.updateMe`
+   - `comment.create`, `comment.delete`
+   - `notification.find`, `notification.markRead`
+   - `ai-caption.generate`
    - `upload.upload`, `upload.destroy`

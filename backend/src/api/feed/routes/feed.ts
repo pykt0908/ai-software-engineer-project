@@ -5,7 +5,6 @@ export default {
       path: '/feed/public',
       handler: 'feed.publicFeed',
       config: {
-        auth: false,
         policies: [],
       },
     },

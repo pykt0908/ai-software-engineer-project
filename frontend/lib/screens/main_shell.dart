@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../data/mock_data.dart';
 import '../models/models.dart';
 import '../services/auth_service.dart';
 import '../widgets/bottom_nav_bar.dart';
@@ -11,8 +10,9 @@ import 'profile_screen.dart';
 
 class MainShell extends StatefulWidget {
   final VoidCallback? onLogout;
+  final VoidCallback? onAccountSwitched;
 
-  const MainShell({super.key, this.onLogout});
+  const MainShell({super.key, this.onLogout, this.onAccountSwitched});
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -54,6 +54,7 @@ class _MainShellState extends State<MainShell> {
         builder: (context) => ProfileScreen(
           user: user,
           onLogout: widget.onLogout,
+          onAccountSwitched: widget.onAccountSwitched,
         ),
       ),
     );
@@ -64,7 +65,11 @@ class _MainShellState extends State<MainShell> {
     return ValueListenableBuilder<CatUser?>(
       valueListenable: AuthService().currentUserNotifier,
       builder: (context, currentUser, child) {
-        final activeUser = currentUser ?? MockData.currentUser;
+        if (currentUser == null) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
         return Scaffold(
           body: IndexedStack(
@@ -81,15 +86,16 @@ class _MainShellState extends State<MainShell> {
               ),
               ProfileScreen(
                 key: _profileKey,
-                user: activeUser,
+                user: currentUser,
                 onLogout: widget.onLogout,
+                onAccountSwitched: widget.onAccountSwitched,
               ),
             ],
           ),
           bottomNavigationBar: InstaCatBottomNavBar(
             currentIndex: _currentIndex,
             onTabSelected: _onTabSelected,
-            currentUser: activeUser,
+            currentUser: currentUser,
           ),
         );
       },

@@ -125,34 +125,53 @@ class Post {
   final String id;
   final CatUser user;
   final List<String> imageUrls;
+  final List<int>? _imageIds;
   String caption;
   int likesCount;
-  final int commentsCount;
-  final String location;
+  int commentsCount;
+  String location;
+  final List<String>? _taggedUsernames;
   final String timestamp;
   bool isLiked;
   bool isSaved;
+
+  /// Media library ids for update/create. Never null at call sites.
+  List<int> get imageIds => _imageIds ?? const <int>[];
+
+  /// Tagged friend usernames. Safe for hot-reload / older Post instances.
+  List<String> get taggedUsernames => _taggedUsernames ?? const <String>[];
 
   Post({
     required this.id,
     required this.user,
     required this.imageUrls,
+    List<int>? imageIds,
     required this.caption,
     required this.likesCount,
     required this.commentsCount,
-    required this.location,
+    this.location = '',
+    List<String>? taggedUsernames,
     required this.timestamp,
     this.isLiked = false,
     this.isSaved = false,
-  });
+  })  : _imageIds = imageIds,
+        _taggedUsernames = taggedUsernames;
 
   factory Post.fromJson(Map<String, dynamic> json) {
     final List<String> images = [];
+    final List<int> imageIds = [];
     if (json['images'] is List) {
       for (final img in json['images']) {
         if (img is Map && img['url'] != null) {
           final resolved = ApiConfig.resolveImageUrl(img['url'].toString());
           if (resolved != null) images.add(resolved);
+          final rawId = img['id'];
+          if (rawId is int) {
+            imageIds.add(rawId);
+          } else if (rawId != null) {
+            final parsed = int.tryParse(rawId.toString());
+            if (parsed != null) imageIds.add(parsed);
+          }
         } else if (img is String) {
           final resolved = ApiConfig.resolveImageUrl(img);
           if (resolved != null) images.add(resolved);
@@ -163,6 +182,8 @@ class Post {
     CatUser postAuthor;
     if (json['author'] is Map<String, dynamic>) {
       postAuthor = CatUser.fromJson(json['author']);
+    } else if (json['author'] is Map) {
+      postAuthor = CatUser.fromJson(Map<String, dynamic>.from(json['author'] as Map));
     } else {
       postAuthor = const CatUser(
         id: 'user_unknown',
@@ -172,22 +193,7 @@ class Post {
       );
     }
 
-    String formattedTime = 'Just now';
-    if (json['createdAt'] != null) {
-      final parsed = DateTime.tryParse(json['createdAt'].toString());
-      if (parsed != null) {
-        final diff = DateTime.now().difference(parsed);
-        if (diff.inMinutes < 1) {
-          formattedTime = 'Just now';
-        } else if (diff.inHours < 1) {
-          formattedTime = '${diff.inMinutes}m';
-        } else if (diff.inDays < 1) {
-          formattedTime = '${diff.inHours}h';
-        } else {
-          formattedTime = '${diff.inDays}d';
-        }
-      }
-    }
+    String formattedTime = _formatRelativeTime(json['createdAt']);
 
     return Post(
       id: json['documentId']?.toString() ?? json['id']?.toString() ?? '',
@@ -197,16 +203,36 @@ class Post {
           : [
               'https://lh3.googleusercontent.com/aida-public/AB6AXuC0XD-x0dfUjXw3MIH4Lhlyk6wMnHcQp-CBshOZ3azaTzmv0uS67O_9nIHwDGpP7lRmeFng2pWrK1mMwbMXMrGPi4PvSbqLIOCZnDBBbCRYzXuVkXH6NBAy19G-G1Cn3Wi-EAQUnaetj2Un35INsvDzibHUVTFn22q0uArSDNfmqjtFOijKJb2d3YQLmrCGC-FPdw7IQgqzgAVUPjnX8ISOjnzIW154VDqYeJmuKM9mzpg6272nT3s8-Q'
             ],
+      imageIds: imageIds,
       caption: json['caption']?.toString() ?? '',
       likesCount: json['likeCount'] is int
           ? json['likeCount']
           : (int.tryParse(json['likeCount']?.toString() ?? '0') ?? 0),
-      commentsCount: 0,
-      location: 'Tokyo, Japan',
+      commentsCount: json['commentCount'] is int
+          ? json['commentCount']
+          : (int.tryParse(json['commentCount']?.toString() ?? '0') ?? 0),
+      location: json['location']?.toString() ?? '',
+      taggedUsernames: (json['taggedUsernames'] is List)
+          ? (json['taggedUsernames'] as List)
+              .map((e) => e.toString().replaceFirst(RegExp(r'^@+'), ''))
+              .where((e) => e.isNotEmpty)
+              .toList()
+          : const <String>[],
       timestamp: formattedTime,
       isLiked: json['isLiked'] == true,
     );
   }
+}
+
+String _formatRelativeTime(dynamic createdAt) {
+  if (createdAt == null) return 'Just now';
+  final parsed = DateTime.tryParse(createdAt.toString());
+  if (parsed == null) return 'Just now';
+  final diff = DateTime.now().difference(parsed);
+  if (diff.inMinutes < 1) return 'Just now';
+  if (diff.inHours < 1) return '${diff.inMinutes}m';
+  if (diff.inDays < 1) return '${diff.inHours}h';
+  return '${diff.inDays}d';
 }
 
 class Comment {
@@ -227,6 +253,33 @@ class Comment {
     this.isLiked = false,
     this.replies = const [],
   });
+
+  factory Comment.fromJson(Map<String, dynamic> json) {
+    CatUser author;
+    if (json['author'] is Map) {
+      author = CatUser.fromJson(Map<String, dynamic>.from(json['author'] as Map));
+    } else if (json['user'] is Map) {
+      author = CatUser.fromJson(Map<String, dynamic>.from(json['user'] as Map));
+    } else {
+      author = const CatUser(
+        id: '',
+        username: 'cat',
+        displayName: 'Cat',
+        avatarUrl: '',
+      );
+    }
+
+    return Comment(
+      id: json['documentId']?.toString() ?? json['id']?.toString() ?? '',
+      user: author,
+      text: json['text']?.toString() ?? '',
+      timestamp: _formatRelativeTime(json['createdAt']),
+      likesCount: json['likesCount'] is int
+          ? json['likesCount'] as int
+          : (int.tryParse(json['likesCount']?.toString() ?? '0') ?? 0),
+      isLiked: json['isLiked'] == true,
+    );
+  }
 }
 
 class Story {
@@ -273,6 +326,7 @@ class NotificationItem {
   final String timeAgo;
   final String? postImageUrl;
   final String? postCaption;
+  final String? postId;
   final bool isRead;
   final bool isFollowing;
 
@@ -284,9 +338,51 @@ class NotificationItem {
     required this.timeAgo,
     this.postImageUrl,
     this.postCaption,
+    this.postId,
     this.isRead = false,
     this.isFollowing = false,
   });
+
+  factory NotificationItem.fromJson(Map<String, dynamic> json) {
+    final actorRaw = json['actor'];
+    final actor = actorRaw is Map
+        ? CatUser.fromJson(Map<String, dynamic>.from(actorRaw))
+        : const CatUser(
+            id: '',
+            username: 'someone',
+            displayName: 'Someone',
+            avatarUrl: '',
+          );
+
+    final typeStr = json['type']?.toString() ?? 'like';
+    final type = NotificationType.values.firstWhere(
+      (t) => t.name == typeStr,
+      orElse: () => NotificationType.like,
+    );
+
+    String? postImageUrl;
+    String? postCaption;
+    String? postId;
+    if (json['post'] is Map) {
+      final post = Map<String, dynamic>.from(json['post'] as Map);
+      postId = post['documentId']?.toString();
+      postCaption = post['caption']?.toString();
+      postImageUrl = ApiConfig.resolveImageUrl(post['imageUrl']?.toString());
+    }
+
+    return NotificationItem(
+      id: json['documentId']?.toString() ?? json['id']?.toString() ?? '',
+      user: actor,
+      type: type,
+      message: json['message']?.toString() ?? '',
+      timeAgo: _formatRelativeTime(json['createdAt']),
+      postImageUrl: postImageUrl,
+      postCaption: postCaption,
+      postId: postId,
+      isRead: json['isRead'] == true,
+      isFollowing: json['isFollowing'] == true,
+    );
+  }
 
   NotificationItem copyWith({
     String? id,
@@ -296,6 +392,7 @@ class NotificationItem {
     String? timeAgo,
     String? postImageUrl,
     String? postCaption,
+    String? postId,
     bool? isRead,
     bool? isFollowing,
   }) {
@@ -307,6 +404,7 @@ class NotificationItem {
       timeAgo: timeAgo ?? this.timeAgo,
       postImageUrl: postImageUrl ?? this.postImageUrl,
       postCaption: postCaption ?? this.postCaption,
+      postId: postId ?? this.postId,
       isRead: isRead ?? this.isRead,
       isFollowing: isFollowing ?? this.isFollowing,
     );

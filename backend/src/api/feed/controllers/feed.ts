@@ -24,43 +24,39 @@ export default {
       populate: ['images', 'author', 'author.avatar'],
     });
 
-    // Batch resolve likes for current user if authenticated
-    let likedPostIds = new Set<string>();
-    if (currentUser && posts.length > 0) {
-      const userLikes = await strapi.documents('api::post-like.post-like').findMany({
-        filters: {
-          user: {
-            id: currentUser.id,
-          },
-          post: {
-            documentId: {
-              $in: posts.map((p: any) => p.documentId),
-            },
-          },
-        },
-        populate: ['post'],
-      });
-      for (const like of userLikes) {
-        if (like.post?.documentId) {
-          likedPostIds.add(like.post.documentId);
-        }
-      }
-    }
-
     const data = await Promise.all(
       posts.map(async (post: any) => {
-        const likeCount = await strapi.documents('api::post-like.post-like').count({
-          filters: {
-            post: {
-              documentId: post.documentId,
+        const [likeCount, commentCount, likedByMe] = await Promise.all([
+          strapi.documents('api::post-like.post-like').count({
+            filters: {
+              post: {
+                documentId: post.documentId,
+              },
             },
-          },
-        });
+          }),
+          strapi.documents('api::comment.comment').count({
+            filters: {
+              post: {
+                documentId: post.documentId,
+              },
+            },
+          }),
+          currentUser
+            ? strapi.documents('api::post-like.post-like').count({
+                filters: {
+                  post: { documentId: post.documentId },
+                  user: { id: currentUser.id },
+                },
+              })
+            : Promise.resolve(0),
+        ]);
 
         return {
           documentId: post.documentId,
           id: post.id,
           caption: post.caption,
+          location: post.location || '',
+          taggedUsernames: Array.isArray(post.taggedUsernames) ? post.taggedUsernames : [],
           createdAt: post.createdAt,
           author: {
             documentId: post.author?.documentId,
@@ -77,7 +73,8 @@ export default {
               }))
             : [],
           likeCount,
-          isLiked: likedPostIds.has(post.documentId),
+          commentCount,
+          isLiked: likedByMe > 0,
         };
       })
     );
@@ -152,42 +149,37 @@ export default {
       populate: ['images', 'author', 'author.avatar'],
     });
 
-    let likedPostIds = new Set<string>();
-    if (posts.length > 0) {
-      const userLikes = await strapi.documents('api::post-like.post-like').findMany({
-        filters: {
-          user: {
-            id: user.id,
-          },
-          post: {
-            documentId: {
-              $in: posts.map((p: any) => p.documentId),
-            },
-          },
-        },
-        populate: ['post'],
-      });
-      for (const like of userLikes) {
-        if (like.post?.documentId) {
-          likedPostIds.add(like.post.documentId);
-        }
-      }
-    }
-
     const data = await Promise.all(
       posts.map(async (post: any) => {
-        const likeCount = await strapi.documents('api::post-like.post-like').count({
-          filters: {
-            post: {
-              documentId: post.documentId,
+        const [likeCount, commentCount, likedByMe] = await Promise.all([
+          strapi.documents('api::post-like.post-like').count({
+            filters: {
+              post: {
+                documentId: post.documentId,
+              },
             },
-          },
-        });
+          }),
+          strapi.documents('api::comment.comment').count({
+            filters: {
+              post: {
+                documentId: post.documentId,
+              },
+            },
+          }),
+          strapi.documents('api::post-like.post-like').count({
+            filters: {
+              post: { documentId: post.documentId },
+              user: { id: user.id },
+            },
+          }),
+        ]);
 
         return {
           documentId: post.documentId,
           id: post.id,
           caption: post.caption,
+          location: post.location || '',
+          taggedUsernames: Array.isArray(post.taggedUsernames) ? post.taggedUsernames : [],
           createdAt: post.createdAt,
           author: {
             documentId: post.author?.documentId,
@@ -204,7 +196,8 @@ export default {
               }))
             : [],
           likeCount,
-          isLiked: likedPostIds.has(post.documentId),
+          commentCount,
+          isLiked: likedByMe > 0,
         };
       })
     );

@@ -83,6 +83,14 @@
       "type": "boolean",
       "default": true
     },
+    "website": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "category": {
+      "type": "string",
+      "maxLength": 120
+    },
     "posts": {
       "type": "relation",
       "relation": "oneToMany",
@@ -95,6 +103,12 @@
       "target": "api::post-like.post-like",
       "mappedBy": "user"
     },
+    "comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "author"
+    },
     "following": {
       "type": "relation",
       "relation": "oneToMany",
@@ -106,6 +120,18 @@
       "relation": "oneToMany",
       "target": "api::follow.follow",
       "mappedBy": "following"
+    },
+    "notificationsReceived": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::notification.notification",
+      "mappedBy": "recipient"
+    },
+    "notificationsSent": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::notification.notification",
+      "mappedBy": "actor"
     }
   }
 }

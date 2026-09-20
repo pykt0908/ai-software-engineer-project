@@ -4,6 +4,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import '../data/mock_data.dart';
 import '../models/models.dart';
+import '../utils/platform_utils.dart';
 import 'api_client.dart';
 import 'auth_service.dart';
 
@@ -16,7 +17,7 @@ class ProfileService {
   ProfileService._internal();
 
   Future<CatUser> getMe() async {
-    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+    if (isFlutterTest) {
       return AuthService().currentUser ?? MockData.currentUser;
     }
     try {
@@ -31,15 +32,19 @@ class ProfileService {
     String? username,
     String? displayName,
     String? bio,
+    String? website,
+    String? category,
     bool? isPublic,
     int? avatarId,
   }) async {
-    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+    if (isFlutterTest) {
       final current = AuthService().currentUser ?? MockData.currentUser;
       return current.copyWith(
         username: username ?? current.username,
         displayName: displayName ?? current.displayName,
         bio: bio ?? current.bio,
+        website: website ?? current.website,
+        category: category ?? current.category,
         isPublic: isPublic ?? current.isPublic,
       );
     }
@@ -48,6 +53,12 @@ class ProfileService {
       if (username != null && username.isNotEmpty) data['username'] = username.trim();
       if (displayName != null) data['displayName'] = displayName;
       if (bio != null) data['bio'] = bio;
+      if (website != null) {
+        data['website'] = website
+            .trim()
+            .replaceFirst(RegExp(r'^https?://', caseSensitive: false), '');
+      }
+      if (category != null) data['category'] = category.trim();
       if (isPublic != null) data['isPublic'] = isPublic;
       if (avatarId != null) data['avatar'] = avatarId;
 
@@ -71,7 +82,7 @@ class ProfileService {
     final q = query.trim();
     if (q.isEmpty) return [];
 
-    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+    if (isFlutterTest) {
       final all = [
         AuthService().currentUser ?? MockData.currentUser,
         MockData.biscuitPaw,
@@ -94,7 +105,11 @@ class ProfileService {
         queryParameters: {'q': q},
       );
       final list = response.data['data'] as List? ?? [];
-      return list.map((item) => CatUser.fromJson(item)).toList();
+      return list
+          .whereType<Map>()
+          .map((item) => CatUser.fromJson(Map<String, dynamic>.from(item)))
+          .where((u) => u.username.isNotEmpty)
+          .toList();
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
@@ -109,9 +124,16 @@ class ProfileService {
           ? await _apiClient.dio.delete('/users/$targetDocumentId/follow')
           : await _apiClient.dio.post('/users/$targetDocumentId/follow');
 
+      final raw = response.data;
+      final payload = (raw is Map && raw['data'] is Map)
+          ? Map<String, dynamic>.from(raw['data'] as Map)
+          : Map<String, dynamic>.from(raw as Map);
+
       return {
-        'following': response.data['following'] == true,
-        'followersCount': response.data['followersCount'] ?? 0,
+        'following': payload['following'] == true,
+        'followersCount': payload['followersCount'] is int
+            ? payload['followersCount'] as int
+            : (int.tryParse(payload['followersCount']?.toString() ?? '0') ?? 0),
       };
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));

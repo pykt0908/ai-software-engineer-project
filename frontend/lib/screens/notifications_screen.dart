@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import '../data/mock_data.dart';
+
 import '../models/models.dart';
+import '../services/notification_service.dart';
+import '../services/profile_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
-import 'post_detail_screen.dart';
+import '../widgets/app_snackbar.dart';
 
 class NotificationScreen extends StatefulWidget {
   final bool showBackButton;
   final Function(CatUser)? onUserSelected;
+  final VoidCallback? onUnreadChanged;
 
   const NotificationScreen({
     super.key,
     this.showBackButton = true,
     this.onUserSelected,
+    this.onUnreadChanged,
   });
 
   @override
@@ -20,15 +24,17 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  late List<NotificationItem> _notifications;
+  List<NotificationItem> _notifications = [];
   String _selectedFilter = 'All';
+  bool _loading = true;
+  String? _error;
 
-  final List<String> _filters = ['All', 'Likes', 'Comments', 'Follows', 'Treats'];
+  final List<String> _filters = ['All', 'Likes', 'Comments', 'Follows'];
 
   @override
   void initState() {
     super.initState();
-    _notifications = List.from(MockData.notifications);
+    _load();
   }
 
   int get _unreadCount => _notifications.where((n) => !n.isRead).length;
@@ -39,99 +45,132 @@ class _NotificationScreenState extends State<NotificationScreen> {
       return _notifications.where((n) => n.type == NotificationType.like).toList();
     }
     if (_selectedFilter == 'Comments') {
-      return _notifications.where((n) => n.type == NotificationType.comment || n.type == NotificationType.mention).toList();
+      return _notifications
+          .where((n) =>
+              n.type == NotificationType.comment ||
+              n.type == NotificationType.mention)
+          .toList();
     }
     if (_selectedFilter == 'Follows') {
       return _notifications.where((n) => n.type == NotificationType.follow).toList();
     }
-    if (_selectedFilter == 'Treats') {
-      return _notifications.where((n) => n.type == NotificationType.treat).toList();
-    }
     return _notifications;
   }
 
-  void _markAllAsRead() {
+  Future<void> _load() async {
     setState(() {
-      _notifications = _notifications.map((n) => n.copyWith(isRead: true)).toList();
-      MockData.notifications = List.from(_notifications);
+      _loading = true;
+      _error = null;
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          children: [
-            Icon(Icons.done_all_rounded, color: Colors.white, size: 18),
-            SizedBox(width: 8),
-            Text('All notifications marked as read'),
-          ],
-        ),
-        backgroundColor: AppColors.textPrimary,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  void _toggleFollow(NotificationItem item) {
-    final index = _notifications.indexWhere((n) => n.id == item.id);
-    if (index != -1) {
+    try {
+      final items = await NotificationService().list();
+      if (!mounted) return;
       setState(() {
-        final updated = _notifications[index].copyWith(
-          isFollowing: !_notifications[index].isFollowing,
-        );
-        _notifications[index] = updated;
+        _notifications = items;
+        _loading = false;
+      });
+      widget.onUnreadChanged?.call();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = e.toString().replaceFirst('Exception: ', '');
       });
     }
   }
 
-  void _removeNotification(NotificationItem item) {
-    final removedIndex = _notifications.indexWhere((n) => n.id == item.id);
-    final removedItem = item;
+  Future<void> _markAllAsRead() async {
+    try {
+      await NotificationService().markAllRead();
+      if (!mounted) return;
+      setState(() {
+        _notifications =
+            _notifications.map((n) => n.copyWith(isRead: true)).toList();
+      });
+      widget.onUnreadChanged?.call();
+      AppSnackBar.success(context, 'All notifications marked as read');
+    } catch (e) {
+      if (!mounted) return;
+      AppSnackBar.error(context, e.toString().replaceFirst('Exception: ', ''));
+    }
+  }
 
+  Future<void> _toggleFollow(NotificationItem item) async {
+    final index = _notifications.indexWhere((n) => n.id == item.id);
+    if (index == -1) return;
+
+    final wasFollowing = _notifications[index].isFollowing;
+    setState(() {
+      _notifications[index] =
+          _notifications[index].copyWith(isFollowing: !wasFollowing);
+    });
+
+    try {
+      final res = await ProfileService().toggleFollow(
+        targetDocumentId: item.user.id,
+        currentFollowing: wasFollowing,
+      );
+      if (!mounted) return;
+      setState(() {
+        _notifications[index] = _notifications[index].copyWith(
+          isFollowing: res['following'] == true,
+        );
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _notifications[index] =
+            _notifications[index].copyWith(isFollowing: wasFollowing);
+      });
+      AppSnackBar.error(context, e.toString().replaceFirst('Exception: ', ''));
+    }
+  }
+
+  Future<void> _removeNotification(NotificationItem item) async {
+    final removedIndex = _notifications.indexWhere((n) => n.id == item.id);
     setState(() {
       _notifications.removeWhere((n) => n.id == item.id);
     });
+    widget.onUnreadChanged?.call();
 
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Notification removed'),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    try {
+      await NotificationService().delete(item.id);
+      if (!mounted) return;
+      AppSnackBar.show(
+        context,
+        'Notification removed',
         action: SnackBarAction(
-          label: 'Undo',
-          textColor: AppColors.primary,
-          onPressed: () {
-            setState(() {
-              _notifications.insert(removedIndex, removedItem);
-            });
-          },
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {},
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _notifications.insert(removedIndex.clamp(0, _notifications.length), item);
+      });
+      widget.onUnreadChanged?.call();
+      AppSnackBar.error(context, e.toString().replaceFirst('Exception: ', ''));
+    }
   }
 
-  void _onNotificationTap(NotificationItem item) {
-    // Mark this specific item as read
+  Future<void> _onNotificationTap(NotificationItem item) async {
     final index = _notifications.indexWhere((n) => n.id == item.id);
     if (index != -1 && !_notifications[index].isRead) {
       setState(() {
         _notifications[index] = _notifications[index].copyWith(isRead: true);
       });
+      widget.onUnreadChanged?.call();
+      try {
+        await NotificationService().markRead(item.id);
+      } catch (_) {}
     }
 
-    if (item.postImageUrl != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => PostDetailScreen(
-            posts: MockData.feedPosts,
-            initialIndex: 0,
-            title: 'Post',
-          ),
-        ),
-      );
-    } else if (item.type == NotificationType.follow && widget.onUserSelected != null) {
+    if (item.type == NotificationType.follow && widget.onUserSelected != null) {
       widget.onUserSelected!(item.user);
+    } else if (item.postId != null && mounted) {
+      AppSnackBar.info(context, 'Open the post from your feed or profile.');
     }
   }
 
@@ -187,7 +226,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
       appBar: AppBar(
         leading: widget.showBackButton
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppColors.textPrimary),
+                icon: const Icon(Icons.arrow_back_ios_new,
+                    size: 20, color: AppColors.textPrimary),
                 splashRadius: 20,
                 onPressed: () => Navigator.of(context).maybePop(),
               )
@@ -221,7 +261,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
           if (_unreadCount > 0)
             TextButton.icon(
               onPressed: _markAllAsRead,
-              icon: const Icon(Icons.done_all_rounded, size: 16, color: AppColors.primary),
+              icon: const Icon(Icons.done_all_rounded,
+                  size: 16, color: AppColors.primary),
               label: Text(
                 'Mark read',
                 style: AppTypography.labelSm.copyWith(
@@ -239,13 +280,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
       body: Column(
         children: [
-          // Filter Chips Row
           Container(
             height: 48,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: const BoxDecoration(
               color: AppColors.surfaceCanvas,
-              border: Border(bottom: BorderSide(color: AppColors.borderSubtle, width: 0.6)),
+              border: Border(
+                  bottom: BorderSide(color: AppColors.borderSubtle, width: 0.6)),
             ),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
@@ -260,9 +301,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   selected: isSelected,
                   onSelected: (selected) {
                     if (selected) {
-                      setState(() {
-                        _selectedFilter = filter;
-                      });
+                      setState(() => _selectedFilter = filter);
                     }
                   },
                   selectedColor: AppColors.primary,
@@ -277,42 +316,63 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     color: isSelected ? AppColors.primary : AppColors.borderSubtle,
                     width: 0.8,
                   ),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
                   showCheckmark: false,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 );
               },
             ),
           ),
-
-          // Main Notifications List
           Expanded(
-            child: filtered.isEmpty
-                ? _buildEmptyState()
-                : RefreshIndicator(
-                    onRefresh: () async {
-                      await Future.delayed(const Duration(milliseconds: 500));
-                      setState(() {
-                        _notifications = List.from(MockData.notifications);
-                      });
-                    },
-                    color: AppColors.primary,
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      children: [
-                        if (unreadItems.isNotEmpty) ...[
-                          _buildSectionHeader('New'),
-                          ...unreadItems.map((item) => _buildNotificationTile(item)),
-                        ],
-                        if (readItems.isNotEmpty) ...[
-                          _buildSectionHeader(unreadItems.isEmpty ? 'All Activity' : 'Earlier'),
-                          ...readItems.map((item) => _buildNotificationTile(item)),
-                        ],
-                        const SizedBox(height: 24),
-                      ],
-                    ),
-                  ),
+            child: _loading
+                ? const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  )
+                : _error != null
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(_error!,
+                                  textAlign: TextAlign.center,
+                                  style: AppTypography.bodyRegular),
+                              const SizedBox(height: 12),
+                              TextButton(
+                                onPressed: _load,
+                                child: const Text('Retry'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : filtered.isEmpty
+                        ? _buildEmptyState()
+                        : RefreshIndicator(
+                            onRefresh: _load,
+                            color: AppColors.primary,
+                            child: ListView(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              children: [
+                                if (unreadItems.isNotEmpty) ...[
+                                  _buildSectionHeader('New'),
+                                  ...unreadItems
+                                      .map((item) => _buildNotificationTile(item)),
+                                ],
+                                if (readItems.isNotEmpty) ...[
+                                  _buildSectionHeader(
+                                      unreadItems.isEmpty ? 'All Activity' : 'Earlier'),
+                                  ...readItems
+                                      .map((item) => _buildNotificationTile(item)),
+                                ],
+                                const SizedBox(height: 24),
+                              ],
+                            ),
+                          ),
           ),
         ],
       ),
@@ -347,12 +407,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
       child: InkWell(
         onTap: () => _onNotificationTap(item),
         child: Container(
-          color: item.isRead ? Colors.transparent : AppColors.primary.withValues(alpha: 0.04),
+          color: item.isRead
+              ? Colors.transparent
+              : AppColors.primary.withValues(alpha: 0.04),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Avatar with Type Badge
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -361,7 +422,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     child: CircleAvatar(
                       radius: 22,
                       backgroundColor: AppColors.surfaceTertiary,
-                      backgroundImage: NetworkImage(item.user.avatarUrl),
+                      backgroundImage: item.user.avatarUrl.isNotEmpty
+                          ? NetworkImage(item.user.avatarUrl)
+                          : null,
+                      child: item.user.avatarUrl.isEmpty
+                          ? const Icon(Icons.pets, color: AppColors.primary)
+                          : null,
                     ),
                   ),
                   Positioned(
@@ -372,8 +438,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ],
               ),
               const SizedBox(width: 12),
-
-              // Notification Text Content
               Expanded(
                 child: RichText(
                   text: TextSpan(
@@ -404,19 +468,24 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ),
               ),
               const SizedBox(width: 10),
-
-              // Trailing Action: Follow Button or Post Thumbnail
               if (item.type == NotificationType.follow) ...[
                 ElevatedButton(
                   onPressed: () => _toggleFollow(item),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: item.isFollowing ? AppColors.surfaceSecondary : AppColors.primary,
-                    foregroundColor: item.isFollowing ? AppColors.textPrimary : Colors.white,
+                    backgroundColor: item.isFollowing
+                        ? AppColors.surfaceSecondary
+                        : AppColors.primary,
+                    foregroundColor:
+                        item.isFollowing ? AppColors.textPrimary : Colors.white,
                     elevation: 0,
-                    side: item.isFollowing ? const BorderSide(color: AppColors.borderSubtle) : BorderSide.none,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    side: item.isFollowing
+                        ? const BorderSide(color: AppColors.borderSubtle)
+                        : BorderSide.none,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                     minimumSize: Size.zero,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                   child: Text(
                     item.isFollowing ? 'Following' : 'Follow Back',
@@ -424,7 +493,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       fontFamily: AppTypography.fontFamily,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: item.isFollowing ? AppColors.textPrimary : Colors.white,
+                      color: item.isFollowing
+                          ? AppColors.textPrimary
+                          : Colors.white,
                     ),
                   ),
                 ),
@@ -440,13 +511,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       width: 44,
                       height: 44,
                       color: AppColors.surfaceSecondary,
-                      child: const Icon(Icons.pets, size: 20, color: AppColors.primary),
+                      child: const Icon(Icons.pets,
+                          size: 20, color: AppColors.primary),
                     ),
                   ),
                 ),
               ],
-
-              // Unread Dot Indicator
               if (!item.isRead) ...[
                 const SizedBox(width: 8),
                 Container(
@@ -487,17 +557,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No Notifications',
+              _selectedFilter == 'All'
+                  ? 'No notifications yet'
+                  : 'No $_selectedFilter yet',
               style: AppTypography.headlineMd,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
             Text(
               _selectedFilter == 'All'
-                  ? "You're all caught up! Purr-fect day ahead 🐾"
-                  : 'No $_selectedFilter notifications found.',
+                  ? 'When someone likes, comments, or follows you, it will show up here.'
+                  : 'Activity for this filter will appear here.',
               textAlign: TextAlign.center,
               style: AppTypography.bodyRegular.copyWith(
                 color: AppColors.textSecondary,
+                height: 1.4,
               ),
             ),
           ],

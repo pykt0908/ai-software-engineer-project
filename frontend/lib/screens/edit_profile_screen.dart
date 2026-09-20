@@ -6,6 +6,8 @@ import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../widgets/app_dialog.dart';
+import '../widgets/app_snackbar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final CatUser user;
@@ -65,9 +67,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick photo: $e')),
-        );
+        AppSnackBar.error(context, 'Failed to pick photo: $e');
       }
     }
   }
@@ -75,22 +75,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _saveProfile() async {
     final newUsername = _usernameController.text.trim();
     if (newUsername.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Username cannot be empty'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      AppSnackBar.error(context, 'Username cannot be empty');
       return;
     }
 
     if (newUsername.length < 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Username must be at least 3 characters'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      AppSnackBar.error(context, 'Username must be at least 3 characters');
       return;
     }
 
@@ -108,97 +98,54 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         username: newUsername,
         displayName: _nameController.text.trim(),
         bio: _bioController.text.trim(),
+        website: _websiteController.text.trim(),
+        category: _categoryController.text.trim(),
         isPublic: _isPublic,
         avatarId: avatarId,
       );
 
-      final fullUpdated = updated.copyWith(
-        username: newUsername,
-        displayName: _nameController.text.trim().isNotEmpty
-            ? _nameController.text.trim()
-            : newUsername,
-        category: _categoryController.text.trim(),
-        website: _websiteController.text.trim(),
-      );
-
-      AuthService().updateCurrentUser(fullUpdated);
+      AuthService().updateCurrentUser(updated);
 
       if (mounted) {
         setState(() {
           _isSaving = false;
         });
-        widget.onSave?.call(fullUpdated);
-        Navigator.of(context).pop(fullUpdated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white, size: 18),
-                SizedBox(width: 8),
-                Text('Profile updated successfully!'),
-              ],
-            ),
-          ),
-        );
+        widget.onSave?.call(updated);
+        Navigator.of(context).pop(updated);
+        AppSnackBar.success(context, 'Profile updated successfully!');
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _isSaving = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to update profile: ${e.toString().replaceAll('Exception: ', '')}'),
-            backgroundColor: AppColors.error,
-          ),
+        AppSnackBar.error(
+          context,
+          'Failed to update profile: ${e.toString().replaceAll('Exception: ', '')}',
         );
       }
     }
   }
 
-  void _confirmLogout() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            const Icon(Icons.logout, color: AppColors.interactiveLike, size: 22),
-            const SizedBox(width: 8),
-            Text('Log Out', style: AppTypography.headlineMd.copyWith(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        content: Text(
-          'Are you sure you want to log out of @${widget.user.username}?',
-          style: AppTypography.bodyRegular,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: AppTypography.bodyBold.copyWith(color: AppColors.textSecondary)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.interactiveLike,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              await AuthService().logout();
-              if (mounted) {
-                if (widget.onLogout != null) {
-                  widget.onLogout!();
-                } else {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                }
-              }
-            },
-            child: const Text('Log Out'),
-          ),
-        ],
-      ),
+  void _confirmLogout() async {
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: 'Log Out',
+      message: 'Are you sure you want to log out of @${widget.user.username}?',
+      icon: Icons.logout,
+      confirmLabel: 'Log Out',
+      isDestructive: true,
     );
+    if (!confirmed || !mounted) return;
+
+    await AuthService().logout();
+    if (mounted) {
+      if (widget.onLogout != null) {
+        widget.onLogout!();
+      } else {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+    }
   }
 
   @override
@@ -393,16 +340,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 _isPublic = val;
               });
             },
-          ),
-          const Divider(height: 0.8, color: AppColors.borderSubtle),
-
-          // Switch to Professional / Creator Account
-          ListTile(
-            title: Text(
-              'Switch to Cat Creator Account',
-              style: AppTypography.bodyBold.copyWith(color: AppColors.primary),
-            ),
-            onTap: () {},
           ),
           const Divider(height: 0.8, color: AppColors.borderSubtle),
 

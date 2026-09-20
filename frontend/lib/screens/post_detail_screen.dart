@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../widgets/app_snackbar.dart';
 import '../widgets/post_card.dart';
 import 'comment_screen.dart';
 import 'edit_post_screen.dart';
@@ -51,12 +52,17 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     super.dispose();
   }
 
-  void _openComments(Post post) {
-    Navigator.of(context).push(
+  void _openComments(Post post) async {
+    final result = await Navigator.of(context).push<int>(
       MaterialPageRoute(
         builder: (context) => CommentScreen(post: post),
       ),
     );
+    if (result != null && mounted) {
+      setState(() {
+        post.commentsCount = result;
+      });
+    }
   }
 
   void _openEditPost(Post post) async {
@@ -66,7 +72,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           post: post,
           onPostUpdated: (newPost) {
             setState(() {
-              post.caption = newPost.caption;
+              final index = _posts.indexWhere((p) => p.id == newPost.id);
+              if (index >= 0) {
+                _posts[index] = newPost;
+              }
             });
           },
         ),
@@ -74,7 +83,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
     if (updated != null && mounted) {
       setState(() {
-        post.caption = updated.caption;
+        final index = _posts.indexWhere((p) => p.id == updated.id);
+        if (index >= 0) {
+          _posts[index] = updated;
+        }
       });
     }
   }
@@ -118,20 +130,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     setState(() {
                       post.isSaved = !post.isSaved;
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          children: [
-                            Icon(
-                              post.isSaved ? Icons.bookmark : Icons.bookmark_border,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(post.isSaved ? 'Saved to collection!' : 'Removed from saved.'),
-                          ],
-                        ),
-                      ),
+                    AppSnackBar.success(
+                      context,
+                      post.isSaved ? 'Saved to collection!' : 'Removed from saved.',
                     );
                   },
                 ),
@@ -140,17 +141,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   title: Text('Share to...', style: AppTypography.bodyBold),
                   onTap: () {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Row(
-                          children: [
-                            Icon(Icons.link, color: Colors.white, size: 18),
-                            SizedBox(width: 8),
-                            Text('Post link copied!'),
-                          ],
-                        ),
-                      ),
-                    );
+                    AppSnackBar.success(context, 'Post link copied!');
                   },
                 ),
                 const Divider(color: AppColors.borderSubtle),
@@ -165,17 +156,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     setState(() {
                       _posts.removeWhere((p) => p.id == post.id);
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Row(
-                          children: [
-                            Icon(Icons.delete_outline, color: Colors.white, size: 18),
-                            SizedBox(width: 8),
-                            Text('Post deleted'),
-                          ],
-                        ),
-                      ),
-                    );
+                    AppSnackBar.success(context, 'Post deleted');
                     if (_posts.isEmpty) {
                       Navigator.of(context).pop();
                     }
