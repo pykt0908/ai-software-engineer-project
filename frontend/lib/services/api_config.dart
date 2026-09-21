@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 class ApiConfig {
+  static const String liveServerUrl = 'https://instacat.cyfrex.co.th';
+
   static String get serverUrl {
-    if (kIsWeb) {
-      return 'http://127.0.0.1:1337';
+    const fromEnv = String.fromEnvironment('API_SERVER_URL', defaultValue: '');
+    if (fromEnv.isNotEmpty) {
+      return fromEnv;
     }
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:1337';
-    }
-    return 'http://127.0.0.1:1337';
+    return liveServerUrl;
   }
 
   static String get baseUrl => '$serverUrl/api';
