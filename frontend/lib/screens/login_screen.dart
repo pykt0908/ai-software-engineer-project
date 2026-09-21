@@ -66,15 +66,26 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _openRegisterScreen() {
-    Navigator.of(context).push(
+  void _openRegisterScreen() async {
+    final registeredUsername = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (context) => RegisterScreen(
-          onRegisterSuccess: widget.onLoginSuccess,
           onBackToLogin: () => Navigator.of(context).pop(),
         ),
       ),
     );
+
+    if (!mounted) return;
+    if (registeredUsername != null && registeredUsername.isNotEmpty) {
+      setState(() {
+        _usernameController.text = registeredUsername;
+        _passwordController.clear();
+      });
+      AppSnackBar.success(
+        context,
+        'Account created successfully! Please sign in.',
+      );
+    }
   }
 
   @override

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import 'switch_account_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  final VoidCallback onRegisterSuccess;
+  final VoidCallback? onRegisterSuccess;
   final VoidCallback? onBackToLogin;
 
   const RegisterScreen({
     super.key,
-    required this.onRegisterSuccess,
+    this.onRegisterSuccess,
     this.onBackToLogin,
   });
 
@@ -99,11 +100,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: password,
       );
 
+      // Clear active token so user explicitly signs in with their new credentials
+      await ApiClient().clearTokens();
+      AuthService().currentUserNotifier.value = null;
+
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        widget.onRegisterSuccess();
+
+        widget.onRegisterSuccess?.call();
+
+        // Return to login / sign in screen with the new username
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context, username);
+        } else {
+          _goToLogin();
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -124,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => SwitchAccountScreen(
-            onLoginSuccess: widget.onRegisterSuccess,
+            onLoginSuccess: widget.onRegisterSuccess ?? () {},
           ),
         ),
       );

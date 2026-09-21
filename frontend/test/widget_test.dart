@@ -226,6 +226,26 @@ void main() {
     expect(find.text('Please fill in all required fields'), findsOneWidget);
   });
 
+  testWidgets('Successful registration navigates back to SwitchAccountScreen with username pre-filled', (WidgetTester tester) async {
+    await tester.pumpWidget(const InstaCatApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Sign up.'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).at(0), 'kitty_cat');
+    await tester.enterText(find.byType(TextField).at(1), 'kitty@cat.com');
+    await tester.enterText(find.byType(TextField).at(2), 'password123');
+    await tester.enterText(find.byType(TextField).at(3), 'password123');
+
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Switch accounts'), findsOneWidget);
+    expect(find.text('kitty_cat'), findsWidgets);
+    expect(find.text('Account created successfully! Please sign in.'), findsOneWidget);
+  });
+
   testWidgets('Logging out from ProfileScreen returns to SwitchAccountScreen', (WidgetTester tester) async {
     await tester.pumpWidget(const InstaCatApp());
     await tester.pumpAndSettle();
