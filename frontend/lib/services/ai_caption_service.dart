@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'api_client.dart';
@@ -38,6 +41,9 @@ class AiCaptionService {
   /// Downloads a remote image (e.g. existing post media) to a temp file for AI generate.
   Future<File> downloadImageToTempFile(String url) async {
     final resolved = ApiConfig.resolveImageUrl(url) ?? url;
+    if (kIsWeb) {
+      return File(resolved);
+    }
     try {
       final tempDir = await getTemporaryDirectory();
       final path =
@@ -62,26 +68,46 @@ class AiCaptionService {
     required CaptionStyle style,
   }) async {
     try {
-      final tempDir = await getTemporaryDirectory();
-      final targetPath =
-          '${tempDir.path}/ai_caption_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      MultipartFile multipartFile;
+      if (kIsWeb) {
+        Uint8List bytes;
+        if (imageFile.path.startsWith('http://') ||
+            imageFile.path.startsWith('https://')) {
+          final res = await Dio().get<List<int>>(
+            imageFile.path,
+            options: Options(responseType: ResponseType.bytes),
+          );
+          bytes = Uint8List.fromList(res.data!);
+        } else {
+          bytes = await XFile(imageFile.path).readAsBytes();
+        }
+        multipartFile = MultipartFile.fromBytes(
+          bytes,
+          filename: 'caption_img.jpg',
+        );
+      } else {
+        final tempDir = await getTemporaryDirectory();
+        final targetPath =
+            '${tempDir.path}/ai_caption_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      final compressed = await FlutterImageCompress.compressAndGetFile(
-        imageFile.absolute.path,
-        targetPath,
-        quality: 80,
-        minWidth: 1280,
-        minHeight: 1280,
-        format: CompressFormat.jpeg,
-      );
+        final compressed = await FlutterImageCompress.compressAndGetFile(
+          imageFile.absolute.path,
+          targetPath,
+          quality: 80,
+          minWidth: 1280,
+          minHeight: 1280,
+          format: CompressFormat.jpeg,
+        );
 
-      final uploadPath = compressed?.path ?? imageFile.path;
-
-      final formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(
+        final uploadPath = compressed?.path ?? imageFile.path;
+        multipartFile = await MultipartFile.fromFile(
           uploadPath,
           filename: 'caption_img.jpg',
-        ),
+        );
+      }
+
+      final formData = FormData.fromMap({
+        'image': multipartFile,
         'style': style.name,
       });
 

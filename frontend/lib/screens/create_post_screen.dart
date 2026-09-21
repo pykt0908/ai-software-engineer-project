@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../services/auth_service.dart';
@@ -352,8 +353,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     onPageChanged: (i) =>
                         setState(() => _currentImageIndex = i),
                     itemBuilder: (ctx, i) {
+                      final file = _selectedFiles[i];
+                      if (kIsWeb) {
+                        return Image.network(
+                          file.path,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: Colors.black12,
+                            child: const Icon(
+                              Icons.broken_image,
+                              color: Colors.white38,
+                            ),
+                          ),
+                        );
+                      }
                       return Image.file(
-                        _selectedFiles[i],
+                        file,
                         fit: BoxFit.cover,
                       );
                     },

@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/models.dart';
 import 'api_client.dart';
@@ -96,30 +99,52 @@ class PostService {
     }
 
     try {
-      final tempDir = await getTemporaryDirectory();
       final multipartFiles = <MultipartFile>[];
 
-      for (int i = 0; i < files.length; i++) {
-        final file = files[i];
-        final targetPath =
-            '${tempDir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
+      if (kIsWeb) {
+        for (int i = 0; i < files.length; i++) {
+          final file = files[i];
+          Uint8List bytes;
+          if (file.path.startsWith('http://') || file.path.startsWith('https://')) {
+            final res = await Dio().get<List<int>>(
+              file.path,
+              options: Options(responseType: ResponseType.bytes),
+            );
+            bytes = Uint8List.fromList(res.data!);
+          } else {
+            bytes = await XFile(file.path).readAsBytes();
+          }
+          multipartFiles.add(
+            MultipartFile.fromBytes(
+              bytes,
+              filename: 'post_img_${DateTime.now().millisecondsSinceEpoch}_$i.jpg',
+            ),
+          );
+        }
+      } else {
+        final tempDir = await getTemporaryDirectory();
+        for (int i = 0; i < files.length; i++) {
+          final file = files[i];
+          final targetPath =
+              '${tempDir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
 
-        final compressed = await FlutterImageCompress.compressAndGetFile(
-          file.absolute.path,
-          targetPath,
-          quality: 85,
-          minWidth: 2048,
-          minHeight: 2048,
-          format: CompressFormat.jpeg,
-        );
+          final compressed = await FlutterImageCompress.compressAndGetFile(
+            file.absolute.path,
+            targetPath,
+            quality: 85,
+            minWidth: 2048,
+            minHeight: 2048,
+            format: CompressFormat.jpeg,
+          );
 
-        final filePath = compressed?.path ?? file.path;
-        multipartFiles.add(
-          await MultipartFile.fromFile(
-            filePath,
-            filename: 'post_img_${DateTime.now().millisecondsSinceEpoch}_$i.jpg',
-          ),
-        );
+          final filePath = compressed?.path ?? file.path;
+          multipartFiles.add(
+            await MultipartFile.fromFile(
+              filePath,
+              filename: 'post_img_${DateTime.now().millisecondsSinceEpoch}_$i.jpg',
+            ),
+          );
+        }
       }
 
       final formData = FormData();
