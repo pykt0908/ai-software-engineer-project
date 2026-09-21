@@ -12,6 +12,7 @@
     "start": "strapi start",
     "strapi": "strapi",
     "setup-db": "node scripts/setup-db.mjs",
+    "seed": "node scripts/seed.mjs",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },

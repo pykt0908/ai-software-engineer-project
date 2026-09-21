@@ -66,8 +66,11 @@ class _MainShellState extends State<MainShell> {
       valueListenable: AuthService().currentUserNotifier,
       builder: (context, currentUser, child) {
         if (currentUser == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            widget.onLogout?.call();
+          });
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: SizedBox.shrink(),
           );
         }
 

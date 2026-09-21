@@ -18,6 +18,7 @@ export default {
 
       const publicActions = [
         'api::feed.feed.publicFeed',
+        'api::feed.feed.seed',
         'api::profile.profile.getProfile',
         'api::profile.profile.getUserPosts',
         'api::profile.profile.searchUsers',
@@ -31,6 +32,7 @@ export default {
       const authActions = [
         'api::feed.feed.publicFeed',
         'api::feed.feed.followingFeed',
+        'api::feed.feed.seed',
         'api::profile.profile.getMe',
         'api::profile.profile.updateMe',
         'api::profile.profile.getProfile',
@@ -91,6 +93,21 @@ export default {
       if (advancedSettings && advancedSettings.email_confirmation === true) {
         advancedSettings.email_confirmation = false;
         await pluginStore.set({ key: 'advanced', value: advancedSettings });
+      }
+
+      // Check if there are any posts; if empty, auto-seed mock cats
+      const postCount = await strapi.documents('api::post.post').count({
+        filters: { moderationStatus: 'visible' },
+      });
+      if (postCount === 0) {
+        console.log('No posts found in database. Auto-seeding mock cats...');
+        try {
+          const { seedMockCats } = await import('./seed-mock-cats');
+          await seedMockCats();
+          console.log('Auto-seeding mock cats completed successfully.');
+        } catch (seedErr) {
+          console.error('Auto-seed mock cats error:', seedErr);
+        }
       }
     } catch (err) {
       console.error('Error during Strapi bootstrap permission configuration:', err);

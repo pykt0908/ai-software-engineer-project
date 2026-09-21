@@ -24,7 +24,23 @@ class _InstaCatAppState extends State<InstaCatApp> {
   @override
   void initState() {
     super.initState();
+    AuthService().currentUserNotifier.addListener(_onCurrentUserChanged);
     _checkAuth();
+  }
+
+  @override
+  void dispose() {
+    AuthService().currentUserNotifier.removeListener(_onCurrentUserChanged);
+    super.dispose();
+  }
+
+  void _onCurrentUserChanged() {
+    final user = AuthService().currentUser;
+    if (user == null && _isLoggedIn && mounted) {
+      setState(() {
+        _isLoggedIn = false;
+      });
+    }
   }
 
   Future<void> _checkAuth() async {

@@ -1,7 +1,7 @@
 export default {
   async publicFeed(ctx: any) {
     const page = Math.max(1, parseInt(ctx.query.page || '1', 10));
-    const pageSize = Math.min(20, Math.max(1, parseInt(ctx.query.pageSize || '10', 10)));
+    const pageSize = Math.min(50, Math.max(1, parseInt(ctx.query.pageSize || '10', 10)));
     const currentUser = ctx.state.user;
 
     const filters: any = {
@@ -213,5 +213,19 @@ export default {
         },
       },
     };
+  },
+
+  async seed(ctx: any) {
+    try {
+      const { seedMockCats } = await import('../../../seed-mock-cats');
+      const result = await seedMockCats();
+      return {
+        success: true,
+        message: 'Mock cat data seeded successfully',
+        data: result,
+      };
+    } catch (err: any) {
+      return ctx.internalServerError(`Failed to seed data: ${err.message}`);
+    }
   },
 };

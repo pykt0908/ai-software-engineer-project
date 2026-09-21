@@ -16,5 +16,13 @@ export default {
         policies: [],
       },
     },
+    {
+      method: 'POST',
+      path: '/feed/seed',
+      handler: 'feed.seed',
+      config: {
+        policies: [],
+      },
+    },
   ],
 };

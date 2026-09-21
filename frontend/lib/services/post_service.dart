@@ -239,6 +239,14 @@ class PostService {
     }
   }
 
+  Future<void> seedMockData() async {
+    try {
+      await _apiClient.dio.post('/feed/seed');
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
+  }
+
   String _extractErrorMessage(DioException e) {
     final responseData = e.response?.data;
     if (responseData is Map) {

@@ -41,8 +41,9 @@ class ApiClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Do not send Authorization header for public auth routes
-          if (options.path.contains('/auth/local')) {
+          // Do not send Authorization header for public auth routes or token refresh
+          if (options.path.contains('/auth/local') ||
+              options.path.contains('/auth/refresh')) {
             options.headers.remove('Authorization');
             return handler.next(options);
           }
@@ -68,6 +69,8 @@ class ApiClient {
             if (!requestPath.contains('/auth/local') &&
                 !requestPath.contains('/auth/refresh')) {
               _isRefreshing = true;
+
+              // Step 1: Try refreshing with stored refreshToken
               var refreshToken = _refreshToken;
               if (refreshToken == null || refreshToken.isEmpty) {
                 try {
@@ -78,10 +81,19 @@ class ApiClient {
 
               if (refreshToken != null && refreshToken.isNotEmpty) {
                 try {
-                  final refreshResponse = await dio.post(
+                  final refreshDio = Dio(BaseOptions(
+                    baseUrl: ApiConfig.baseUrl,
+                    connectTimeout: const Duration(seconds: 10),
+                    receiveTimeout: const Duration(seconds: 10),
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json',
+                    },
+                  ));
+
+                  final refreshResponse = await refreshDio.post(
                     '/auth/refresh',
                     data: {'refreshToken': refreshToken},
-                    options: Options(headers: {'Authorization': ''}),
                   );
 
                   if (refreshResponse.statusCode == 200 &&
@@ -89,29 +101,66 @@ class ApiClient {
                     final newJwt = refreshResponse.data['jwt'] as String?;
                     final newRefresh = refreshResponse.data['refreshToken'] as String?;
 
-                    if (newJwt != null) {
-                      _accessToken = newJwt;
-                      _refreshToken = newRefresh ?? _refreshToken;
-                      try {
-                        await storage.write(key: keyAccessToken, value: newJwt);
-                        if (newRefresh != null) {
-                          await storage.write(
-                              key: keyRefreshToken, value: newRefresh);
-                        }
-                      } catch (_) {}
+                    if (newJwt != null && newJwt.isNotEmpty) {
+                      await saveTokens(jwt: newJwt, refreshToken: newRefresh);
+                      _isRefreshing = false;
+
+                      // Retry original request with new token
+                      final clonedOptions = error.requestOptions;
+                      clonedOptions.headers['Authorization'] = 'Bearer $newJwt';
+                      final retryResponse = await dio.fetch(clonedOptions);
+                      return handler.resolve(retryResponse);
                     }
-
-                    _isRefreshing = false;
-
-                    // Retry original request with new token
-                    final clonedOptions = error.requestOptions;
-                    clonedOptions.headers['Authorization'] = 'Bearer $newJwt';
-                    final retryResponse = await dio.fetch(clonedOptions);
-                    return handler.resolve(retryResponse);
                   }
                 } catch (_) {
                   // Refresh token failed or expired
                 }
+              }
+
+              // Step 2: Fallback to silent login using stored credentials if available
+              try {
+                final lastId = await storage.read(key: 'instacat_last_identifier');
+                final lastPass = await storage.read(key: 'instacat_last_password');
+
+                if (lastId != null &&
+                    lastId.isNotEmpty &&
+                    lastPass != null &&
+                    lastPass.isNotEmpty) {
+                  final authDio = Dio(BaseOptions(
+                    baseUrl: ApiConfig.baseUrl,
+                    connectTimeout: const Duration(seconds: 10),
+                    receiveTimeout: const Duration(seconds: 10),
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json',
+                    },
+                  ));
+
+                  final loginResponse = await authDio.post(
+                    '/auth/local',
+                    data: {
+                      'identifier': lastId.trim(),
+                      'password': lastPass,
+                    },
+                  );
+
+                  if (loginResponse.statusCode == 200 && loginResponse.data != null) {
+                    final newJwt = loginResponse.data['jwt'] as String?;
+                    final newRefresh = loginResponse.data['refreshToken'] as String?;
+
+                    if (newJwt != null && newJwt.isNotEmpty) {
+                      await saveTokens(jwt: newJwt, refreshToken: newRefresh);
+                      _isRefreshing = false;
+
+                      final clonedOptions = error.requestOptions;
+                      clonedOptions.headers['Authorization'] = 'Bearer $newJwt';
+                      final retryResponse = await dio.fetch(clonedOptions);
+                      return handler.resolve(retryResponse);
+                    }
+                  }
+                }
+              } catch (_) {
+                // Silent login also failed
               }
 
               _isRefreshing = false;

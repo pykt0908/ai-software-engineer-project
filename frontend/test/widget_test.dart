@@ -7,6 +7,7 @@ import 'package:frontend/data/mock_data.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/screens/feed_screen.dart';
+import 'package:frontend/screens/explore_screen.dart';
 import 'package:frontend/screens/main_shell.dart';
 
 const List<int> _kTransparentImage = <int>[
@@ -362,5 +363,26 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('milo_the_scottish'), findsOneWidget);
+  });
+
+  testWidgets('ExploreScreen renders categories and Masonry grid', (WidgetTester tester) async {
+    await tester.pumpWidget(const InstaCatApp());
+    await tester.pumpAndSettle();
+
+    await _loginFromSwitchScreen(tester);
+
+    await tester.tap(find.byIcon(Icons.search_rounded));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ExploreScreen), findsOneWidget);
+    expect(find.text('Trending'), findsOneWidget);
+    expect(find.text('Reels'), findsOneWidget);
+    expect(find.text('Ragdoll'), findsOneWidget);
+
+    await tester.tap(find.text('Reels'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Trending'));
+    await tester.pumpAndSettle();
   });
 }

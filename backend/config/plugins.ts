@@ -27,8 +27,20 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
   'users-permissions': {
     config: {
       jwtManagement: 'refresh',
+      jwt: {
+        expiresIn: '30d',
+      },
+      ratelimit: {
+        interval: 60000,
+        max: 200,
+      },
       sessions: {
-        httpOnly: true,
+        accessTokenLifespan: 7 * 24 * 60 * 60, // 7 days
+        maxRefreshTokenLifespan: 30 * 24 * 60 * 60, // 30 days
+        idleRefreshTokenLifespan: 14 * 24 * 60 * 60, // 14 days
+        maxSessionLifespan: 30 * 24 * 60 * 60, // 30 days
+        idleSessionLifespan: 7 * 24 * 60 * 60, // 7 days
+        httpOnly: false,
       },
     },
   },
