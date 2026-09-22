@@ -45,6 +45,7 @@ export async function sendOneSignalPush({
         external_id: externalUserIds.map(String),
       },
       target_channel: 'push',
+      priority: 10,
       headings: {
         en: title,
       },

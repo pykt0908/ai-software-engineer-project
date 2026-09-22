@@ -30,6 +30,12 @@ class PushNotificationService {
       // Request push notification permission
       OneSignal.Notifications.requestPermission(true);
 
+      // Foreground notification display handler (shows notification banner even when app is open)
+      OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+        debugPrint('[PushNotificationService] Foreground notification: ${event.notification.title}');
+        event.notification.display();
+      });
+
       // Notification click handler
       OneSignal.Notifications.addClickListener((event) {
         final data = event.notification.additionalData;
