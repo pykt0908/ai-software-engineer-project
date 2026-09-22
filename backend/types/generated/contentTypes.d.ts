@@ -479,6 +479,53 @@ export interface ApiAiCaptionLogAiCaptionLog
   };
 }
 
+export interface ApiAiImageJobAiImageJob extends Struct.CollectionTypeSchema {
+  collectionName: 'ai_image_jobs';
+  info: {
+    description: 'Log and job status for AI Photo Studio image editing and enhancement';
+    displayName: 'AI Image Job';
+    pluralName: 'ai-image-jobs';
+    singularName: 'ai-image-job';
+  };
+  options: {
+    draftAndPublish: false;
+    timestamps: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    errorMessage: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ai-image-job.ai-image-job'
+    > &
+      Schema.Attribute.Private;
+    operation: Schema.Attribute.Enumeration<
+      ['enhance', 'edit', 'generate_prompt']
+    > &
+      Schema.Attribute.Required;
+    prompt: Schema.Attribute.Text;
+    provider: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    resultMedia: Schema.Attribute.Media<'images'>;
+    sourceMedia: Schema.Attribute.Media<'images'>;
+    status: Schema.Attribute.Enumeration<
+      ['queued', 'processing', 'completed', 'failed', 'cancelled']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'completed'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiCommentComment extends Struct.CollectionTypeSchema {
   collectionName: 'comments';
   info: {
@@ -1267,6 +1314,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::ai-caption-log.ai-caption-log': ApiAiCaptionLogAiCaptionLog;
+      'api::ai-image-job.ai-image-job': ApiAiImageJobAiImageJob;
       'api::comment.comment': ApiCommentComment;
       'api::follow.follow': ApiFollowFollow;
       'api::notification.notification': ApiNotificationNotification;

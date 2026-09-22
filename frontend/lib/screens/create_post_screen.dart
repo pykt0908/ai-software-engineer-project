@@ -9,6 +9,7 @@ import '../theme/app_typography.dart';
 import '../widgets/ai_caption_widgets.dart';
 import '../widgets/app_snackbar.dart';
 import '../widgets/post_composer_extras.dart';
+import 'ai_photo_studio_screen.dart';
 import 'gallery_picker_screen.dart';
 
 class CreatePostScreen extends StatefulWidget {
@@ -202,6 +203,26 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
+  Future<void> _openAiPhotoStudio() async {
+    if (_selectedFiles.isEmpty || _isSharing) return;
+
+    final index = _currentImageIndex.clamp(0, _selectedFiles.length - 1);
+    final currentFile = _selectedFiles[index];
+
+    final editedFile = await Navigator.of(context).push<File>(
+      MaterialPageRoute(
+        builder: (_) => AiPhotoStudioScreen(originalFile: currentFile),
+      ),
+    );
+
+    if (editedFile != null && mounted) {
+      setState(() {
+        _selectedFiles[index] = editedFile;
+      });
+      AppSnackBar.success(context, 'อัปเดตรูปภาพด้วยผลลัพธ์จาก AI แล้ว 🐾');
+    }
+  }
+
   Future<void> _handleShare() async {
     if (_selectedFiles.isEmpty) {
       AppSnackBar.error(context, 'Please select at least 1 cat photo to share');
@@ -358,7 +379,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         return Image.network(
                           file.path,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
+                          errorBuilder: (context, error, stackTrace) => Container(
                             color: Colors.black12,
                             child: const Icon(
                               Icons.broken_image,
@@ -417,45 +438,68 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ),
                 Positioned(
                   bottom: 12,
-                  left: 12,
-                  child: ElevatedButton.icon(
-                    onPressed: () => _openGalleryPicker(),
-                    icon: const Icon(Icons.photo_library_outlined, size: 16),
-                    label: const Text('Change'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black.withValues(alpha: 0.7),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                  left: 10,
+                  right: 10,
+                  child: Row(
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => _openGalleryPicker(),
+                        icon: const Icon(Icons.photo_library_outlined, size: 14),
+                        label: const Text('Change'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black.withValues(alpha: 0.7),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                      const SizedBox(width: 6),
+                      ElevatedButton.icon(
+                        onPressed: _openAiPhotoStudio,
+                        icon: const Icon(Icons.auto_awesome, size: 14, color: Colors.white),
+                        label: const Text(
+                          '✨ AI แต่งภาพ',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary.withValues(alpha: 0.92),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          elevation: 3,
+                        ),
                       ),
-                    ),
+                      const Spacer(),
+                      if (_selectedFiles.length < 10)
+                        ElevatedButton.icon(
+                          onPressed: _addMorePhotos,
+                          icon: const Icon(Icons.add, size: 14),
+                          label: const Text('Add'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black.withValues(alpha: 0.7),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                if (_selectedFiles.length < 10)
-                  Positioned(
-                    bottom: 12,
-                    right: 12,
-                    child: ElevatedButton.icon(
-                      onPressed: _addMorePhotos,
-                      icon: const Icon(Icons.add, size: 16),
-                      label: const Text('Add More'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black.withValues(alpha: 0.7),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),

@@ -1,4 +1,5 @@
 import '../services/api_config.dart';
+export 'ai_image_models.dart';
 
 class CatUser {
   final String id;

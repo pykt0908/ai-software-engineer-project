@@ -122,22 +122,37 @@ class PostService {
           );
         }
       } else {
-        final tempDir = await getTemporaryDirectory();
+        String tempPath;
+        try {
+          final tempDir = await getTemporaryDirectory();
+          tempPath = tempDir.path;
+        } catch (_) {
+          tempPath = Directory.systemTemp.path;
+        }
+
         for (int i = 0; i < files.length; i++) {
           final file = files[i];
-          final targetPath =
-              '${tempDir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
+          String filePath = file.path;
 
-          final compressed = await FlutterImageCompress.compressAndGetFile(
-            file.absolute.path,
-            targetPath,
-            quality: 85,
-            minWidth: 2048,
-            minHeight: 2048,
-            format: CompressFormat.jpeg,
-          );
+          try {
+            final targetPath =
+                '$tempPath/compressed_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
 
-          final filePath = compressed?.path ?? file.path;
+            final compressed = await FlutterImageCompress.compressAndGetFile(
+              file.absolute.path,
+              targetPath,
+              quality: 85,
+              minWidth: 2048,
+              minHeight: 2048,
+              format: CompressFormat.jpeg,
+            );
+            if (compressed != null) {
+              filePath = compressed.path;
+            }
+          } catch (_) {
+            filePath = file.path;
+          }
+
           multipartFiles.add(
             await MultipartFile.fromFile(
               filePath,

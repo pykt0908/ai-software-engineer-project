@@ -45,9 +45,15 @@ class AiCaptionService {
       return File(resolved);
     }
     try {
-      final tempDir = await getTemporaryDirectory();
+      String tempPath;
+      try {
+        final tempDir = await getTemporaryDirectory();
+        tempPath = tempDir.path;
+      } catch (_) {
+        tempPath = Directory.systemTemp.path;
+      }
       final path =
-          '${tempDir.path}/ai_caption_dl_${DateTime.now().millisecondsSinceEpoch}.jpg';
+          '$tempPath/ai_caption_dl_${DateTime.now().millisecondsSinceEpoch}.jpg';
       await _apiClient.dio.download(
         resolved,
         path,
@@ -58,8 +64,11 @@ class AiCaptionService {
         ),
       );
       return File(path);
-    } on DioException catch (e) {
-      throw Exception(_extractErrorMessage(e));
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(_extractErrorMessage(e));
+      }
+      throw Exception(e.toString().replaceFirst('Exception: ', ''));
     }
   }
 
@@ -86,20 +95,33 @@ class AiCaptionService {
           filename: 'caption_img.jpg',
         );
       } else {
-        final tempDir = await getTemporaryDirectory();
-        final targetPath =
-            '${tempDir.path}/ai_caption_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        String uploadPath = imageFile.path;
+        try {
+          String tempPath;
+          try {
+            final tempDir = await getTemporaryDirectory();
+            tempPath = tempDir.path;
+          } catch (_) {
+            tempPath = Directory.systemTemp.path;
+          }
+          final targetPath =
+              '$tempPath/ai_caption_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-        final compressed = await FlutterImageCompress.compressAndGetFile(
-          imageFile.absolute.path,
-          targetPath,
-          quality: 80,
-          minWidth: 1280,
-          minHeight: 1280,
-          format: CompressFormat.jpeg,
-        );
+          final compressed = await FlutterImageCompress.compressAndGetFile(
+            imageFile.absolute.path,
+            targetPath,
+            quality: 80,
+            minWidth: 1280,
+            minHeight: 1280,
+            format: CompressFormat.jpeg,
+          );
+          if (compressed != null) {
+            uploadPath = compressed.path;
+          }
+        } catch (_) {
+          uploadPath = imageFile.path;
+        }
 
-        final uploadPath = compressed?.path ?? imageFile.path;
         multipartFile = await MultipartFile.fromFile(
           uploadPath,
           filename: 'caption_img.jpg',
@@ -132,8 +154,11 @@ class AiCaptionService {
         }
       }
       throw Exception('ไม่ได้รับ caption จากเซิร์ฟเวอร์');
-    } on DioException catch (e) {
-      throw Exception(_extractErrorMessage(e));
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(_extractErrorMessage(e));
+      }
+      throw Exception(e.toString().replaceFirst('Exception: ', ''));
     }
   }
 
@@ -148,6 +173,12 @@ class AiCaptionService {
         return responseData['message'].toString();
       }
     }
+    if (e.response?.statusCode == 405) {
+      return 'เซิร์ฟเวอร์ยังไม่เปิดให้บริการฟีเจอร์นี้ (405 Method Not Allowed)';
+    }
+    if (e.response?.statusCode == 403) {
+      return 'ไม่มีสิทธิ์เข้าถึงฟีเจอร์นี้ กรุณาเข้าสู่ระบบใหม่อีกครั้ง';
+    }
     if (e.response?.statusCode == 429) {
       return 'วันนี้ใช้ AI สร้าง caption ครบโควต้าแล้ว ลองใหม่พรุ่งนี้';
     }
@@ -157,6 +188,9 @@ class AiCaptionService {
     }
     if (e.type == DioExceptionType.connectionError) {
       return 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบว่า Strapi กำลังรันอยู่';
+    }
+    if (e.type == DioExceptionType.badResponse) {
+      return 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (${e.response?.statusCode ?? 500})';
     }
     return e.message ?? 'สร้าง caption ไม่สำเร็จ';
   }

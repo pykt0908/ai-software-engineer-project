@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ai_image_jobs",
+  "info": {
+    "singularName": "ai-image-job",
+    "pluralName": "ai-image-jobs",
+    "displayName": "AI Image Job",
+    "description": "Log and job status for AI Photo Studio image editing and enhancement"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "queued",
+        "processing",
+        "completed",
+        "failed",
+        "cancelled"
+      ],
+      "default": "completed",
+      "required": true
+    },
+    "operation": {
+      "type": "enumeration",
+      "enum": [
+        "enhance",
+        "edit",
+        "generate_prompt"
+      ],
+      "required": true
+    },
+    "prompt": {
+      "type": "text"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "type": "string"
+    },
+    "sourceMedia": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "resultMedia": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

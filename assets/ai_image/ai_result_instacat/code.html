@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Result Preview - InstaCat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#F97316',
+              50: '#FFF7ED',
+              100: '#FFEDD5',
+              200: '#FED7AA',
+              500: '#F97316',
+              600: '#EA580C',
+              700: '#C2410C',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-rounded {
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-rounded.filled {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Comparison Slider styles */
+    .compare-container {
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    .compare-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 50%;
+      overflow: hidden;
+    }
+    .compare-divider {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background-color: #FFFFFF;
+      transform: translateX(-50%);
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .compare-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 38px;
+      height: 38px;
+      background: #FFFFFF;
+      border: 2px solid #F97316;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      cursor: ew-resize;
+    }
+  </style>
+</head>
+<body class="bg-[#F8F9FA] flex justify-center items-start min-h-screen font-sans antialiased text-gray-900 selection:bg-orange-100">
+
+  <!-- Mobile Frame Container (390px width) -->
+  <div class="w-full max-w-[390px] min-h-screen bg-white flex flex-col shadow-2xl relative overflow-hidden border-x border-gray-100 pb-8">
+
+    <!-- Status Bar -->
+    <div class="sticky top-0 z-30 bg-white/95 backdrop-blur-md px-6 pt-3 pb-2 flex justify-between items-center text-xs font-semibold tracking-tight text-gray-900">
+      <span>9:41</span>
+      <div class="flex items-center gap-1.5">
+        <span class="material-symbols-rounded text-sm">signal_cellular_alt</span>
+        <span class="material-symbols-rounded text-sm">wifi</span>
+        <span class="material-symbols-rounded text-sm">battery_full</span>
+      </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-8 z-20 bg-white/95 backdrop-blur-md px-4 py-2.5 border-b border-gray-100 flex items-center justify-between">
+      <button class="flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors p-1 -ml-1 rounded-full hover:bg-gray-100 active:scale-95" aria-label="Go Back">
+        <span class="material-symbols-rounded text-2xl">arrow_back_ios_new</span>
+      </button>
+
+      <div class="flex items-center gap-1.5">
+        <h1 class="font-bold text-[17px] text-gray-900 tracking-tight">AI Result</h1>
+        <span class="flex items-center gap-0.5 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs">
+          <span class="material-symbols-rounded text-[11px] filled">auto_awesome</span>
+          Ready
+        </span>
+      </div>
+
+      <button class="text-xs font-semibold text-orange-600 hover:text-orange-700 transition-colors px-2 py-1 rounded-md hover:bg-orange-50">
+        Share
+      </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto px-4 pt-3 pb-4 flex flex-col gap-3.5">
+
+      <!-- View Switcher Tabs: Interactive Slider vs Side-by-Side -->
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-1 bg-stone-100 p-1 rounded-xl">
+          <button class="px-2.5 py-1 rounded-lg bg-white shadow-xs text-orange-600 font-bold text-xs flex items-center gap-1">
+            <span class="material-symbols-rounded text-sm">compare</span>
+            Split Slider
+          </button>
+          <button class="px-2.5 py-1 rounded-lg text-gray-500 hover:text-gray-800 font-medium text-xs flex items-center gap-1">
+            <span class="material-symbols-rounded text-sm">view_column</span>
+            Side by Side
+          </button>
+        </div>
+        <span class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
+          <span class="material-symbols-rounded text-xs text-orange-500 filled">touch_app</span>
+          Drag slider to inspect
+        </span>
+      </div>
+
+      <!-- Before / After Interactive Slider Comparison View -->
+      <div class="compare-container relative w-full aspect-square rounded-2xl overflow-hidden bg-stone-900 shadow-md border border-gray-100" id="compareContainer">
+        <!-- Background: AI Result (Underneath) -->
+        <img 
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeSz83bD17hp7YuQ5AQFvNEnrLOY9al-jhs0WkBt9kvnIGS1OTpTYTWJ5L1QQdsPvHuo68rNrLavdPqBbM2yEbdbc_QO4ccaG0uWWqq_4K-yFamfxZjqfunRkqFV4nQ9kcxS7FEncY0WOOn_jLaIzRLTUo2GdoTMigdppgoX8FG2kLwBber7PufOwQO8p2AYoYNINDgKMb6cR-ag7Rtb5KB7AsBv7ZGfgIz7bEVBPcWZrvfiFRoTG7Lw" 
+          alt="AI Enhanced Result" 
+          class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        />
+
+        <!-- Foreground: Original Image (Clipped overlay) -->
+        <div class="compare-overlay" id="compareOverlay" style="width: 48%;">
+          <img 
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9iFjvy4bPZUGcq0gvpEjVQkaYrox6f-d22PM-aSBYcSaNPvszfZ3oZVg08awFTpm-p2CzqDt8mTqByuSZ1KJbsqHdDVg3o0Zpq1JGiA3R9r2lbLoTLXV9J33VsEZJfS5n6O9cbBEgIsIi1EcG72R5sHqiXrJgWfV70EvWJ0hI9JRpF8mWynr8R7jWBjzMKzJA_DSHEKEhm5NDaTj9YMO0OhUVJc8BWvpIFrrzYrfhQ8T7D-xpl7KHGg" 
+            alt="Original Cat Photo" 
+            class="absolute top-0 left-0 max-w-none h-full object-cover pointer-events-none"
+            style="width: 358px; height: 358px;"
+          />
+          <!-- Badge for Original -->
+          <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-white text-[11px] font-semibold tracking-wide shadow-sm flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+            Original
+          </div>
+        </div>
+
+        <!-- Badge for AI Result -->
+        <div class="absolute top-3 right-3 bg-orange-600/90 backdrop-blur-md px-2.5 py-1 rounded-full text-white text-[11px] font-semibold tracking-wide shadow-sm flex items-center gap-1">
+          <span class="material-symbols-rounded text-xs filled">auto_awesome</span>
+          AI Result
+        </div>
+
+        <!-- Slider Divider & Handle -->
+        <div class="compare-divider" id="compareDivider" style="left: 48%;">
+          <div class="compare-handle shadow-lg">
+            <span class="material-symbols-rounded text-orange-600 text-lg">unfold_more</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compact AI Summary Card -->
+      <div class="bg-stone-50 border border-gray-200/90 rounded-2xl p-3.5 flex flex-col gap-2.5 shadow-xs">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
+              <span class="material-symbols-rounded text-lg filled">auto_awesome</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h2 class="text-[14px] font-bold text-gray-900">AI Enhanced</h2>
+                <span class="text-[10px] font-bold bg-green-100 text-green-700 px-1.5 py-0.2 rounded-full">100% Match</span>
+              </div>
+              <p class="text-[12px] text-gray-500 font-medium">Improved lighting, rich color tones and soft fur details</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prompt Used Quote Card -->
+        <div class="bg-white rounded-xl p-2.5 border border-gray-200 text-xs text-gray-600 flex flex-col gap-1">
+          <div class="flex items-center justify-between text-[11px] text-gray-400 font-medium">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-rounded text-xs text-orange-500 filled">format_quote</span>
+              Prompt Used
+            </span>
+            <button class="text-orange-600 hover:text-orange-700 font-semibold flex items-center gap-0.5">
+              <span class="material-symbols-rounded text-xs">edit</span>
+              Edit Prompt
+            </button>
+          </div>
+          <p class="italic text-gray-800 leading-relaxed font-normal pl-2 border-l-2 border-orange-400">
+            "Make my cat brighter, sharper and more adorable while keeping the natural fur texture and warm cozy lighting."
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col gap-2 pt-1">
+        <!-- Primary Button: Use This Photo (Replaces image in Create Post) -->
+        <button class="w-full h-12 rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-[0.98] text-white font-bold text-[15px] flex items-center justify-center gap-2 shadow-md shadow-orange-500/25 transition-all">
+          <span class="material-symbols-rounded text-xl filled">check_circle</span>
+          <span>Use This Photo</span>
+        </button>
+
+        <!-- Secondary Action Row -->
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Try Again Button -->
+          <button class="h-10 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition">
+            <span class="material-symbols-rounded text-base text-gray-500">replay</span>
+            <span>Try Again</span>
+          </button>
+
+          <!-- Edit Prompt Button -->
+          <button class="h-10 rounded-xl bg-orange-50 border border-orange-200 hover:bg-orange-100/70 text-orange-700 font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition">
+            <span class="material-symbols-rounded text-base text-orange-600">edit_note</span>
+            <span>Edit Prompt</span>
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Home Indicator -->
+    <div class="flex justify-center pb-2 pt-1">
+      <div class="w-32 h-1 bg-gray-300 rounded-full"></div>
+    </div>
+
+  </div>
+
+  <!-- Interactive Slider Script -->
+  <script>
+    const container = document.getElementById('compareContainer');
+    const overlay = document.getElementById('compareOverlay');
+    const divider = document.getElementById('compareDivider');
+
+    if (container && overlay && divider) {
+      let isDragging = false;
+
+      const updatePosition = (clientX) => {
+        const rect = container.getBoundingClientRect();
+        let x = clientX - rect.left;
+        if (x < 0) x = 0;
+        if (x > rect.width) x = rect.width;
+        const percentage = (x / rect.width) * 100;
+        overlay.style.width = percentage + '%';
+        divider.style.left = percentage + '%';
+      };
+
+      container.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        updatePosition(e.clientX);
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        updatePosition(e.clientX);
+      });
+
+      window.addEventListener('pointerup', () => {
+        isDragging = false;
+      });
+    }
+  </script>
+
+</body>
+</html>
