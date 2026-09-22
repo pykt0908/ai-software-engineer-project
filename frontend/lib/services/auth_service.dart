@@ -5,6 +5,7 @@ import '../data/mock_data.dart';
 import '../models/models.dart';
 import '../utils/platform_utils.dart';
 import 'api_client.dart';
+import 'push_notification_service.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
@@ -26,6 +27,14 @@ class AuthService {
     _apiClient.onAuthFailed = () {
       currentUserNotifier.value = null;
     };
+    currentUserNotifier.addListener(() {
+      final user = currentUserNotifier.value;
+      if (user != null) {
+        PushNotificationService().login(user.id);
+      } else {
+        PushNotificationService().logout();
+      }
+    });
   }
 
   Future<CatUser?> loadLastUser() async {

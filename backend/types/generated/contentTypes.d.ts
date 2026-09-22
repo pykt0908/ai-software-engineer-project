@@ -675,6 +675,61 @@ export interface ApiPostPost extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPushQueuePushQueue extends Struct.CollectionTypeSchema {
+  collectionName: 'push_queues';
+  info: {
+    description: 'Queue table for asynchronous push notifications';
+    displayName: 'Push Queue';
+    pluralName: 'push-queues';
+    singularName: 'push-queue';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    actor: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    attempts: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    eventType: Schema.Attribute.Enumeration<
+      ['like', 'comment', 'follow', 'new_post']
+    > &
+      Schema.Attribute.Required;
+    lastError: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::push-queue.push-queue'
+    > &
+      Schema.Attribute.Private;
+    message: Schema.Attribute.Text & Schema.Attribute.Required;
+    payload: Schema.Attribute.JSON;
+    processedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    recipient: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    status: Schema.Attribute.Enumeration<
+      ['pending', 'processing', 'completed', 'failed']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'pending'>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 120;
+      }> &
+      Schema.Attribute.DefaultTo<'InstaCat'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -1217,6 +1272,7 @@ declare module '@strapi/strapi' {
       'api::notification.notification': ApiNotificationNotification;
       'api::post-like.post-like': ApiPostLikePostLike;
       'api::post.post': ApiPostPost;
+      'api::push-queue.push-queue': ApiPushQueuePushQueue;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

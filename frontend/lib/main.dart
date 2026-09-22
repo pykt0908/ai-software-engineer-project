@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'screens/main_shell.dart';
 import 'screens/switch_account_screen.dart';
 import 'services/auth_service.dart';
+import 'services/push_notification_service.dart';
 import 'theme/app_theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await PushNotificationService().initialize();
   runApp(const InstaCatApp());
 }
 

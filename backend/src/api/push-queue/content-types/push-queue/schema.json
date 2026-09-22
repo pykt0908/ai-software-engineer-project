@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "push_queues",
+  "info": {
+    "singularName": "push-queue",
+    "pluralName": "push-queues",
+    "displayName": "Push Queue",
+    "description": "Queue table for asynchronous push notifications"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "recipient": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "actor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "eventType": {
+      "type": "enumeration",
+      "enum": ["like", "comment", "follow", "new_post"],
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 120,
+      "default": "InstaCat"
+    },
+    "message": {
+      "type": "text",
+      "required": true
+    },
+    "payload": {
+      "type": "json"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "processing", "completed", "failed"],
+      "default": "pending",
+      "required": true
+    },
+    "attempts": {
+      "type": "integer",
+      "default": 0
+    },
+    "lastError": {
+      "type": "text"
+    },
+    "processedAt": {
+      "type": "datetime"
+    }
+  }
+}

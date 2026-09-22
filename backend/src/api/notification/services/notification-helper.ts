@@ -1,4 +1,5 @@
 import type { Core } from '@strapi/strapi';
+import { enqueuePush } from '../../../services/push-queue-helper';
 
 type NotificationType = 'like' | 'comment' | 'follow';
 
@@ -12,7 +13,8 @@ type CreateNotificationInput = {
 };
 
 /**
- * Creates an in-app notification. Skips self-actions and duplicate recent events.
+ * Creates an in-app notification and enqueues an asynchronous push notification.
+ * Skips self-actions and duplicate recent events.
  */
 export async function createNotification(
   strapi: Core.Strapi,
@@ -55,6 +57,34 @@ export async function createNotification(
         ...(input.postId ? { post: input.postId } : {}),
         ...(input.commentId ? { comment: input.commentId } : {}),
       } as any,
+    });
+
+    // Enqueue push notification
+    let actorName = 'Someone';
+    try {
+      const actor = await strapi.db.query('plugin::users-permissions.user').findOne({
+        where: { id: input.actorId },
+        select: ['username', 'displayName'],
+      });
+      if (actor) {
+        actorName = actor.displayName || actor.username || 'Someone';
+      }
+    } catch {
+      // Fallback to default
+    }
+
+    await enqueuePush(strapi, {
+      recipientId: input.recipientId,
+      actorId: input.actorId,
+      eventType: input.type,
+      title: 'InstaCat',
+      message: `${actorName} ${input.message}`,
+      payload: {
+        type: input.type,
+        postId: input.postId,
+        commentId: input.commentId,
+        screen: input.type === 'follow' ? 'profile' : 'post_detail',
+      },
     });
   } catch (err) {
     strapi.log.warn(`Failed to create notification: ${err}`);

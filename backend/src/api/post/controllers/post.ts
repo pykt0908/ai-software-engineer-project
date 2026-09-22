@@ -1,5 +1,6 @@
 import { factories } from '@strapi/strapi';
 import { createNotification } from '../../notification/services/notification-helper';
+import { enqueueFollowersPush } from '../../../services/push-queue-helper';
 
 function mapAuthor(author: any) {
   return {
@@ -76,6 +77,13 @@ export default factories.createCoreController('api::post.post', ({ strapi }) => 
       },
       populate: ['images', 'author', 'author.avatar'],
     }) as any;
+
+    // Enqueue push notifications for all followers
+    await enqueueFollowersPush(strapi, {
+      authorId: user.id,
+      actorDisplayName: user.displayName || user.username,
+      post: newPost,
+    });
 
     return {
       data: {

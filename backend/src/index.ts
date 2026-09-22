@@ -109,6 +109,14 @@ export default {
           console.error('Auto-seed mock cats error:', seedErr);
         }
       }
+
+      // Start background Push Notification queue worker
+      try {
+        const { startPushWorker } = await import('./workers/push-worker');
+        startPushWorker(strapi);
+      } catch (workerErr) {
+        strapi.log.error(`Failed to start PushWorker: ${workerErr}`);
+      }
     } catch (err) {
       console.error('Error during Strapi bootstrap permission configuration:', err);
     }
