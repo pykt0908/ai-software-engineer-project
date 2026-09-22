@@ -188,10 +188,10 @@ class AiImageService {
       }
     }
     if (e.response?.statusCode == 405) {
-      return 'เซิร์ฟเวอร์ยังไม่เปิดให้บริการฟีเจอร์ AI นี้ (405 Method Not Allowed)';
+      return 'ระบบ AI แต่งภาพยังไม่พร้อมใช้งาน หรือ Endpoint ไม่ถูกต้อง (405 Method Not Allowed)';
     }
     if (e.response?.statusCode == 403) {
-      return 'ไม่มีสิทธิ์เข้าถึงฟีเจอร์นี้ กรุณาเข้าสู่ระบบใหม่อีกครั้ง';
+      return 'ไม่มีสิทธิ์เข้าถึงฟีเจอร์นี้ กรุณาเข้าสู่ระบบใหม่อีกครั้ง (403 Forbidden)';
     }
     if (e.response?.statusCode == 429) {
       return 'วันนี้ใช้ AI แต่งภาพครบโควต้าแล้ว ลองใหม่อีกครั้งพรุ่งนี้นะครับ 🐾';
@@ -204,7 +204,8 @@ class AiImageService {
       return 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบว่าระบบหลังบ้านกำลังทำงานอยู่';
     }
     if (e.type == DioExceptionType.badResponse) {
-      return 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (${e.response?.statusCode ?? 500})';
+      final status = e.response?.statusCode;
+      return 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ ($status)';
     }
     return e.message ?? 'แต่งรูปภาพไม่สำเร็จ';
   }

@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'api_client.dart';
@@ -174,10 +172,10 @@ class AiCaptionService {
       }
     }
     if (e.response?.statusCode == 405) {
-      return 'เซิร์ฟเวอร์ยังไม่เปิดให้บริการฟีเจอร์นี้ (405 Method Not Allowed)';
+      return 'ระบบ AI Caption ยังไม่พร้อมใช้งาน หรือ Endpoint ไม่ถูกต้อง (405 Method Not Allowed)';
     }
     if (e.response?.statusCode == 403) {
-      return 'ไม่มีสิทธิ์เข้าถึงฟีเจอร์นี้ กรุณาเข้าสู่ระบบใหม่อีกครั้ง';
+      return 'ไม่มีสิทธิ์เข้าถึงฟีเจอร์นี้ กรุณาเข้าสู่ระบบใหม่อีกครั้ง (403 Forbidden)';
     }
     if (e.response?.statusCode == 429) {
       return 'วันนี้ใช้ AI สร้าง caption ครบโควต้าแล้ว ลองใหม่พรุ่งนี้';
@@ -190,7 +188,8 @@ class AiCaptionService {
       return 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบว่า Strapi กำลังรันอยู่';
     }
     if (e.type == DioExceptionType.badResponse) {
-      return 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (${e.response?.statusCode ?? 500})';
+      final status = e.response?.statusCode;
+      return 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ ($status)';
     }
     return e.message ?? 'สร้าง caption ไม่สำเร็จ';
   }

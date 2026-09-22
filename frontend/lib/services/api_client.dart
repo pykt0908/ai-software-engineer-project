@@ -41,6 +41,12 @@ class ApiClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
+          // If sending FormData, remove forced application/json header to let Dio set boundary
+          if (options.data is FormData) {
+            options.headers.remove('Content-Type');
+            options.contentType = null;
+          }
+
           // Do not send Authorization header for public auth routes or token refresh
           if (options.path.contains('/auth/local') ||
               options.path.contains('/auth/refresh')) {
@@ -64,6 +70,10 @@ class ApiClient {
           return handler.next(options);
         },
         onError: (DioException error, handler) async {
+          debugPrint('❌ [API Error] ${error.response?.statusCode} ${error.requestOptions.method} ${error.requestOptions.uri}');
+          if (error.response?.data != null) {
+            debugPrint('   [API Response] ${error.response?.data}');
+          }
           if (error.response?.statusCode == 401 && !_isRefreshing) {
             final requestPath = error.requestOptions.path;
             if (!requestPath.contains('/auth/local') &&

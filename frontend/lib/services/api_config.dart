@@ -11,7 +11,15 @@ class ApiConfig {
     return liveServerUrl;
   }
 
-  static String get baseUrl => '$serverUrl/api';
+  static String get baseUrl {
+    final clean = serverUrl.endsWith('/')
+        ? serverUrl.substring(0, serverUrl.length - 1)
+        : serverUrl;
+    if (clean.endsWith('/api')) {
+      return clean;
+    }
+    return '$clean/api';
+  }
 
   /// Google Maps & Google Places API Key (can be passed via --dart-define=GOOGLE_MAPS_API_KEY=... or configured here).
   static const String googleMapsApiKey = String.fromEnvironment(
