@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class ApiConfig {
   static const String liveServerUrl = 'https://instacat.cyfrex.co.th';
   static const String localServerUrl = 'http://172.20.10.10:1337';
@@ -10,11 +8,7 @@ class ApiConfig {
     if (fromEnv.isNotEmpty) {
       return fromEnv;
     }
-    // Automatically use 10.0.2.2 when running on Android
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-      return androidEmulatorUrl;
-    }
-    return localServerUrl;
+    return liveServerUrl;
   }
 
   static String get baseUrl => '$serverUrl/api';
