@@ -39,10 +39,15 @@ export async function processPushQueueBatch(strapiInstance?: Core.Strapi, batchS
 
     for (const job of jobs) {
       const recipient = (job as any).recipient;
+      // Prefer documentId as Flutter registers OneSignal with user.documentId
       const targetExternalIds = [
         recipient?.documentId ? String(recipient.documentId) : null,
-        recipient?.id ? String(recipient.id) : null,
       ].filter((x): x is string => Boolean(x));
+
+      // Fallback to integer id if documentId not present
+      if (targetExternalIds.length === 0 && recipient?.id) {
+        targetExternalIds.push(String(recipient.id));
+      }
 
       if (targetExternalIds.length === 0) {
         // Invalid recipient, mark failed
@@ -65,7 +70,7 @@ export async function processPushQueueBatch(strapiInstance?: Core.Strapi, batchS
         } as any,
       });
 
-      // Dispatch to OneSignal via External ID (covers both documentId and id)
+      // Dispatch to OneSignal via External ID
       const result = await sendOneSignalPush({
         externalUserIds: targetExternalIds,
         title: job.title || 'InstaCat',
@@ -83,7 +88,12 @@ export async function processPushQueueBatch(strapiInstance?: Core.Strapi, batchS
           } as any,
         });
       } else {
-        const nextAttempts = ((job as any).attempts || 0) + 1;
+        const isPermanent =
+          result.error?.includes('not subscribed') ||
+          result.error?.includes('invalid_aliases') ||
+          result.error?.includes('not found');
+
+        const nextAttempts = isPermanent ? 3 : ((job as any).attempts || 0) + 1;
         await strapi.documents('api::push-queue.push-queue').update({
           documentId: job.documentId,
           data: {

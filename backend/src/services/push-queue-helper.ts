@@ -26,6 +26,22 @@ export async function enqueuePush(
   }
 
   try {
+    // Deduplicate: ignore identical push notification enqueued within the last 10 seconds
+    const tenSecondsAgo = new Date(Date.now() - 10000).toISOString();
+    const duplicate = await strapi.documents('api::push-queue.push-queue').findFirst({
+      filters: {
+        recipient: { id: input.recipientId },
+        eventType: input.eventType,
+        ...(input.actorId ? { actor: { id: input.actorId } } : {}),
+        createdAt: { $gte: tenSecondsAgo },
+      },
+    });
+
+    if (duplicate) {
+      strapi.log.info(`[PushQueue] Skipping duplicate push job for ${input.eventType}`);
+      return null;
+    }
+
     const job = await strapi.documents('api::push-queue.push-queue').create({
       data: {
         recipient: input.recipientId,

@@ -66,6 +66,22 @@ export async function sendOneSignalPush({
 
     const result = (await res.json()) as any;
 
+    // If an ID was returned, OneSignal accepted and created the notification
+    if (result?.id) {
+      const warningStr = result?.errors
+        ? typeof result.errors === 'object'
+          ? JSON.stringify(result.errors)
+          : String(result.errors)
+        : undefined;
+
+      return {
+        success: true,
+        id: result.id,
+        recipients: result.recipients ?? externalUserIds.length,
+        error: warningStr,
+      };
+    }
+
     if (!res.ok || result?.errors) {
       const errStr = Array.isArray(result?.errors)
         ? result.errors.join(', ')
@@ -80,8 +96,8 @@ export async function sendOneSignalPush({
 
     return {
       success: true,
-      id: result.id,
-      recipients: result.recipients || externalUserIds.length,
+      id: result?.id,
+      recipients: result?.recipients || externalUserIds.length,
     };
   } catch (err: any) {
     return {
